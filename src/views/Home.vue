@@ -1,0 +1,89 @@
+<template>
+  <div class="min-h-screen">
+    <!-- Hero section -->
+    <div class="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto text-center">
+        <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Helper
+          </span>
+          助手
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
+          整合日常小工具，让生活更便捷
+        </p>
+      </div>
+    </div>
+
+    <!-- Tools grid -->
+    <div class="px-4 sm:px-6 lg:px-8 pb-12">
+      <div class="max-w-5xl mx-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <ToolCard
+            to="/food"
+            title="今天吃什么"
+            description="不知道吃什么？让命运轮盘帮你决定！内置30种常见外卖选项，支持自定义添加。"
+            :icon="Food"
+            color="orange"
+          />
+          <ToolCard
+            to="/random"
+            title="随机数生成"
+            description="生成指定范围内的随机数，支持批量生成、去重、一键复制结果。"
+            :icon="CircleCheckFilled"
+            color="blue"
+          />
+          
+          <!-- Coming soon placeholder -->
+          <div class="rounded-2xl border border-dashed border-gray-300 dark:border-gray-600 bg-gray-50/50 dark:bg-gray-800/30 p-6 flex flex-col items-center justify-center text-center min-h-[200px]">
+            <el-icon :size="32" class="text-gray-300 dark:text-gray-600 mb-3">
+              <Plus />
+            </el-icon>
+            <p class="text-sm text-gray-400 dark:text-gray-500">更多工具即将上线</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features section -->
+    <div class="px-4 sm:px-6 lg:px-8 py-12 bg-gray-50/50 dark:bg-gray-800/30">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">功能特点</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div class="text-center p-4">
+            <div class="w-12 h-12 mx-auto rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-3">
+              <el-icon :size="24" class="text-blue-600 dark:text-blue-400">
+                <Moon />
+              </el-icon>
+            </div>
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-1">暗黑模式</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">支持白天/黑夜主题切换</p>
+          </div>
+          <div class="text-center p-4">
+            <div class="w-12 h-12 mx-auto rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-3">
+              <el-icon :size="24" class="text-green-600 dark:text-green-400">
+                <Cellphone />
+              </el-icon>
+            </div>
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-1">响应式设计</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">完美适配移动端和PC端</p>
+          </div>
+          <div class="text-center p-4">
+            <div class="w-12 h-12 mx-auto rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-3">
+              <el-icon :size="24" class="text-purple-600 dark:text-purple-400">
+                <Files />
+              </el-icon>
+            </div>
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-1">数据持久化</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">本地存储，数据不丢失</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { Food, CircleCheckFilled, Plus, Moon, Cellphone, Files } from '@element-plus/icons-vue'
+import ToolCard from '../components/common/ToolCard.vue'
+</script>
