@@ -57,8 +57,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { HomeFilled, Food, CircleCheckFilled } from '@element-plus/icons-vue'
+import { HomeFilled, Food, CircleCheckFilled, Picture } from '@element-plus/icons-vue'
 import { useAppStore } from '../../stores'
 
 const appStore = useAppStore()
@@ -67,5 +66,6 @@ const menuRoutes = computed(() => [
   { path: '/', title: '首页', icon: HomeFilled },
   { path: '/food', title: '今天吃什么', icon: Food },
   { path: '/random', title: '随机数生成', icon: CircleCheckFilled },
+  { path: '/image', title: '图片处理', icon: Picture },
 ])
 </script>

@@ -33,14 +33,13 @@
             :icon="CircleCheckFilled"
             color="blue"
           />
-          
-          <!-- Coming soon placeholder -->
-          <div class="rounded-2xl border border-dashed border-gray-300 dark:border-gray-600 bg-gray-50/50 dark:bg-gray-800/30 p-6 flex flex-col items-center justify-center text-center min-h-[200px]">
-            <el-icon :size="32" class="text-gray-300 dark:text-gray-600 mb-3">
-              <Plus />
-            </el-icon>
-            <p class="text-sm text-gray-400 dark:text-gray-500">更多工具即将上线</p>
-          </div>
+          <ToolCard
+            to="/image"
+            title="图片处理"
+            description="图片格式转换与压缩，纯前端处理保护隐私，支持批量操作。"
+            :icon="Picture"
+            color="purple"
+          />
         </div>
       </div>
     </div>
@@ -84,6 +83,6 @@
 </template>
 
 <script setup lang="ts">
-import { Food, CircleCheckFilled, Plus, Moon, Cellphone, Files } from '@element-plus/icons-vue'
+import { Food, CircleCheckFilled, Picture, Moon, Cellphone, Files } from '@element-plus/icons-vue'
 import ToolCard from '../components/common/ToolCard.vue'
 </script>

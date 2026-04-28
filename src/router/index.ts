@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import FoodPicker from '../views/FoodPicker.vue'
 import RandomNumber from '../views/RandomNumber.vue'
+import ImageProcessor from '../views/ImageProcessor.vue'
 
 const routes = [
   {
@@ -21,6 +22,12 @@ const routes = [
     name: 'RandomNumber',
     component: RandomNumber,
     meta: { title: '随机数生成', icon: 'CircleCheckFilled' },
+  },
+  {
+    path: '/image',
+    name: 'ImageProcessor',
+    component: ImageProcessor,
+    meta: { title: '图片处理', icon: 'Picture' },
   },
 ]
 
