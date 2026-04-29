@@ -30,12 +30,13 @@ import { ElConfigProvider } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import AppHeader from './components/common/AppHeader.vue'
 import SideMenu from './components/common/SideMenu.vue'
-import { useThemeStore, useFoodStore, useRandomStore } from './stores'
+import { useThemeStore, useFoodStore, useRandomStore, usePasswordStore } from './stores'
 import { initDatabase } from './db'
 
 const themeStore = useThemeStore()
 const foodStore = useFoodStore()
 const randomStore = useRandomStore()
+const passwordStore = usePasswordStore()
 
 // Initialize on mount
 onMounted(async () => {
@@ -49,6 +50,7 @@ onMounted(async () => {
   await foodStore.loadOptions()
   await foodStore.loadHistory()
   await randomStore.loadConfig()
+  await passwordStore.loadPasswords()
 })
 </script>
 

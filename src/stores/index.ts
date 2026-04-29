@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { getDB, type FoodOption, type RandomConfig } from '../db'
+import { getDB, type FoodOption, type RandomConfig, type Password } from '../db'
 
 // 主题 Store
 export const useThemeStore = defineStore('theme', () => {
@@ -257,5 +257,63 @@ export const useRandomStore = defineStore('random', () => {
     saveConfig,
     generate,
     updateConfig,
+  }
+})
+
+// 密码本 Store
+export interface PasswordForm {
+  platform: string
+  username: string
+  password: string
+  notes?: string
+}
+
+export const usePasswordStore = defineStore('password', () => {
+  const passwords = ref<Password[]>([])
+  const loading = ref(false)
+
+  const db = getDB()
+
+  // 加载密码列表
+  const loadPasswords = async () => {
+    loading.value = true
+    passwords.value = await db.passwords.orderBy('updatedAt').reverse().toArray()
+    loading.value = false
+  }
+
+  // 添加密码
+  const addPassword = async (form: PasswordForm) => {
+    const now = new Date()
+    const id = await db.passwords.add({
+      ...form,
+      createdAt: now,
+      updatedAt: now,
+    })
+    await loadPasswords()
+    return id
+  }
+
+  // 更新密码
+  const updatePassword = async (id: number, form: PasswordForm) => {
+    await db.passwords.update(id, {
+      ...form,
+      updatedAt: new Date(),
+    })
+    await loadPasswords()
+  }
+
+  // 删除密码
+  const deletePassword = async (id: number) => {
+    await db.passwords.delete(id)
+    await loadPasswords()
+  }
+
+  return {
+    passwords,
+    loading,
+    loadPasswords,
+    addPassword,
+    updatePassword,
+    deletePassword,
   }
 })

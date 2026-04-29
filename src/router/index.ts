@@ -3,6 +3,7 @@ import Home from '../views/Home.vue'
 import FoodPicker from '../views/FoodPicker.vue'
 import RandomNumber from '../views/RandomNumber.vue'
 import ImageProcessor from '../views/ImageProcessor.vue'
+import PasswordBook from '../views/PasswordBook.vue'
 
 const routes = [
   {
@@ -28,6 +29,12 @@ const routes = [
     name: 'ImageProcessor',
     component: ImageProcessor,
     meta: { title: '图片处理', icon: 'Picture' },
+  },
+  {
+    path: '/password',
+    name: 'PasswordBook',
+    component: PasswordBook,
+    meta: { title: '密码本', icon: 'Lock' },
   },
 ]
 
