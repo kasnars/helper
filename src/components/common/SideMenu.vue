@@ -57,7 +57,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { HomeFilled, Food, CircleCheckFilled, Picture, Lock } from '@element-plus/icons-vue'
+import { HomeFilled, Food, CircleCheckFilled, Picture, Lock, Tools } from '@element-plus/icons-vue'
 import { useAppStore } from '../../stores'
 
 const appStore = useAppStore()
@@ -68,5 +68,6 @@ const menuRoutes = computed(() => [
   { path: '/random', title: '随机数生成', icon: CircleCheckFilled },
   { path: '/image', title: '图片处理', icon: Picture },
   { path: '/password', title: '密码本', icon: Lock },
+  { path: '/devtools', title: '开发工具', icon: Tools },
 ])
 </script>

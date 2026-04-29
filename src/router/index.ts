@@ -4,6 +4,7 @@ import FoodPicker from '../views/FoodPicker.vue'
 import RandomNumber from '../views/RandomNumber.vue'
 import ImageProcessor from '../views/ImageProcessor.vue'
 import PasswordBook from '../views/PasswordBook.vue'
+import DevTools from '../views/DevTools.vue'
 
 const routes = [
   {
@@ -35,6 +36,12 @@ const routes = [
     name: 'PasswordBook',
     component: PasswordBook,
     meta: { title: '密码本', icon: 'Lock' },
+  },
+  {
+    path: '/devtools',
+    name: 'DevTools',
+    component: DevTools,
+    meta: { title: '开发工具', icon: 'Tools' },
   },
 ]
 

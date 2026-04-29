@@ -17,7 +17,7 @@
 
     <!-- Tools grid -->
     <div class="px-4 sm:px-6 lg:px-8 pb-12">
-      <div class="max-w-5xl mx-auto">
+      <div class="max-w-6xl mx-auto">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <ToolCard
             to="/food"
@@ -46,6 +46,13 @@
             description="安全存储账号密码，支持 JSON 导入导出，本地存储保护隐私。"
             :icon="Lock"
             color="red"
+          />
+          <ToolCard
+            to="/devtools"
+            title="开发工具"
+            description="正则测试、JSON编辑器、二维码、在线画板、PDF工具等开发必备工具。"
+            :icon="Tools"
+            color="green"
           />
         </div>
       </div>
@@ -90,6 +97,6 @@
 </template>
 
 <script setup lang="ts">
-import { Food, CircleCheckFilled, Picture, Lock, Moon, Cellphone, Files } from '@element-plus/icons-vue'
+import { Food, CircleCheckFilled, Picture, Lock, Tools, Moon, Cellphone, Files } from '@element-plus/icons-vue'
 import ToolCard from '../components/common/ToolCard.vue'
 </script>
