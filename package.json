@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy:dev": "deploy --env=dev",
+    "deploy:prod": "deploy --env=prod"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
