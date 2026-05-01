@@ -16,23 +16,63 @@
         <el-radio-group v-model="activeTool" size="large">
           <el-radio-button label="regex">
             <el-icon><Search /></el-icon>
-            正则测试
+            <span class="hidden sm:inline">正则测试</span>
+            <span class="sm:hidden">正则</span>
           </el-radio-button>
           <el-radio-button label="json">
             <el-icon><Document /></el-icon>
-            JSON 工具
+            <span class="hidden sm:inline">JSON 工具</span>
+            <span class="sm:hidden">JSON</span>
           </el-radio-button>
           <el-radio-button label="qrcode">
             <el-icon><FullScreen /></el-icon>
-            二维码
+            <span class="hidden sm:inline">二维码</span>
+            <span class="sm:hidden">二维码</span>
           </el-radio-button>
           <el-radio-button label="whiteboard">
             <el-icon><EditPen /></el-icon>
-            在线画板
+            <span class="hidden sm:inline">在线画板</span>
+            <span class="sm:hidden">画板</span>
           </el-radio-button>
           <el-radio-button label="pdf">
             <el-icon><DocumentChecked /></el-icon>
-            PDF 工具
+            <span class="hidden sm:inline">PDF 工具</span>
+            <span class="sm:hidden">PDF</span>
+          </el-radio-button>
+          <el-radio-button label="base64">
+            <el-icon><Share /></el-icon>
+            <span class="hidden sm:inline">Base64</span>
+            <span class="sm:hidden">Base64</span>
+          </el-radio-button>
+          <el-radio-button label="timestamp">
+            <el-icon><Timer /></el-icon>
+            <span class="hidden sm:inline">时间戳</span>
+            <span class="sm:hidden">时间戳</span>
+          </el-radio-button>
+          <el-radio-button label="color">
+            <el-icon><Brush /></el-icon>
+            <span class="hidden sm:inline">颜色工具</span>
+            <span class="sm:hidden">颜色</span>
+          </el-radio-button>
+          <el-radio-button label="hash">
+            <el-icon><Key /></el-icon>
+            <span class="hidden sm:inline">哈希</span>
+            <span class="sm:hidden">哈希</span>
+          </el-radio-button>
+          <el-radio-button label="textstat">
+            <el-icon><Document /></el-icon>
+            <span class="hidden sm:inline">文本统计</span>
+            <span class="sm:hidden">文本</span>
+          </el-radio-button>
+          <el-radio-button label="radix">
+            <el-icon><Sort /></el-icon>
+            <span class="hidden sm:inline">进制转换</span>
+            <span class="sm:hidden">进制</span>
+          </el-radio-button>
+          <el-radio-button label="uuid">
+            <el-icon><Postcard /></el-icon>
+            <span class="hidden sm:inline">UUID</span>
+            <span class="sm:hidden">UUID</span>
           </el-radio-button>
         </el-radio-group>
       </div>
@@ -44,6 +84,13 @@
         <QrCodeTool v-if="activeTool === 'qrcode'" />
         <Whiteboard v-if="activeTool === 'whiteboard'" />
         <PdfTool v-if="activeTool === 'pdf'" />
+        <Base64Tool v-if="activeTool === 'base64'" />
+        <TimestampTool v-if="activeTool === 'timestamp'" />
+        <ColorTool v-if="activeTool === 'color'" />
+        <HashTool v-if="activeTool === 'hash'" />
+        <TextStatTool v-if="activeTool === 'textstat'" />
+        <RadixTool v-if="activeTool === 'radix'" />
+        <UUIDTool v-if="activeTool === 'uuid'" />
       </div>
     </div>
   </div>
@@ -51,12 +98,19 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Search, Document, FullScreen, EditPen, DocumentChecked } from '@element-plus/icons-vue'
+import { Search, Document, FullScreen, EditPen, DocumentChecked, Share, Timer, Brush, Key, Sort, Postcard } from '@element-plus/icons-vue'
 import RegexTester from '../components/dev/RegexTester.vue'
 import JsonEditor from '../components/dev/JsonEditor.vue'
 import QrCodeTool from '../components/dev/QrCodeTool.vue'
 import Whiteboard from '../components/dev/Whiteboard.vue'
 import PdfTool from '../components/dev/PdfTool.vue'
+import Base64Tool from '../components/dev/Base64Tool.vue'
+import TimestampTool from '../components/dev/TimestampTool.vue'
+import ColorTool from '../components/dev/ColorTool.vue'
+import HashTool from '../components/dev/HashTool.vue'
+import TextStatTool from '../components/dev/TextStatTool.vue'
+import RadixTool from '../components/dev/RadixTool.vue'
+import UUIDTool from '../components/dev/UUIDTool.vue'
 
-const activeTool = ref<'regex' | 'json' | 'qrcode' | 'whiteboard' | 'pdf'>('regex')
+const activeTool = ref<'regex' | 'json' | 'qrcode' | 'whiteboard' | 'pdf' | 'base64' | 'timestamp' | 'color' | 'hash' | 'textstat' | 'radix' | 'uuid'>('regex')
 </script>

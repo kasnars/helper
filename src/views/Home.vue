@@ -20,37 +20,23 @@
       <div class="max-w-6xl mx-auto">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <ToolCard
-            to="/food"
-            title="今天吃什么"
-            description="不知道吃什么？让命运轮盘帮你决定！内置30种常见外卖选项，支持自定义添加。"
-            :icon="Food"
+            to="/life"
+            title="生活工具"
+            description="今天吃什么、随机数生成、密码本、在线画板等日常生活实用工具。"
+            :icon="Star"
             color="orange"
           />
           <ToolCard
-            to="/random"
-            title="随机数生成"
-            description="生成指定范围内的随机数，支持批量生成、去重、一键复制结果。"
-            :icon="CircleCheckFilled"
+            to="/file"
+            title="文件工具"
+            description="图片格式转换与压缩、PDF处理工具，纯前端处理保护隐私。"
+            :icon="FolderOpened"
             color="blue"
-          />
-          <ToolCard
-            to="/image"
-            title="图片处理"
-            description="图片格式转换与压缩，纯前端处理保护隐私，支持批量操作。"
-            :icon="Picture"
-            color="purple"
-          />
-          <ToolCard
-            to="/password"
-            title="密码本"
-            description="安全存储账号密码，支持 JSON 导入导出，本地存储保护隐私。"
-            :icon="Lock"
-            color="red"
           />
           <ToolCard
             to="/devtools"
             title="开发工具"
-            description="正则测试、JSON编辑器、二维码、在线画板、PDF工具等开发必备工具。"
+            description="Base64、时间戳、颜色工具、哈希生成、JSON编辑器、二维码等开发必备工具。"
             :icon="Tools"
             color="green"
           />
@@ -97,6 +83,6 @@
 </template>
 
 <script setup lang="ts">
-import { Food, CircleCheckFilled, Picture, Lock, Tools, Moon, Cellphone, Files } from '@element-plus/icons-vue'
+import { Star, FolderOpened, Tools, Moon, Cellphone, Files } from '@element-plus/icons-vue'
 import ToolCard from '../components/common/ToolCard.vue'
 </script>
