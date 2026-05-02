@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
-    "deploy:dev": "deploy --env=dev",
+    "deploy:dev": "deploy-cli-service deploy --mode dev",
     "deploy:prod": "deploy-cli-service deploy --mode prod"
   },
   "dependencies": {
