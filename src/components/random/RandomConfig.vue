@@ -51,6 +51,22 @@
       </div>
     </div>
 
+    <!-- Algorithm selector -->
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">随机数算法</label>
+      <el-select v-model="config.algorithm" class="w-full" placeholder="选择随机数算法">
+        <el-option
+          v-for="algo in algorithms"
+          :key="algo.value"
+          :label="algo.name"
+          :value="algo.value"
+        >
+          <span>{{ algo.name }}</span>
+          <span class="text-xs text-gray-500 ml-2">{{ algo.description }}</span>
+        </el-option>
+      </el-select>
+    </div>
+
     <!-- Range warning -->
     <el-alert
       v-if="showWarning"
@@ -80,6 +96,7 @@
 import { ref, computed, watch } from 'vue'
 import { Refresh } from '@element-plus/icons-vue'
 import { useRandomStore } from '../../stores'
+import { RandomAlgorithmFactory } from '../../utils/randomAlgorithms'
 
 const randomStore = useRandomStore()
 
@@ -89,6 +106,8 @@ const config = computed({
 })
 
 const generating = computed(() => randomStore.generating)
+
+const algorithms = RandomAlgorithmFactory.getAlgorithmInfo()
 
 const showWarning = ref(false)
 const warningMessage = ref('')

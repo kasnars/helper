@@ -7,7 +7,7 @@
           <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Helper
           </span>
-          助手
+          工具集
         </h1>
         <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
           整合日常小工具，让生活更便捷

@@ -135,17 +135,6 @@
    - 质量调节
    - 一键下载
 
-### 🔑 密码管理 (PasswordBook)
-
-1. **密码管理器** 🔒
-   - 密码增删改查
-   - 搜索过滤（平台名/账号）
-   - 密码显示/隐藏切换
-   - 一键复制账号/密码
-   - 导入/导出（JSON 格式）
-   - 本地 IndexedDB 存储
-   - 数据持久化
-
 ### 🎲 随机数生成 (RandomNumber)
 
 1. **随机数生成器** 🎯
@@ -199,8 +188,6 @@ src/
 │   ├── image/           # 图像处理组件
 │   │   ├── ImageCompressor.vue  # 图片压缩
 │   │   └── ImageConverter.vue   # 图片转换
-│   ├── password/        # 密码管理组件
-│   │   └── PasswordManager.vue  # 密码管理器
 │   └── random/          # 随机数组件
 │       ├── RandomConfig.vue # 参数配置
 │       └── RandomResult.vue # 结果展示
@@ -211,7 +198,6 @@ src/
 │   ├── Home.vue             # 首页
 │   ├── ImageProcessor.vue   # 图像处理页
 │   ├── LifeTools.vue        # 生活工具页
-│   ├── PasswordBook.vue     # 密码本页面
 │   └── RandomNumber.vue     # 随机数页
 ├── stores/              # Pinia 状态管理
 ├── db/                  # IndexedDB 封装

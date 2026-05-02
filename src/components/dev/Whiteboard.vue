@@ -2,18 +2,20 @@
   <div class="space-y-4">
     <!-- Toolbar -->
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-      <div class="flex flex-wrap items-center gap-4">
+      <div class="flex flex-wrap items-center gap-3">
         <!-- Tools -->
         <div class="flex items-center gap-2">
           <el-button
             v-for="tool in tools"
             :key="tool.name"
             :type="currentTool === tool.name ? 'primary' : 'default'"
+            :title="tool.title"
             @click="currentTool = tool.name"
           >
-            <el-icon>
+            <el-icon v-if="tool.icon">
               <component :is="tool.icon" />
             </el-icon>
+            <div v-else class="w-4 h-4 rounded-full border-2 border-current" />
           </el-button>
         </div>
 
@@ -21,29 +23,30 @@
 
         <!-- Color -->
         <div class="flex items-center gap-2">
-          <span class="text-sm text-gray-600 dark:text-gray-400">颜色:</span>
-          <el-color-picker v-model="strokeColor" />
+          <span class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">颜色:</span>
+          <el-color-picker v-model="strokeColor" show-alpha />
         </div>
 
         <!-- Size -->
-        <div class="flex items-center gap-2">
-          <span class="text-sm text-gray-600 dark:text-gray-400">粗细:</span>
-          <el-slider v-model="strokeWidth" :min="1" :max="20" class="w-24" />
+        <div class="flex items-center gap-2 min-w-[180px]">
+          <span class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">粗细:</span>
+          <el-slider v-model="strokeWidth" :min="1" :max="20" class="flex-1" />
+          <span class="text-sm text-gray-500 dark:text-gray-400 w-8">{{ strokeWidth }}</span>
         </div>
 
         <el-divider direction="vertical" />
 
         <!-- Actions -->
         <div class="flex items-center gap-2">
-          <el-button @click="undo" :disabled="historyIndex <= 0">
+          <el-button @click="undo" :disabled="historyIndex <= 0" title="撤销">
             <el-icon><ArrowLeft /></el-icon>
           </el-button>
-          <el-button @click="redo" :disabled="historyIndex >= history.length - 1">
+          <el-button @click="redo" :disabled="historyIndex >= history.length - 1" title="重做">
             <el-icon><ArrowRight /></el-icon>
           </el-button>
-          <el-button @click="clearCanvas">
+          <el-button @click="clearCanvas" title="清空画布">
             <el-icon><Delete /></el-icon>
-            清空
+            <span class="hidden sm:inline">清空</span>
           </el-button>
         </div>
 
@@ -51,9 +54,9 @@
 
         <!-- Export -->
         <div class="flex items-center gap-2">
-          <el-button type="primary" @click="downloadImage">
+          <el-button type="primary" @click="downloadImage" title="保存为PNG图片">
             <el-icon><Download /></el-icon>
-            保存图片
+            <span class="hidden sm:inline">保存图片</span>
           </el-button>
         </div>
       </div>
@@ -91,9 +94,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import {
-  Edit,
-  CircleCheck,
-  Remove,
+  EditPen,
+  SemiSelect,
+  Crop,
   ArrowLeft,
   ArrowRight,
   Delete,
@@ -102,11 +105,11 @@ import {
 import { ElMessage } from 'element-plus'
 
 const tools = [
-  { name: 'pen', icon: Edit },
-  { name: 'line', icon: Remove },
-  { name: 'rect', icon: 'Square' as any },
-  { name: 'circle', icon: 'CircleCheck' as any },
-  { name: 'eraser', icon: 'Erase' as any },
+  { name: 'pen', icon: EditPen, title: '画笔' },
+  { name: 'line', icon: SemiSelect, title: '直线' },
+  { name: 'rect', icon: Crop, title: '矩形' },
+  { name: 'circle', icon: null, title: '圆形' },
+  { name: 'eraser', icon: Delete, title: '橡皮擦' },
 ]
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)

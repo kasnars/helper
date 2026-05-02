@@ -8,7 +8,10 @@
       <SideMenu />
       
       <!-- Main content -->
-      <main class="lg:pl-64">
+      <main 
+        class="transition-all duration-300"
+        :class="appStore.sideMenuOpen ? 'lg:pl-64' : 'lg:pl-0'"
+      >
         <div class="pt-16">
           <router-view v-slot="{ Component }">
             <transition
@@ -30,13 +33,13 @@ import { ElConfigProvider } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import AppHeader from './components/common/AppHeader.vue'
 import SideMenu from './components/common/SideMenu.vue'
-import { useThemeStore, useFoodStore, useRandomStore, usePasswordStore } from './stores'
+import { useThemeStore, useFoodStore, useRandomStore, useAppStore } from './stores'
 import { initDatabase } from './db'
 
 const themeStore = useThemeStore()
+const appStore = useAppStore()
 const foodStore = useFoodStore()
 const randomStore = useRandomStore()
-const passwordStore = usePasswordStore()
 
 // Initialize on mount
 onMounted(async () => {
@@ -50,7 +53,6 @@ onMounted(async () => {
   await foodStore.loadOptions()
   await foodStore.loadHistory()
   await randomStore.loadConfig()
-  await passwordStore.loadPasswords()
 })
 </script>
 

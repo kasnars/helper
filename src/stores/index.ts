@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { getDB, type FoodOption, type RandomConfig, type Password } from '../db'
+import { getDB, type FoodOption, type RandomConfig } from '../db'
+import { RandomAlgorithmFactory, type RandomAlgorithm } from '../utils/randomAlgorithms'
 
 // 主题 Store
 export const useThemeStore = defineStore('theme', () => {
@@ -184,6 +185,7 @@ export const useRandomStore = defineStore('random', () => {
     max: 100,
     count: 1,
     unique: false,
+    algorithm: 'random',
   })
   const results = ref<number[]>([])
   const generating = ref(false)
@@ -195,6 +197,10 @@ export const useRandomStore = defineStore('random', () => {
     const saved = await db.randomConfig.get('default')
     if (saved) {
       config.value = saved
+      // 确保算法字段存在
+      if (!config.value.algorithm) {
+        config.value.algorithm = 'random'
+      }
     }
   }
 
@@ -210,7 +216,7 @@ export const useRandomStore = defineStore('random', () => {
   const generate = async () => {
     generating.value = true
 
-    const { min, max, count, unique } = config.value
+    const { min, max, count, unique, algorithm } = config.value
     const range = max - min + 1
 
     // 如果要求唯一且范围不够，调整数量
@@ -219,19 +225,22 @@ export const useRandomStore = defineStore('random', () => {
       actualCount = range
     }
 
+    // 创建随机数生成器
+    const generator = RandomAlgorithmFactory.createGenerator(algorithm || 'random')
+    
     const nums: number[] = []
 
     if (unique) {
       // 生成不重复的随机数
       const pool = Array.from({ length: range }, (_, i) => min + i)
       for (let i = 0; i < actualCount; i++) {
-        const randomIndex = Math.floor(Math.random() * pool.length)
+        const randomIndex = Math.floor(generator.next() * pool.length)
         nums.push(pool.splice(randomIndex, 1)[0])
       }
     } else {
       // 生成可能重复的随机数
       for (let i = 0; i < actualCount; i++) {
-        nums.push(Math.floor(Math.random() * range) + min)
+        nums.push(Math.floor(generator.next() * range) + min)
       }
     }
 
@@ -257,63 +266,5 @@ export const useRandomStore = defineStore('random', () => {
     saveConfig,
     generate,
     updateConfig,
-  }
-})
-
-// 密码本 Store
-export interface PasswordForm {
-  platform: string
-  username: string
-  password: string
-  notes?: string
-}
-
-export const usePasswordStore = defineStore('password', () => {
-  const passwords = ref<Password[]>([])
-  const loading = ref(false)
-
-  const db = getDB()
-
-  // 加载密码列表
-  const loadPasswords = async () => {
-    loading.value = true
-    passwords.value = await db.passwords.orderBy('updatedAt').reverse().toArray()
-    loading.value = false
-  }
-
-  // 添加密码
-  const addPassword = async (form: PasswordForm) => {
-    const now = new Date()
-    const id = await db.passwords.add({
-      ...form,
-      createdAt: now,
-      updatedAt: now,
-    })
-    await loadPasswords()
-    return id
-  }
-
-  // 更新密码
-  const updatePassword = async (id: number, form: PasswordForm) => {
-    await db.passwords.update(id, {
-      ...form,
-      updatedAt: new Date(),
-    })
-    await loadPasswords()
-  }
-
-  // 删除密码
-  const deletePassword = async (id: number) => {
-    await db.passwords.delete(id)
-    await loadPasswords()
-  }
-
-  return {
-    passwords,
-    loading,
-    loadPasswords,
-    addPassword,
-    updatePassword,
-    deletePassword,
   }
 })

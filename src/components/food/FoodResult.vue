@@ -36,8 +36,17 @@
             </div>
           </div>
 
-          <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center justify-center gap-2">
             {{ title }}
+            <el-button
+              type="primary"
+              link
+              size="small"
+              @click="copyResult"
+              class="ml-1"
+            >
+              <el-icon><CopyDocument /></el-icon>
+            </el-button>
           </h3>
           <p class="text-gray-500 dark:text-gray-400 mb-6">
             {{ subtitle }}
@@ -45,6 +54,13 @@
 
           <!-- Action buttons -->
           <div class="flex gap-3">
+            <el-button
+              size="large"
+              @click="copyResult"
+            >
+              <el-icon class="mr-1"><CopyDocument /></el-icon>
+              复制
+            </el-button>
             <el-button
               type="primary"
               size="large"
@@ -68,7 +84,9 @@
 </template>
 
 <script setup lang="ts">
-import { Close } from '@element-plus/icons-vue'
+import { ref } from 'vue'
+import { Close, CopyDocument } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 
 interface Props {
   visible: boolean
@@ -78,7 +96,7 @@ interface Props {
   showAgain?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   subtitle: '',
   emoji: '🎉',
   showAgain: true,
@@ -91,4 +109,13 @@ const emit = defineEmits<{
 
 const close = () => emit('close')
 const onAgain = () => emit('again')
+
+const copyResult = async () => {
+  try {
+    await navigator.clipboard.writeText(props.title)
+    ElMessage.success('已复制到剪贴板')
+  } catch (err) {
+    ElMessage.error('复制失败，请手动复制')
+  }
+}
 </script>

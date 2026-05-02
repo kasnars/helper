@@ -24,11 +24,6 @@
             <span class="hidden sm:inline">随机数生成</span>
             <span class="sm:hidden">随机数</span>
           </el-radio-button>
-          <el-radio-button label="password">
-            <el-icon><Lock /></el-icon>
-            <span class="hidden sm:inline">密码本</span>
-            <span class="sm:hidden">密码</span>
-          </el-radio-button>
           <el-radio-button label="whiteboard">
             <el-icon><EditPen /></el-icon>
             <span class="hidden sm:inline">在线画板</span>
@@ -45,9 +40,6 @@
         <!-- Random Number -->
         <RandomNumber v-if="activeTool === 'random'" />
 
-        <!-- Password Book -->
-        <PasswordBook v-if="activeTool === 'password'" />
-
         <!-- Whiteboard -->
         <Whiteboard v-if="activeTool === 'whiteboard'" />
       </div>
@@ -57,11 +49,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Food, CircleCheckFilled, Lock, EditPen } from '@element-plus/icons-vue'
+import { Food, CircleCheckFilled, EditPen } from '@element-plus/icons-vue'
 import FoodPicker from '../views/FoodPicker.vue'
 import RandomNumber from '../views/RandomNumber.vue'
-import PasswordBook from '../views/PasswordBook.vue'
 import Whiteboard from '../components/dev/Whiteboard.vue'
 
-const activeTool = ref<'food' | 'random' | 'password' | 'whiteboard'>('food')
+const activeTool = ref<'food' | 'random' | 'whiteboard'>('food')
 </script>

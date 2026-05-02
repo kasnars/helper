@@ -1,4 +1,5 @@
 import Dexie, { type Table } from 'dexie'
+import type { RandomAlgorithm } from '../utils/randomAlgorithms'
 
 // 数据库类型定义
 export interface FoodOption {
@@ -23,22 +24,13 @@ export interface RandomConfig {
   max: number
   count: number
   unique: boolean
+  algorithm?: RandomAlgorithm
   lastUsed?: Date
 }
 
 export interface AppSetting {
   id: string
   value: any
-}
-
-export interface Password {
-  id?: number
-  platform: string
-  username: string
-  password: string
-  notes?: string
-  createdAt: Date
-  updatedAt: Date
 }
 
 // 内置外卖数据
@@ -84,6 +76,7 @@ const defaultRandomConfig: RandomConfig = {
   max: 100,
   count: 1,
   unique: false,
+  algorithm: 'random',
   lastUsed: new Date(),
 }
 
@@ -148,7 +141,6 @@ export class HelperDatabase extends Dexie {
   foodHistory!: Table<FoodHistory>
   randomConfig!: Table<RandomConfig>
   appSettings!: Table<AppSetting>
-  passwords!: Table<Password>
 
   private lsDB: LocalStorageDB | null = null
   private useIndexedDB: boolean = true
@@ -160,13 +152,12 @@ export class HelperDatabase extends Dexie {
     this.useIndexedDB = isIndexedDBSupported()
 
     if (this.useIndexedDB) {
-      // 定义数据库结构 - 添加 passwords 表
+      // 定义数据库结构
       this.version(2).stores({
         foodOptions: '++id, category, isBuiltin',
         foodHistory: '++id, timestamp',
         randomConfig: 'id',
         appSettings: 'id',
-        passwords: '++id, platform',
       })
     } else {
       // 使用 localStorage 降级
@@ -196,7 +187,7 @@ export class HelperDatabase extends Dexie {
   }
 
   // 重写 count 方法以支持降级
-  async tableCount(tableName: 'foodOptions' | 'foodHistory' | 'randomConfig' | 'appSettings' | 'passwords'): Promise<number> {
+  async tableCount(tableName: 'foodOptions' | 'foodHistory' | 'randomConfig' | 'appSettings'): Promise<number> {
     if (this.useIndexedDB) {
       return this[tableName].count()
     } else {
@@ -205,7 +196,7 @@ export class HelperDatabase extends Dexie {
     }
   }
 
-  private getTableName(table: 'foodOptions' | 'foodHistory' | 'randomConfig' | 'appSettings' | 'passwords'): string {
+  private getTableName(table: 'foodOptions' | 'foodHistory' | 'randomConfig' | 'appSettings'): string {
     return table
   }
 }

@@ -6,9 +6,14 @@
       class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6"
     >
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-          生成结果 ({{ results.length }}个)
-        </h3>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+            生成结果 ({{ results.length }}个)
+          </h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            算法: {{ algorithmName }}
+          </p>
+        </div>
         <el-button type="primary" plain size="small" @click="copyAll">
           <template #icon>
             <el-icon><CopyDocument /></el-icon>
@@ -86,6 +91,8 @@
 import { ref, computed, watch } from 'vue'
 import { CopyDocument, CircleCheckFilled } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import { useRandomStore } from '../../stores'
+import { RandomAlgorithmFactory } from '../../utils/randomAlgorithms'
 
 interface Props {
   results: number[]
@@ -93,7 +100,16 @@ interface Props {
 
 const props = defineProps<Props>()
 
+const randomStore = useRandomStore()
+
 const isNewGeneration = ref(false)
+
+// 获取当前算法名称
+const algorithmName = computed(() => {
+  const algo = randomStore.config.algorithm || 'random'
+  const info = RandomAlgorithmFactory.getAlgorithmInfo().find(a => a.value === algo)
+  return info ? info.name : 'Math.random()'
+})
 
 // Calculate statistics
 const stats = computed(() => {

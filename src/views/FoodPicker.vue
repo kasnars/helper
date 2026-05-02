@@ -17,6 +17,7 @@
         <div class="flex flex-col items-center">
           <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 w-full">
             <FoodWheel
+              ref="wheelRef"
               :options="wheelOptions"
               :size="wheelSize"
               @select="onWheelSelect"
@@ -66,12 +67,24 @@
               <div
                 v-for="(record, index) in foodStore.history"
                 :key="index"
-                class="flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
+                class="flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg group cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                @click="showHistoryDetailModal(record)"
               >
-                <span class="text-sm text-gray-900 dark:text-white">{{ record.result }}</span>
-                <span class="text-xs text-gray-400 dark:text-gray-500">
-                  {{ formatTime(record.timestamp) }}
-                </span>
+                <span class="text-sm text-gray-900 dark:text-white flex-1">{{ record.result }}</span>
+                <div class="flex items-center gap-2">
+                  <el-button
+                    type="primary"
+                    link
+                    size="small"
+                    @click.stop="copyHistory(record.result)"
+                    class="opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <el-icon><CopyDocument /></el-icon>
+                  </el-button>
+                  <span class="text-xs text-gray-400 dark:text-gray-500">
+                    {{ formatTime(record.timestamp) }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -87,14 +100,26 @@
         @close="showResult = false"
         @again="spinAgain"
       />
+
+      <!-- History detail modal -->
+      <FoodResult
+        v-if="selectedHistory"
+        :visible="showHistoryDetail"
+        :title="selectedHistory.result"
+        :subtitle="formatFullTime(selectedHistory.timestamp)"
+        emoji="📋"
+        :showAgain="false"
+        @close="showHistoryDetail = false"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
-import { Timer } from '@element-plus/icons-vue'
+import { Timer, CopyDocument } from '@element-plus/icons-vue'
 import { useFoodStore } from '../stores'
+import { ElMessage } from 'element-plus'
 import FoodWheel from '../components/food/FoodWheel.vue'
 import FoodManager from '../components/food/FoodManager.vue'
 import FoodResult from '../components/food/FoodResult.vue'
@@ -103,6 +128,9 @@ const foodStore = useFoodStore()
 const categoryFilter = ref<'all' | 'lunch' | 'dinner'>('all')
 const showResult = ref(false)
 const selectedResult = ref<{ name: string; emoji: string } | null>(null)
+const wheelRef = ref<InstanceType<typeof FoodWheel> | null>(null)
+const showHistoryDetail = ref(false)
+const selectedHistory = ref<{ result: string; timestamp: Date } | null>(null)
 
 // Responsive wheel size
 const wheelSize = computed(() => {
@@ -140,6 +168,10 @@ const onWheelSelect = async (result: { name: string; emoji: string }) => {
 const spinAgain = () => {
   showResult.value = false
   selectedResult.value = null
+  // 等待弹窗关闭动画完成后，再触发转盘旋转
+  setTimeout(() => {
+    wheelRef.value?.spin()
+  }, 300)
 }
 
 const clearHistory = async () => {
@@ -149,6 +181,31 @@ const clearHistory = async () => {
 const formatTime = (timestamp: Date) => {
   const date = new Date(timestamp)
   return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
+}
+
+const copyHistory = async (text: string) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    ElMessage.success('已复制到剪贴板')
+  } catch (err) {
+    ElMessage.error('复制失败，请手动复制')
+  }
+}
+
+const showHistoryDetailModal = (record: { result: string; timestamp: Date }) => {
+  selectedHistory.value = record
+  showHistoryDetail.value = true
+}
+
+const formatFullTime = (timestamp: Date) => {
+  const date = new Date(timestamp)
+  const year = date.getFullYear()
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const day = date.getDate().toString().padStart(2, '0')
+  const hours = date.getHours().toString().padStart(2, '0')
+  const minutes = date.getMinutes().toString().padStart(2, '0')
+  const seconds = date.getSeconds().toString().padStart(2, '0')
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
 }
 
 // Reload options when they change

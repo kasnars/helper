@@ -166,4 +166,9 @@ watch(() => props.options, drawWheel, { deep: true })
 onMounted(() => {
   drawWheel()
 })
+
+// Expose spin method for parent component
+defineExpose({
+  spin
+})
 </script>

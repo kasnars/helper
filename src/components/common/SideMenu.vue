@@ -9,23 +9,26 @@
     leave-to-class="opacity-0"
   >
     <div
-      v-show="appStore.sideMenuOpen"
-      class="fixed inset-0 bg-black/50 z-50 lg:hidden"
+      v-if="isMobile && appStore.sideMenuOpen"
+      class="fixed inset-0 bg-black/50 z-40"
       @click="appStore.closeSideMenu"
     />
   </Transition>
 
   <!-- Side menu -->
   <aside
-    class="fixed top-16 left-0 bottom-0 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 z-40 transition-transform duration-300 lg:translate-x-0"
-    :class="appStore.sideMenuOpen ? 'translate-x-0' : '-translate-x-full'"
+    class="fixed top-16 left-0 bottom-0 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transition-transform duration-300"
+    :class="[
+      getSidebarClass,
+      isMobile && appStore.sideMenuOpen ? 'z-50' : 'z-40'
+    ]"
   >
     <nav class="p-4 space-y-2">
       <router-link
         v-for="route in menuRoutes"
         :key="route.path"
         :to="route.path"
-        @click="appStore.closeSideMenu"
+        @click="handleMenuClick"
         class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group"
         :class="[
           $route.path === route.path
@@ -56,11 +59,42 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { HomeFilled, Star, FolderOpened, Tools } from '@element-plus/icons-vue'
 import { useAppStore } from '../../stores'
 
 const appStore = useAppStore()
+
+// 检测是否为移动端
+const isMobile = ref(false)
+
+const checkMobile = () => {
+  isMobile.value = window.innerWidth < 1024
+}
+
+// 计算侧边栏的 class
+const getSidebarClass = computed(() => {
+  if (isMobile.value) {
+    // 移动端：根据 sideMenuOpen 控制显示/隐藏
+    return appStore.sideMenuOpen ? 'translate-x-0' : '-translate-x-full'
+  } else {
+    // 桌面端：根据 sideMenuOpen 控制显示/隐藏（收起功能）
+    return appStore.sideMenuOpen ? 'translate-x-0' : '-translate-x-full'
+  }
+})
+
+onMounted(() => {
+  checkMobile()
+  window.addEventListener('resize', checkMobile)
+  // 桌面端默认展开
+  if (!isMobile.value) {
+    appStore.sideMenuOpen = true
+  }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobile)
+})
 
 const menuRoutes = computed(() => [
   { path: '/', title: '首页', icon: HomeFilled },
@@ -68,4 +102,11 @@ const menuRoutes = computed(() => [
   { path: '/file', title: '文件工具', icon: FolderOpened },
   { path: '/devtools', title: '开发工具', icon: Tools },
 ])
+
+// 点击菜单项时，仅在移动端关闭菜单
+const handleMenuClick = () => {
+  if (isMobile.value) {
+    appStore.closeSideMenu()
+  }
+}
 </script>
