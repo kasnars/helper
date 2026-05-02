@@ -216,7 +216,7 @@ class CryptoGenerator implements RandomGenerator {
   
   next(): number {
     if (this.index >= this.buffer.length) {
-      crypto.getRandomValues(this.buffer)
+      crypto.getRandomValues(this.buffer as any)
       this.index = 0
     }
     return this.buffer[this.index++] / 4294967296
