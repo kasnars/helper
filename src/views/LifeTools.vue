@@ -24,10 +24,15 @@
             <span class="hidden sm:inline">随机数生成</span>
             <span class="sm:hidden">随机数</span>
           </el-radio-button>
-          <el-radio-button label="whiteboard">
-            <el-icon><EditPen /></el-icon>
-            <span class="hidden sm:inline">在线画板</span>
-            <span class="sm:hidden">画板</span>
+          <el-radio-button label="qrcode">
+            <el-icon><FullScreen /></el-icon>
+            <span class="hidden sm:inline">二维码工具</span>
+            <span class="sm:hidden">二维码</span>
+          </el-radio-button>
+          <el-radio-button label="unit">
+            <el-icon><ScaleToOriginal /></el-icon>
+            <span class="hidden sm:inline">单位换算</span>
+            <span class="sm:hidden">换算</span>
           </el-radio-button>
         </el-radio-group>
       </div>
@@ -40,19 +45,32 @@
         <!-- Random Number -->
         <RandomNumber v-if="activeTool === 'random'" />
 
-        <!-- Whiteboard -->
-        <Whiteboard v-if="activeTool === 'whiteboard'" />
+        <!-- QR Code Tool -->
+        <QrCodeTool v-if="activeTool === 'qrcode'" />
+
+        <!-- Unit Converter -->
+        <UnitConverter v-if="activeTool === 'unit'" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Food, CircleCheckFilled, EditPen } from '@element-plus/icons-vue'
+import { ref, onMounted } from 'vue'
+import { Food, CircleCheckFilled, FullScreen, ScaleToOriginal } from '@element-plus/icons-vue'
 import FoodPicker from '../views/FoodPicker.vue'
 import RandomNumber from '../views/RandomNumber.vue'
-import Whiteboard from '../components/dev/Whiteboard.vue'
+import QrCodeTool from '../components/dev/QrCodeTool.vue'
+import UnitConverter from '../components/dev/UnitConverter.vue'
 
-const activeTool = ref<'food' | 'random' | 'whiteboard'>('food')
+const activeTool = ref<'food' | 'random' | 'qrcode' | 'unit'>('food')
+
+// 从 sessionStorage 恢复 tab 状态
+onMounted(() => {
+  const savedTool = sessionStorage.getItem('activeTool')
+  if (savedTool && ['food', 'random', 'qrcode', 'unit'].includes(savedTool)) {
+    activeTool.value = savedTool as any
+    sessionStorage.removeItem('activeTool')
+  }
+})
 </script>

@@ -7,7 +7,7 @@
           📁 文件工具
         </h1>
         <p class="text-gray-600 dark:text-gray-400">
-          图片和 PDF 文件处理工具
+          图片、PDF、画板和文字提取工具
         </p>
       </div>
 
@@ -24,6 +24,21 @@
             <span class="hidden sm:inline">PDF 工具</span>
             <span class="sm:hidden">PDF</span>
           </el-radio-button>
+          <el-radio-button label="whiteboard">
+            <el-icon><EditPen /></el-icon>
+            <span class="hidden sm:inline">在线画板</span>
+            <span class="sm:hidden">画板</span>
+          </el-radio-button>
+          <el-radio-button label="text">
+            <el-icon><Document /></el-icon>
+            <span class="hidden sm:inline">文字提取</span>
+            <span class="sm:hidden">文字</span>
+          </el-radio-button>
+          <el-radio-button label="watermark">
+            <el-icon><Picture /></el-icon>
+            <span class="hidden sm:inline">图片水印</span>
+            <span class="sm:hidden">水印</span>
+          </el-radio-button>
         </el-radio-group>
       </div>
 
@@ -34,16 +49,37 @@
 
         <!-- PDF Tool -->
         <PdfTool v-if="activeTool === 'pdf'" />
+
+        <!-- Whiteboard -->
+        <Whiteboard v-if="activeTool === 'whiteboard'" />
+
+        <!-- Text Extractor -->
+        <TextExtractor v-if="activeTool === 'text'" />
+
+        <!-- Image Watermark -->
+        <ImageWatermark v-if="activeTool === 'watermark'" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Picture, DocumentChecked } from '@element-plus/icons-vue'
+import { ref, onMounted } from 'vue'
+import { Picture, DocumentChecked, EditPen, Document } from '@element-plus/icons-vue'
 import ImageProcessor from '../views/ImageProcessor.vue'
 import PdfTool from '../components/dev/PdfTool.vue'
+import Whiteboard from '../components/dev/Whiteboard.vue'
+import TextExtractor from '../components/dev/TextExtractor.vue'
+import ImageWatermark from '../components/dev/ImageWatermark.vue'
 
-const activeTool = ref<'image' | 'pdf'>('image')
+const activeTool = ref<'image' | 'pdf' | 'whiteboard' | 'text' | 'watermark'>('image')
+
+// 从 sessionStorage 恢复 tab 状态
+onMounted(() => {
+  const savedTool = sessionStorage.getItem('activeTool')
+  if (savedTool && ['image', 'pdf', 'whiteboard', 'text', 'watermark'].includes(savedTool)) {
+    activeTool.value = savedTool as any
+    sessionStorage.removeItem('activeTool')
+  }
+})
 </script>

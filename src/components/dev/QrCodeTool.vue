@@ -60,10 +60,10 @@
         <!-- Result -->
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">二维码预览</h3>
-          
+                  
           <div class="flex items-center justify-center min-h-[300px] bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            <canvas v-if="qrCanvas" ref="qrCanvas" class="max-w-full" />
-            <p v-else class="text-gray-400">点击"生成二维码"按钮</p>
+            <img v-if="qrDataUrl" :src="qrDataUrl" alt="二维码" class="max-w-full" />
+            <p v-else class="text-gray-400">点击“生成二维码”按钮</p>
           </div>
 
           <div class="flex gap-3 mt-4">
@@ -197,7 +197,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick } from 'vue'
+import { ref } from 'vue'
 import { Upload, Download, CopyDocument, Camera, Link, Search } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import QRCode from 'qrcode'
@@ -211,7 +211,6 @@ const qrSize = ref(300)
 const qrColor = ref('#000000')
 const qrBgColor = ref('#FFFFFF')
 const qrErrorLevel = ref<'L' | 'M' | 'Q' | 'H'>('M')
-const qrCanvas = ref<HTMLCanvasElement | null>(null)
 const qrDataUrl = ref('')
 
 // Scan
@@ -227,7 +226,6 @@ let scanInterval: number | null = null
 const generateQR = async () => {
   if (!qrContent.value) return
   
-  await nextTick()
   const canvas = document.createElement('canvas')
   
   try {
@@ -241,7 +239,6 @@ const generateQR = async () => {
       errorCorrectionLevel: qrErrorLevel.value,
     })
     
-    qrCanvas.value = canvas
     qrDataUrl.value = canvas.toDataURL('image/png')
   } catch (error) {
     ElMessage.error('生成失败')
@@ -257,11 +254,10 @@ const downloadQR = () => {
 }
 
 const copyQR = async () => {
-  if (!qrCanvas.value) return
+  if (!qrDataUrl.value) return
   try {
-    const blob = await new Promise<Blob>((resolve) => {
-      qrCanvas.value!.toBlob((b) => resolve(b!), 'image/png')
-    })
+    const response = await fetch(qrDataUrl.value)
+    const blob = await response.blob()
     await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
     ElMessage.success('已复制到剪贴板')
   } catch {

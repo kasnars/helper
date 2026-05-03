@@ -65,14 +65,150 @@
             </span>
           </router-link>
         </div>
+
+        <!-- Right: Search + Theme Toggle -->
+        <div class="flex items-center gap-4">
+          <!-- Global Search -->
+          <div class="relative">
+            <el-autocomplete
+              v-model="searchQuery"
+              :fetch-suggestions="searchTools"
+              placeholder="搜索工具..."
+              class="w-64"
+              :trigger-on-focus="true"
+              @select="handleSelect"
+              @keyup.enter="handleFirstSelect"
+            >
+              <template #prefix>
+                <el-icon><Search /></el-icon>
+              </template>
+              <template #default="{ item }">
+                <div class="flex items-center gap-2">
+                  <div class="w-4 h-4 flex items-center justify-center">
+                    <el-icon v-if="item.icon === 'Food'" :size="16" class="text-gray-500"><Food /></el-icon>
+                    <el-icon v-else-if="item.icon === 'CircleCheckFilled'" :size="16" class="text-gray-500"><CircleCheckFilled /></el-icon>
+                    <el-icon v-else-if="item.icon === 'FullScreen'" :size="16" class="text-gray-500"><FullScreen /></el-icon>
+                    <el-icon v-else-if="item.icon === 'ScaleToOriginal'" :size="16" class="text-gray-500"><ScaleToOriginal /></el-icon>
+                    <el-icon v-else-if="item.icon === 'Picture'" :size="16" class="text-gray-500"><Picture /></el-icon>
+                    <el-icon v-else-if="item.icon === 'DocumentChecked'" :size="16" class="text-gray-500"><DocumentChecked /></el-icon>
+                    <el-icon v-else-if="item.icon === 'EditPen'" :size="16" class="text-gray-500"><EditPen /></el-icon>
+                    <el-icon v-else-if="item.icon === 'Document'" :size="16" class="text-gray-500"><Document /></el-icon>
+                    <el-icon v-else-if="item.icon === 'Search'" :size="16" class="text-gray-500"><Search /></el-icon>
+                    <el-icon v-else-if="item.icon === 'Share'" :size="16" class="text-gray-500"><Share /></el-icon>
+                    <el-icon v-else-if="item.icon === 'Timer'" :size="16" class="text-gray-500"><Timer /></el-icon>
+                    <el-icon v-else-if="item.icon === 'Brush'" :size="16" class="text-gray-500"><Brush /></el-icon>
+                    <el-icon v-else-if="item.icon === 'Key'" :size="16" class="text-gray-500"><Key /></el-icon>
+                    <el-icon v-else-if="item.icon === 'Sort'" :size="16" class="text-gray-500"><Sort /></el-icon>
+                    <el-icon v-else-if="item.icon === 'Postcard'" :size="16" class="text-gray-500"><Postcard /></el-icon>
+                    <el-icon v-else-if="item.icon === 'Link'" :size="16" class="text-gray-500"><Link /></el-icon>
+                  </div>
+                  <div>
+                    <div class="text-sm font-medium">{{ item.name }}</div>
+                    <div class="text-xs text-gray-500">{{ item.category }}</div>
+                  </div>
+                </div>
+              </template>
+            </el-autocomplete>
+          </div>
+        </div>
       </div>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
-import { Menu, Tools, Fold, Expand } from '@element-plus/icons-vue'
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { 
+  Menu, FolderOpened, Fold, Expand, Search,
+  Food, CircleCheckFilled, FullScreen, ScaleToOriginal,
+  Picture, DocumentChecked, EditPen, Document,
+  Share, Timer, Brush, Key, Sort, Postcard, Link
+} from '@element-plus/icons-vue'
 import { useAppStore } from '../../stores'
 
 const appStore = useAppStore()
+const router = useRouter()
+const searchQuery = ref('')
+
+// 工具搜索数据
+const allTools = [
+  // 生活工具
+  { name: '今天吃什么', category: '生活工具', path: '/life', tab: 'food', icon: 'Food' },
+  { name: '随机数生成', category: '生活工具', path: '/life', tab: 'random', icon: 'CircleCheckFilled' },
+  { name: '二维码工具', category: '生活工具', path: '/life', tab: 'qrcode', icon: 'FullScreen' },
+  { name: '单位换算', category: '生活工具', path: '/life', tab: 'unit', icon: 'ScaleToOriginal' },
+  
+  // 文件工具
+  { name: '图片处理', category: '文件工具', path: '/file', tab: 'image', icon: 'Picture' },
+  { name: 'PDF 工具', category: '文件工具', path: '/file', tab: 'pdf', icon: 'DocumentChecked' },
+  { name: '在线画板', category: '文件工具', path: '/file', tab: 'whiteboard', icon: 'EditPen' },
+  { name: '文字提取', category: '文件工具', path: '/file', tab: 'text', icon: 'Document' },
+  { name: '图片水印', category: '文件工具', path: '/file', tab: 'watermark', icon: 'Picture' },
+  
+  // 开发工具
+  { name: '正则测试', category: '开发工具', path: '/devtools', tab: 'regex', icon: 'Search' },
+  { name: 'JSON 工具', category: '开发工具', path: '/devtools', tab: 'json', icon: 'Document' },
+  { name: 'Base64', category: '开发工具', path: '/devtools', tab: 'base64', icon: 'Share' },
+  { name: '时间戳', category: '开发工具', path: '/devtools', tab: 'timestamp', icon: 'Timer' },
+  { name: '颜色工具', category: '开发工具', path: '/devtools', tab: 'color', icon: 'Brush' },
+  { name: '哈希', category: '开发工具', path: '/devtools', tab: 'hash', icon: 'Key' },
+  { name: '文本统计', category: '开发工具', path: '/devtools', tab: 'textstat', icon: 'Document' },
+  { name: '进制转换', category: '开发工具', path: '/devtools', tab: 'radix', icon: 'Sort' },
+  { name: 'UUID', category: '开发工具', path: '/devtools', tab: 'uuid', icon: 'Postcard' },
+  { name: 'JWT 解码', category: '开发工具', path: '/devtools', tab: 'jwt', icon: 'Key' },
+  { name: 'URL 编解码', category: '开发工具', path: '/devtools', tab: 'url', icon: 'Link' },
+  { name: 'Cron 生成器', category: '开发工具', path: '/devtools', tab: 'cron', icon: 'Timer' },
+  { name: 'Markdown 预览', category: '开发工具', path: '/devtools', tab: 'markdown', icon: 'Document' },
+]
+
+const searchTools = (queryString: string, cb: Function) => {
+  if (!queryString) {
+    cb([])
+    return
+  }
+  
+  const query = queryString.toLowerCase()
+  const results = allTools.filter(tool => 
+    tool.name.toLowerCase().includes(query) ||
+    tool.category.toLowerCase().includes(query)
+  )
+  
+  cb(results.map(tool => ({
+    value: tool.name,
+    ...tool,
+  })))
+}
+
+const handleSelect = (item: any) => {
+  navigateToTool(item)
+}
+
+const handleFirstSelect = () => {
+  // 当按下回车时，如果有搜索结果，跳转到第一个
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    const firstResult = allTools.find(tool => 
+      tool.name.toLowerCase().includes(query) ||
+      tool.category.toLowerCase().includes(query)
+    )
+    if (firstResult) {
+      navigateToTool(firstResult)
+    }
+  }
+}
+
+const navigateToTool = (tool: any) => {
+  // 跳转到对应页面
+  router.push(tool.path)
+  
+  // 设置对应的 tab
+  if (tool.tab) {
+    // 使用 sessionStorage 传递 tab 信息
+    sessionStorage.setItem('activeTool', tool.tab)
+  }
+  
+  // 清空搜索
+  searchQuery.value = ''
+}
 </script>

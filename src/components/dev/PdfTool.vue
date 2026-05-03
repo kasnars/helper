@@ -6,6 +6,7 @@
         <el-radio-button label="preview">PDF 预览</el-radio-button>
         <el-radio-button label="merge">合并 PDF</el-radio-button>
         <el-radio-button label="split">拆分 PDF</el-radio-button>
+        <el-radio-button label="image2pdf">图片转 PDF</el-radio-button>
       </el-radio-group>
     </div>
 
@@ -100,6 +101,76 @@
       </div>
     </template>
 
+    <!-- Image to PDF Mode -->
+    <template v-if="mode === 'image2pdf'">
+      <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <el-upload
+          drag
+          accept="image/*"
+          :auto-upload="false"
+          :on-change="handleImageUpload"
+          multiple
+          class="w-full"
+        >
+          <el-icon :size="48" class="text-gray-400"><Upload /></el-icon>
+          <div class="el-upload__text">拖拽图片到此处或 <em>点击上传</em></div>
+          <template #tip>
+            <div class="el-upload__tip">支持 JPG、PNG、WebP 等格式，可批量上传</div>
+          </template>
+        </el-upload>
+
+        <div v-if="images.length > 0" class="mt-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-semibold text-gray-900 dark:text-white">
+              已选择 {{ images.length }} 张图片
+            </h3>
+            <div class="flex gap-2">
+              <el-select v-model="pdfPageSize" size="small" class="w-32">
+                <el-option label="A4" value="a4" />
+                <el-option label="A3" value="a3" />
+                <el-option label="原始大小" value="original" />
+              </el-select>
+              <el-select v-model="pdfOrientation" size="small" class="w-28">
+                <el-option label="纵向" value="portrait" />
+                <el-option label="横向" value="landscape" />
+              </el-select>
+            </div>
+          </div>
+
+          <!-- Image Preview Grid -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div
+              v-for="(image, index) in images"
+              :key="index"
+              class="relative aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden group"
+            >
+              <img :src="image.url" class="w-full h-full object-cover" alt="preview" />
+              <button
+                @click="removeImage(index)"
+                class="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <el-icon :size="12"><Close /></el-icon>
+              </button>
+              <div class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs text-center py-1">
+                {{ index + 1 }}
+              </div>
+            </div>
+          </div>
+
+          <el-button
+            type="primary"
+            class="w-full"
+            :loading="converting"
+            :disabled="images.length === 0"
+            @click="convertImagesToPdf"
+          >
+            <el-icon><Document /></el-icon>
+            生成 PDF
+          </el-button>
+        </div>
+      </div>
+    </template>
+
     <!-- Split Mode -->
     <template v-if="mode === 'split'">
       <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
@@ -159,16 +230,16 @@
 
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue'
-import { Upload, Delete, Connection, Scissor } from '@element-plus/icons-vue'
+import { Upload, Delete, Connection, Scissor, Close, Document } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import type { UploadFile } from 'element-plus'
 import * as pdfjs from 'pdfjs-dist'
-import { PDFDocument } from 'pdf-lib'
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import pdfWorker from 'pdfjs-dist/build/pdf.worker?url'
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker
 
-const mode = ref<'preview' | 'merge' | 'split'>('preview')
+const mode = ref<'preview' | 'merge' | 'split' | 'image2pdf'>('preview')
 
 // Preview
 const pdfDoc = ref<pdfjs.PDFDocumentProxy | null>(null)
@@ -188,6 +259,18 @@ const splitMode = ref<'range' | 'every' | 'single'>('range')
 const splitRange = ref('')
 const splitEvery = ref(1)
 const splitting = ref(false)
+
+// Image to PDF
+const images = ref<Array<{ file: File; url: string }>>([])
+const pdfPageSize = ref<'a4' | 'a3' | 'original'>('a4')
+const pdfOrientation = ref<'portrait' | 'landscape'>('portrait')
+const converting = ref(false)
+
+interface PdfImageData {
+  bytes: Uint8Array
+  width: number
+  height: number
+}
 
 // Watch page change for preview
 watch(currentPage, async (page) => {
@@ -346,5 +429,121 @@ const downloadPdf = (bytes: Uint8Array, filename: string) => {
   link.download = filename
   link.click()
   URL.revokeObjectURL(url)
+}
+
+// Image to PDF handlers
+const handleImageUpload = (file: UploadFile) => {
+  if (!file.raw) return
+  
+  const url = URL.createObjectURL(file.raw)
+  images.value.push({
+    file: file.raw,
+    url,
+  })
+}
+
+const removeImage = (index: number) => {
+  URL.revokeObjectURL(images.value[index].url)
+  images.value.splice(index, 1)
+}
+
+const loadImageData = (file: File): Promise<PdfImageData> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = img.width
+      canvas.height = img.height
+      const ctx = canvas.getContext('2d')
+      if (!ctx) {
+        reject(new Error('Canvas context not available'))
+        return
+      }
+      ctx.drawImage(img, 0, 0)
+      
+      // Get image bytes
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          reject(new Error('Failed to get image data'))
+          return
+        }
+        const reader = new FileReader()
+        reader.onload = () => {
+          resolve({
+            bytes: new Uint8Array(reader.result as ArrayBuffer),
+            width: img.width,
+            height: img.height,
+          })
+        }
+        reader.onerror = reject
+        reader.readAsArrayBuffer(blob)
+      }, 'image/png')
+    }
+    img.onerror = reject
+    img.src = URL.createObjectURL(file)
+  })
+}
+
+const convertImagesToPdf = async () => {
+  if (images.value.length === 0) return
+  
+  converting.value = true
+  
+  try {
+    const pdfDoc = await PDFDocument.create()
+    
+    for (const image of images.value) {
+      const imageData = await loadImageData(image.file)
+      
+      // Determine page size
+      let pageWidth: number
+      let pageHeight: number
+      
+      if (pdfPageSize.value === 'original') {
+        pageWidth = imageData.width
+        pageHeight = imageData.height
+      } else if (pdfPageSize.value === 'a4') {
+        pageWidth = pdfOrientation.value === 'landscape' ? 842 : 595
+        pageHeight = pdfOrientation.value === 'landscape' ? 595 : 842
+      } else { // a3
+        pageWidth = pdfOrientation.value === 'landscape' ? 1191 : 842
+        pageHeight = pdfOrientation.value === 'landscape' ? 842 : 1191
+      }
+      
+      const page = pdfDoc.addPage([pageWidth, pageHeight])
+      
+      // Embed PNG image
+      const pngImage = await pdfDoc.embedPng(imageData.bytes)
+      
+      // Calculate scaling to fit page
+      const scale = Math.min(
+        pageWidth / imageData.width,
+        pageHeight / imageData.height
+      )
+      
+      const scaledWidth = imageData.width * scale
+      const scaledHeight = imageData.height * scale
+      
+      // Center the image
+      const x = (pageWidth - scaledWidth) / 2
+      const y = (pageHeight - scaledHeight) / 2
+      
+      page.drawImage(pngImage, {
+        x,
+        y,
+        width: scaledWidth,
+        height: scaledHeight,
+      })
+    }
+    
+    const pdfBytes = await pdfDoc.save()
+    downloadPdf(pdfBytes, `images_${Date.now()}.pdf`)
+    ElMessage.success('PDF 生成成功')
+  } catch (error) {
+    ElMessage.error('生成失败')
+    console.error(error)
+  } finally {
+    converting.value = false
+  }
 }
 </script>

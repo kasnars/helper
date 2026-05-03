@@ -118,3 +118,15 @@ html.dark ::-webkit-scrollbar-thumb {
     transform: translateY(0);
   }
 }
+
+/* Radio button icon and text alignment */
+.el-radio-button__inner {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.el-radio-button__inner .el-icon {
+  display: flex;
+  align-items: center;
+}

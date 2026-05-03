@@ -24,21 +24,6 @@
             <span class="hidden sm:inline">JSON 工具</span>
             <span class="sm:hidden">JSON</span>
           </el-radio-button>
-          <el-radio-button label="qrcode">
-            <el-icon><FullScreen /></el-icon>
-            <span class="hidden sm:inline">二维码</span>
-            <span class="sm:hidden">二维码</span>
-          </el-radio-button>
-          <el-radio-button label="whiteboard">
-            <el-icon><EditPen /></el-icon>
-            <span class="hidden sm:inline">在线画板</span>
-            <span class="sm:hidden">画板</span>
-          </el-radio-button>
-          <el-radio-button label="pdf">
-            <el-icon><DocumentChecked /></el-icon>
-            <span class="hidden sm:inline">PDF 工具</span>
-            <span class="sm:hidden">PDF</span>
-          </el-radio-button>
           <el-radio-button label="base64">
             <el-icon><Share /></el-icon>
             <span class="hidden sm:inline">Base64</span>
@@ -74,6 +59,26 @@
             <span class="hidden sm:inline">UUID</span>
             <span class="sm:hidden">UUID</span>
           </el-radio-button>
+          <el-radio-button label="jwt">
+            <el-icon><Key /></el-icon>
+            <span class="hidden sm:inline">JWT 解码</span>
+            <span class="sm:hidden">JWT</span>
+          </el-radio-button>
+          <el-radio-button label="url">
+            <el-icon><Link /></el-icon>
+            <span class="hidden sm:inline">URL 编解码</span>
+            <span class="sm:hidden">URL</span>
+          </el-radio-button>
+          <el-radio-button label="cron">
+            <el-icon><Timer /></el-icon>
+            <span class="hidden sm:inline">Cron 生成器</span>
+            <span class="sm:hidden">Cron</span>
+          </el-radio-button>
+          <el-radio-button label="markdown">
+            <el-icon><Document /></el-icon>
+            <span class="hidden sm:inline">Markdown</span>
+            <span class="sm:hidden">MD</span>
+          </el-radio-button>
         </el-radio-group>
       </div>
 
@@ -81,9 +86,6 @@
       <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <RegexTester v-if="activeTool === 'regex'" />
         <JsonEditor v-if="activeTool === 'json'" />
-        <QrCodeTool v-if="activeTool === 'qrcode'" />
-        <Whiteboard v-if="activeTool === 'whiteboard'" />
-        <PdfTool v-if="activeTool === 'pdf'" />
         <Base64Tool v-if="activeTool === 'base64'" />
         <TimestampTool v-if="activeTool === 'timestamp'" />
         <ColorTool v-if="activeTool === 'color'" />
@@ -91,19 +93,20 @@
         <TextStatTool v-if="activeTool === 'textstat'" />
         <RadixTool v-if="activeTool === 'radix'" />
         <UUIDTool v-if="activeTool === 'uuid'" />
+        <JWTDecoder v-if="activeTool === 'jwt'" />
+        <URLEncoder v-if="activeTool === 'url'" />
+        <CronGenerator v-if="activeTool === 'cron'" />
+        <MarkdownPreview v-if="activeTool === 'markdown'" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Search, Document, FullScreen, EditPen, DocumentChecked, Share, Timer, Brush, Key, Sort, Postcard } from '@element-plus/icons-vue'
+import { ref, onMounted } from 'vue'
+import { Search, Document, Share, Timer, Brush, Key, Sort, Postcard, Link } from '@element-plus/icons-vue'
 import RegexTester from '../components/dev/RegexTester.vue'
 import JsonEditor from '../components/dev/JsonEditor.vue'
-import QrCodeTool from '../components/dev/QrCodeTool.vue'
-import Whiteboard from '../components/dev/Whiteboard.vue'
-import PdfTool from '../components/dev/PdfTool.vue'
 import Base64Tool from '../components/dev/Base64Tool.vue'
 import TimestampTool from '../components/dev/TimestampTool.vue'
 import ColorTool from '../components/dev/ColorTool.vue'
@@ -111,6 +114,19 @@ import HashTool from '../components/dev/HashTool.vue'
 import TextStatTool from '../components/dev/TextStatTool.vue'
 import RadixTool from '../components/dev/RadixTool.vue'
 import UUIDTool from '../components/dev/UUIDTool.vue'
+import JWTDecoder from '../components/dev/JWTDecoder.vue'
+import URLEncoder from '../components/dev/URLEncoder.vue'
+import CronGenerator from '../components/dev/CronGenerator.vue'
+import MarkdownPreview from '../components/dev/MarkdownPreview.vue'
 
-const activeTool = ref<'regex' | 'json' | 'qrcode' | 'whiteboard' | 'pdf' | 'base64' | 'timestamp' | 'color' | 'hash' | 'textstat' | 'radix' | 'uuid'>('regex')
+const activeTool = ref<'regex' | 'json' | 'base64' | 'timestamp' | 'color' | 'hash' | 'textstat' | 'radix' | 'uuid' | 'jwt' | 'url' | 'cron' | 'markdown'>('regex')
+
+// 从 sessionStorage 恢复 tab 状态
+onMounted(() => {
+  const savedTool = sessionStorage.getItem('activeTool')
+  if (savedTool && ['regex', 'json', 'base64', 'timestamp', 'color', 'hash', 'textstat', 'radix', 'uuid', 'jwt', 'url', 'cron', 'markdown'].includes(savedTool)) {
+    activeTool.value = savedTool as any
+    sessionStorage.removeItem('activeTool')
+  }
+})
 </script>

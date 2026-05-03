@@ -25,7 +25,7 @@
         拖拽图片到此处，或点击上传
       </p>
       <p class="text-sm text-gray-400 dark:text-gray-500">
-        支持 PNG、JPEG、WebP、GIF、BMP 格式，最多 10 张
+        支持 PNG、JPEG、WebP、GIF、BMP、SVG、AVIF、ICO 格式，最多 10 张
       </p>
     </div>
 
@@ -76,11 +76,15 @@
 
               <!-- Format Selection -->
               <div class="flex gap-2">
-                <el-select v-model="image.targetFormat" size="small" class="w-28">
+                <el-select v-model="image.targetFormat" size="small" class="w-32">
                   <el-option label="PNG" value="image/png" />
                   <el-option label="JPEG" value="image/jpeg" />
                   <el-option label="WebP" value="image/webp" />
                   <el-option label="BMP" value="image/bmp" />
+                  <el-option label="GIF" value="image/gif" />
+                  <el-option label="SVG" value="image/svg+xml" />
+                  <el-option label="AVIF" value="image/avif" />
+                  <el-option label="ICO" value="image/x-icon" />
                 </el-select>
 
                 <el-button
@@ -159,6 +163,24 @@ interface ImageItem {
     size: number
   }
   compressionRatio?: number
+}
+
+// ICO file format constants
+interface ICOHeader {
+  reserved: number
+  imageType: number
+  imageCount: number
+}
+
+interface ICOEntry {
+  width: number
+  height: number
+  colorPalette: number
+  reserved: number
+  colorPlanes: number
+  bitsPerPixel: number
+  imageDataSize: number
+  imageDataOffset: number
 }
 
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -272,6 +294,32 @@ const convertImageFormat = (file: File, targetFormat: string): Promise<Blob> => 
 
       ctx.drawImage(img, 0, 0)
 
+      // Special handling for ICO format
+      if (targetFormat === 'image/x-icon') {
+        canvas.toBlob(
+          (pngBlob) => {
+            if (!pngBlob) {
+              reject(new Error('Conversion failed'))
+              return
+            }
+            // Convert PNG to ICO by creating a simple ICO file structure
+            convertPngToIco(pngBlob, img.width, img.height).then(resolve).catch(reject)
+          },
+          'image/png',
+          1
+        )
+        return
+      }
+
+      // Special handling for SVG format
+      if (targetFormat === 'image/svg+xml') {
+        const svgContent = generateSvgFromCanvas(img, canvas)
+        const blob = new Blob([svgContent], { type: 'image/svg+xml' })
+        resolve(blob)
+        return
+      }
+
+      // Standard format conversion
       canvas.toBlob(
         (blob) => {
           if (blob) {
@@ -287,6 +335,65 @@ const convertImageFormat = (file: File, targetFormat: string): Promise<Blob> => 
     img.onerror = reject
     img.src = URL.createObjectURL(file)
   })
+}
+
+// Convert PNG blob to ICO format
+const convertPngToIco = (pngBlob: Blob, width: number, height: number): Promise<Blob> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      try {
+        const pngData = new Uint8Array(reader.result as ArrayBuffer)
+        const icoData = createIcoFile(pngData, Math.min(width, height))
+        resolve(new Blob([icoData.buffer as ArrayBuffer], { type: 'image/x-icon' }))
+      } catch (error) {
+        reject(error)
+      }
+    }
+    reader.onerror = reject
+    reader.readAsArrayBuffer(pngBlob)
+  })
+}
+
+// Create ICO file structure
+const createIcoFile = (pngData: Uint8Array, size: number): Uint8Array => {
+  // ICO file structure: ICONDIR + ICONDIRENTRY + PNG data
+  const iconDirSize = 6 // 3 fields of 2 bytes each
+  const iconEntrySize = 16 // ICO directory entry size
+  const totalSize = iconDirSize + iconEntrySize + pngData.length
+
+  const buffer = new Uint8Array(totalSize)
+  const view = new DataView(buffer.buffer)
+
+  // ICONDIR header
+  view.setUint16(0, 0, true) // Reserved, must be 0
+  view.setUint16(2, 1, true) // Image type: 1 for ICO
+  view.setUint16(4, 1, true) // Number of images
+
+  // ICONDIRENTRY
+  view.setUint8(6, size >= 256 ? 0 : size) // Width (0 = 256)
+  view.setUint8(7, size >= 256 ? 0 : size) // Height (0 = 256)
+  view.setUint8(8, 0) // Color palette (0 = no palette)
+  view.setUint8(9, 0) // Reserved
+  view.setUint16(10, 1, true) // Color planes
+  view.setUint16(12, 32, true) // Bits per pixel
+  view.setUint32(14, pngData.length, true) // Image data size
+  view.setUint32(18, iconDirSize + iconEntrySize, true) // Image data offset
+
+  // Copy PNG data
+  buffer.set(pngData, iconDirSize + iconEntrySize)
+
+  return buffer
+}
+
+// Generate SVG from canvas/image
+const generateSvgFromCanvas = (img: HTMLImageElement, canvas: HTMLCanvasElement): string => {
+  const dataUrl = canvas.toDataURL('image/png')
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+     width="${img.width}" height="${img.height}" viewBox="0 0 ${img.width} ${img.height}">
+  <image width="${img.width}" height="${img.height}" xlink:href="${dataUrl}"/>
+</svg>`
 }
 
 const processAll = async () => {
