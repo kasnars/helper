@@ -426,12 +426,24 @@ const clearAll = () => {
   images.value = []
 }
 
+// MIME 类型到文件扩展名的映射
+const mimeToExt: Record<string, string> = {
+  'image/png': 'png',
+  'image/jpeg': 'jpg',
+  'image/webp': 'webp',
+  'image/bmp': 'bmp',
+  'image/gif': 'gif',
+  'image/svg+xml': 'svg',
+  'image/avif': 'avif',
+  'image/x-icon': 'ico',
+}
+
 const downloadImage = (image: ImageItem) => {
   if (!image.result) return
 
   const link = document.createElement('a')
   link.href = image.result.url
-  const ext = image.targetFormat.split('/')[1]
+  const ext = mimeToExt[image.targetFormat] || image.targetFormat.split('/')[1]
   const originalName = image.file.name.replace(/\.[^/.]+$/, '')
   link.download = `${originalName}_converted.${ext}`
   link.click()
