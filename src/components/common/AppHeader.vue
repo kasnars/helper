@@ -1,9 +1,8 @@
 <template>
   <header class="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
-        <!-- Left: Menu button + Logo -->
-        <div class="flex items-center gap-4">
+    <div class="flex items-center h-16">
+        <!-- Menu button - 紧贴最左边 -->
+        <div class="flex items-center pl-2">
           <!-- Mobile menu button -->
           <button
             @click="appStore.toggleSideMenu"
@@ -14,7 +13,7 @@
               <Menu />
             </el-icon>
           </button>
-          
+
           <!-- Desktop collapse button -->
           <button
             @click="appStore.toggleSideMenu"
@@ -26,9 +25,13 @@
               <Expand v-else />
             </el-icon>
           </button>
-          
-          <router-link to="/" class="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-8 h-8">
+        </div>
+
+        <!-- Logo + Search 居中区域 -->
+        <div class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between">
+            <router-link to="/" class="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-8 h-8">
               <circle style="fill:#3E4959" cx="256" cy="256" r="256"/>
               <path style="fill:#FFFFFF" d="M294.806,173.475L294.806,173.475c-0.974-1.906-0.733-4.169,0.654-6.213c1.47-2.174,1.794-5.46,1.09-6.834l-2.292-4.489c-0.723-1.414-0.165-3.135,1.252-3.865c1.404-0.717,3.131-0.162,3.848,1.259l2.302,4.489c1.741,3.419,1.12,8.859-1.45,12.658c-0.132,0.202-0.201,0.34-0.238,0.439c0.238,0.185,0.951,0.548,2.425,0.595l9.335,0.304c3.174,0.096,5.662,1.444,6.811,3.696c1.15,2.24,0.789,5.044-0.998,7.677l-5.232,7.736c-0.74,1.09-0.717,1.728-0.651,1.863c0.073,0.132,0.565,0.529,1.889,0.568l9.332,0.294c3.181,0.099,5.672,1.447,6.815,3.69c1.146,2.256,0.786,5.057-1.004,7.693l-5.229,7.736c-0.743,1.09-0.714,1.728-0.647,1.86c0.073,0.149,0.571,0.532,1.883,0.568l9.338,0.304c3.184,0.102,5.662,1.447,6.815,3.69c1.143,2.253,0.783,5.057-1.004,7.683l-5.229,7.736c-0.74,1.097-0.71,1.728-0.641,1.86c0.066,0.142,0.558,0.529,1.886,0.575l9.335,0.294c3.528,0.109,6.227,1.486,7.402,3.772c0.971,1.903,0.737,4.179-0.647,6.217c-1.239,1.823-1.381,6.273,0.271,9.513l29.729,58.203c0.717,1.404,0.155,3.138-1.255,3.861c-1.417,0.717-3.135,0.155-3.861-1.259l-29.729-58.196c-2.481-4.862-2.444-11.591,0.089-15.34c0.135-0.188,0.205-0.344,0.231-0.439c-0.225-0.185-0.948-0.548-2.418-0.595l-9.335-0.291c-3.181-0.096-5.662-1.447-6.818-3.703c-1.143-2.246-0.77-5.047,1.014-7.677l5.229-7.739c0.737-1.1,0.71-1.728,0.641-1.863c-0.066-0.126-0.568-0.525-1.883-0.565l-9.342-0.301c-3.174-0.092-5.662-1.453-6.808-3.7c-1.153-2.249-0.783-5.044,0.998-7.683l5.236-7.733c0.75-1.093,0.714-1.724,0.644-1.863c-0.069-0.132-0.568-0.529-1.883-0.571l-9.332-0.294c-3.184-0.099-5.662-1.444-6.815-3.693c-1.153-2.246-0.793-5.051,1.001-7.69l5.229-7.723c0.747-1.093,0.717-1.741,0.654-1.866c-0.069-0.139-0.571-0.532-1.893-0.565l-9.338-0.297C298.681,177.129,295.976,175.761,294.806,173.475z"/>
               <rect x="338.773" y="286.89" transform="matrix(0.4548 0.8906 -0.8906 0.4548 461.5439 -167.474)" style="fill:#CCCBCA" width="57.569" height="12.684"/>
@@ -64,54 +67,51 @@
               Helper
             </span>
           </router-link>
-        </div>
-
-        <!-- Right: Search + Theme Toggle -->
-        <div class="flex items-center gap-4">
-          <!-- Global Search -->
-          <div class="relative">
-            <el-autocomplete
-              v-model="searchQuery"
-              :fetch-suggestions="searchTools"
-              placeholder="搜索工具..."
-              class="w-64"
-              :trigger-on-focus="true"
-              @select="handleSelect"
-              @keyup.enter="handleFirstSelect"
-            >
-              <template #prefix>
-                <el-icon><Search /></el-icon>
-              </template>
-              <template #default="{ item }">
-                <div class="flex items-center gap-2">
-                  <div class="w-4 h-4 flex items-center justify-center">
-                    <el-icon v-if="item.icon === 'Food'" :size="16" class="text-gray-500"><Food /></el-icon>
-                    <el-icon v-else-if="item.icon === 'CircleCheckFilled'" :size="16" class="text-gray-500"><CircleCheckFilled /></el-icon>
-                    <el-icon v-else-if="item.icon === 'FullScreen'" :size="16" class="text-gray-500"><FullScreen /></el-icon>
-                    <el-icon v-else-if="item.icon === 'ScaleToOriginal'" :size="16" class="text-gray-500"><ScaleToOriginal /></el-icon>
-                    <el-icon v-else-if="item.icon === 'Picture'" :size="16" class="text-gray-500"><Picture /></el-icon>
-                    <el-icon v-else-if="item.icon === 'DocumentChecked'" :size="16" class="text-gray-500"><DocumentChecked /></el-icon>
-                    <el-icon v-else-if="item.icon === 'EditPen'" :size="16" class="text-gray-500"><EditPen /></el-icon>
-                    <el-icon v-else-if="item.icon === 'Document'" :size="16" class="text-gray-500"><Document /></el-icon>
-                    <el-icon v-else-if="item.icon === 'Search'" :size="16" class="text-gray-500"><Search /></el-icon>
-                    <el-icon v-else-if="item.icon === 'Share'" :size="16" class="text-gray-500"><Share /></el-icon>
-                    <el-icon v-else-if="item.icon === 'Timer'" :size="16" class="text-gray-500"><Timer /></el-icon>
-                    <el-icon v-else-if="item.icon === 'Brush'" :size="16" class="text-gray-500"><Brush /></el-icon>
-                    <el-icon v-else-if="item.icon === 'Key'" :size="16" class="text-gray-500"><Key /></el-icon>
-                    <el-icon v-else-if="item.icon === 'Sort'" :size="16" class="text-gray-500"><Sort /></el-icon>
-                    <el-icon v-else-if="item.icon === 'Postcard'" :size="16" class="text-gray-500"><Postcard /></el-icon>
-                    <el-icon v-else-if="item.icon === 'Link'" :size="16" class="text-gray-500"><Link /></el-icon>
-                  </div>
-                  <div>
-                    <div class="text-sm font-medium">{{ item.name }}</div>
-                    <div class="text-xs text-gray-500">{{ item.category }}</div>
-                  </div>
-                </div>
-              </template>
-            </el-autocomplete>
           </div>
         </div>
-      </div>
+
+        <!-- Right: Search - 紧贴最右边 -->
+        <div class="flex items-center pr-2 ml-auto">
+          <el-autocomplete
+            v-model="searchQuery"
+            :fetch-suggestions="searchTools"
+            placeholder="搜索工具..."
+            class="w-80"
+            :trigger-on-focus="true"
+            @select="handleSelect"
+            @keyup.enter="handleFirstSelect"
+          >
+            <template #prefix>
+              <el-icon><Search /></el-icon>
+            </template>
+            <template #default="{ item }">
+              <div class="flex items-center gap-2">
+                <div class="w-4 h-4 flex items-center justify-center">
+                  <el-icon v-if="item.icon === 'Food'" :size="16" class="text-gray-500"><Food /></el-icon>
+                  <el-icon v-else-if="item.icon === 'CircleCheckFilled'" :size="16" class="text-gray-500"><CircleCheckFilled /></el-icon>
+                  <el-icon v-else-if="item.icon === 'FullScreen'" :size="16" class="text-gray-500"><FullScreen /></el-icon>
+                  <el-icon v-else-if="item.icon === 'ScaleToOriginal'" :size="16" class="text-gray-500"><ScaleToOriginal /></el-icon>
+                  <el-icon v-else-if="item.icon === 'Picture'" :size="16" class="text-gray-500"><Picture /></el-icon>
+                  <el-icon v-else-if="item.icon === 'DocumentChecked'" :size="16" class="text-gray-500"><DocumentChecked /></el-icon>
+                  <el-icon v-else-if="item.icon === 'EditPen'" :size="16" class="text-gray-500"><EditPen /></el-icon>
+                  <el-icon v-else-if="item.icon === 'Document'" :size="16" class="text-gray-500"><Document /></el-icon>
+                  <el-icon v-else-if="item.icon === 'Search'" :size="16" class="text-gray-500"><Search /></el-icon>
+                  <el-icon v-else-if="item.icon === 'Share'" :size="16" class="text-gray-500"><Share /></el-icon>
+                  <el-icon v-else-if="item.icon === 'Timer'" :size="16" class="text-gray-500"><Timer /></el-icon>
+                  <el-icon v-else-if="item.icon === 'Brush'" :size="16" class="text-gray-500"><Brush /></el-icon>
+                  <el-icon v-else-if="item.icon === 'Key'" :size="16" class="text-gray-500"><Key /></el-icon>
+                  <el-icon v-else-if="item.icon === 'Sort'" :size="16" class="text-gray-500"><Sort /></el-icon>
+                  <el-icon v-else-if="item.icon === 'Postcard'" :size="16" class="text-gray-500"><Postcard /></el-icon>
+                  <el-icon v-else-if="item.icon === 'Link'" :size="16" class="text-gray-500"><Link /></el-icon>
+                </div>
+                <div>
+                  <div class="text-sm font-medium">{{ item.name }}</div>
+                  <div class="text-xs text-gray-500">{{ item.category }}</div>
+                </div>
+              </div>
+            </template>
+          </el-autocomplete>
+        </div>
     </div>
   </header>
 </template>

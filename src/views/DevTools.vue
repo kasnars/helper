@@ -11,100 +11,50 @@
         </p>
       </div>
 
+      <!-- Category Filter -->
+      <div class="flex flex-wrap gap-2 justify-center mb-6">
+        <el-button
+          v-for="cat in categories"
+          :key="cat.value"
+          :type="activeCategory === cat.value ? 'primary' : ''"
+          :plain="activeCategory !== cat.value"
+          @click="handleCategoryChange(cat.value)"
+        >
+          {{ cat.icon }} {{ cat.label }}
+        </el-button>
+      </div>
+
       <!-- Tool Navigation -->
       <div class="flex flex-wrap gap-2 justify-center mb-8">
         <el-radio-group v-model="activeTool" size="large">
-          <el-radio-button label="regex">
-            <el-icon><Search /></el-icon>
-            <span class="hidden sm:inline">正则测试</span>
-            <span class="sm:hidden">正则</span>
-          </el-radio-button>
-          <el-radio-button label="json">
-            <el-icon><Document /></el-icon>
-            <span class="hidden sm:inline">JSON 工具</span>
-            <span class="sm:hidden">JSON</span>
-          </el-radio-button>
-          <el-radio-button label="base64">
-            <el-icon><Share /></el-icon>
-            <span class="hidden sm:inline">Base64</span>
-            <span class="sm:hidden">Base64</span>
-          </el-radio-button>
-          <el-radio-button label="timestamp">
-            <el-icon><Timer /></el-icon>
-            <span class="hidden sm:inline">时间戳</span>
-            <span class="sm:hidden">时间戳</span>
-          </el-radio-button>
-          <el-radio-button label="color">
-            <el-icon><Brush /></el-icon>
-            <span class="hidden sm:inline">颜色工具</span>
-            <span class="sm:hidden">颜色</span>
-          </el-radio-button>
-          <el-radio-button label="hash">
-            <el-icon><Key /></el-icon>
-            <span class="hidden sm:inline">哈希</span>
-            <span class="sm:hidden">哈希</span>
-          </el-radio-button>
-          <el-radio-button label="textstat">
-            <el-icon><Document /></el-icon>
-            <span class="hidden sm:inline">文本统计</span>
-            <span class="sm:hidden">文本</span>
-          </el-radio-button>
-          <el-radio-button label="radix">
-            <el-icon><Sort /></el-icon>
-            <span class="hidden sm:inline">进制转换</span>
-            <span class="sm:hidden">进制</span>
-          </el-radio-button>
-          <el-radio-button label="uuid">
-            <el-icon><Postcard /></el-icon>
-            <span class="hidden sm:inline">UUID</span>
-            <span class="sm:hidden">UUID</span>
-          </el-radio-button>
-          <el-radio-button label="jwt">
-            <el-icon><Key /></el-icon>
-            <span class="hidden sm:inline">JWT 解码</span>
-            <span class="sm:hidden">JWT</span>
-          </el-radio-button>
-          <el-radio-button label="url">
-            <el-icon><Link /></el-icon>
-            <span class="hidden sm:inline">URL 编解码</span>
-            <span class="sm:hidden">URL</span>
-          </el-radio-button>
-          <el-radio-button label="cron">
-            <el-icon><Timer /></el-icon>
-            <span class="hidden sm:inline">Cron 生成器</span>
-            <span class="sm:hidden">Cron</span>
-          </el-radio-button>
-          <el-radio-button label="markdown">
-            <el-icon><Document /></el-icon>
-            <span class="hidden sm:inline">Markdown</span>
-            <span class="sm:hidden">MD</span>
+          <el-radio-button
+            v-for="tool in filteredTools"
+            :key="tool.value"
+            :label="tool.value"
+          >
+            <el-icon><component :is="tool.icon" /></el-icon>
+            <span class="hidden sm:inline">{{ tool.label }}</span>
+            <span class="sm:hidden">{{ tool.shortLabel }}</span>
           </el-radio-button>
         </el-radio-group>
       </div>
 
       <!-- Tool Content -->
       <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <RegexTester v-if="activeTool === 'regex'" />
-        <JsonEditor v-if="activeTool === 'json'" />
-        <Base64Tool v-if="activeTool === 'base64'" />
-        <TimestampTool v-if="activeTool === 'timestamp'" />
-        <ColorTool v-if="activeTool === 'color'" />
-        <HashTool v-if="activeTool === 'hash'" />
-        <TextStatTool v-if="activeTool === 'textstat'" />
-        <RadixTool v-if="activeTool === 'radix'" />
-        <UUIDTool v-if="activeTool === 'uuid'" />
-        <JWTDecoder v-if="activeTool === 'jwt'" />
-        <URLEncoder v-if="activeTool === 'url'" />
-        <CronGenerator v-if="activeTool === 'cron'" />
-        <MarkdownPreview v-if="activeTool === 'markdown'" />
+        <component :is="toolComponents[activeTool]" v-if="toolComponents[activeTool]" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { Search, Document, Share, Timer, Brush, Key, Sort, Postcard, Link } from '@element-plus/icons-vue'
+import { ref, computed, onMounted, markRaw } from 'vue'
+import {
+  Search, Document, Share, Timer, Brush, Key, Sort, Postcard, Link,
+  Box, Grid, Monitor, Edit, Reading, SetUp, DataLine, Memo
+} from '@element-plus/icons-vue'
+
+// Components
 import RegexTester from '../components/dev/RegexTester.vue'
 import JsonEditor from '../components/dev/JsonEditor.vue'
 import Base64Tool from '../components/dev/Base64Tool.vue'
@@ -118,14 +68,121 @@ import JWTDecoder from '../components/dev/JWTDecoder.vue'
 import URLEncoder from '../components/dev/URLEncoder.vue'
 import CronGenerator from '../components/dev/CronGenerator.vue'
 import MarkdownPreview from '../components/dev/MarkdownPreview.vue'
+import GradientGenerator from '../components/dev/GradientGenerator.vue'
+import BoxShadowGenerator from '../components/dev/BoxShadowGenerator.vue'
+import CodeFormatter from '../components/dev/CodeFormatter.vue'
+import HttpStatusCode from '../components/dev/HttpStatusCode.vue'
+import FlexboxPlayground from '../components/dev/FlexboxPlayground.vue'
+import YamlJsonConverter from '../components/dev/YamlJsonConverter.vue'
+import SqlFormatter from '../components/dev/SqlFormatter.vue'
+import ChmodCalculator from '../components/dev/ChmodCalculator.vue'
+import LinuxCommands from '../components/dev/LinuxCommands.vue'
 
-const activeTool = ref<'regex' | 'json' | 'base64' | 'timestamp' | 'color' | 'hash' | 'textstat' | 'radix' | 'uuid' | 'jwt' | 'url' | 'cron' | 'markdown'>('regex')
+type ToolCategory = 'all' | 'encode' | 'format' | 'css' | 'text' | 'system'
+
+interface ToolItem {
+  value: string
+  label: string
+  shortLabel: string
+  icon: any
+  category: ToolCategory
+}
+
+const categories = [
+  { label: '全部', value: 'all' as ToolCategory, icon: '📋' },
+  { label: '编码/加密', value: 'encode' as ToolCategory, icon: '🔐' },
+  { label: '数据格式', value: 'format' as ToolCategory, icon: '📄' },
+  { label: 'Web/CSS', value: 'css' as ToolCategory, icon: '🎨' },
+  { label: '文本处理', value: 'text' as ToolCategory, icon: '📝' },
+  { label: '系统/运维', value: 'system' as ToolCategory, icon: '⚙️' },
+]
+
+const tools: ToolItem[] = [
+  // 编码/加密
+  { value: 'base64', label: 'Base64', shortLabel: 'Base64', icon: markRaw(Share), category: 'encode' },
+  { value: 'url', label: 'URL 编解码', shortLabel: 'URL', icon: markRaw(Link), category: 'encode' },
+  { value: 'jwt', label: 'JWT 解码', shortLabel: 'JWT', icon: markRaw(Key), category: 'encode' },
+  { value: 'hash', label: '哈希', shortLabel: '哈希', icon: markRaw(Key), category: 'encode' },
+
+  // 数据格式
+  { value: 'json', label: 'JSON 工具', shortLabel: 'JSON', icon: markRaw(Document), category: 'format' },
+  { value: 'yaml', label: 'YAML/JSON', shortLabel: 'YAML', icon: markRaw(Document), category: 'format' },
+  { value: 'sql', label: 'SQL格式化', shortLabel: 'SQL', icon: markRaw(Document), category: 'format' },
+  { value: 'formatter', label: '代码格式化', shortLabel: '格式化', icon: markRaw(Edit), category: 'format' },
+
+  // Web/CSS
+  { value: 'color', label: '颜色工具', shortLabel: '颜色', icon: markRaw(Brush), category: 'css' },
+  { value: 'gradient', label: '渐变生成', shortLabel: '渐变', icon: markRaw(Brush), category: 'css' },
+  { value: 'boxshadow', label: '阴影生成', shortLabel: '阴影', icon: markRaw(Box), category: 'css' },
+  { value: 'flexbox', label: 'Flexbox', shortLabel: 'Flex', icon: markRaw(Grid), category: 'css' },
+  { value: 'http', label: 'HTTP状态码', shortLabel: 'HTTP', icon: markRaw(Link), category: 'css' },
+
+  // 文本处理
+  { value: 'regex', label: '正则测试', shortLabel: '正则', icon: markRaw(Search), category: 'text' },
+  { value: 'textstat', label: '文本统计', shortLabel: '文本', icon: markRaw(Reading), category: 'text' },
+  { value: 'markdown', label: 'Markdown', shortLabel: 'MD', icon: markRaw(Memo), category: 'text' },
+  { value: 'cron', label: 'Cron 生成器', shortLabel: 'Cron', icon: markRaw(Timer), category: 'text' },
+
+  // 系统/运维
+  { value: 'timestamp', label: '时间戳', shortLabel: '时间戳', icon: markRaw(Timer), category: 'system' },
+  { value: 'uuid', label: 'UUID', shortLabel: 'UUID', icon: markRaw(Postcard), category: 'system' },
+  { value: 'radix', label: '进制转换', shortLabel: '进制', icon: markRaw(Sort), category: 'system' },
+  { value: 'chmod', label: 'Chmod计算', shortLabel: 'Chmod', icon: markRaw(SetUp), category: 'system' },
+  { value: 'linux', label: 'Linux命令', shortLabel: 'Linux', icon: markRaw(Monitor), category: 'system' },
+]
+
+const toolComponents: Record<string, any> = {
+  regex: markRaw(RegexTester),
+  json: markRaw(JsonEditor),
+  base64: markRaw(Base64Tool),
+  timestamp: markRaw(TimestampTool),
+  color: markRaw(ColorTool),
+  hash: markRaw(HashTool),
+  textstat: markRaw(TextStatTool),
+  radix: markRaw(RadixTool),
+  uuid: markRaw(UUIDTool),
+  jwt: markRaw(JWTDecoder),
+  url: markRaw(URLEncoder),
+  cron: markRaw(CronGenerator),
+  markdown: markRaw(MarkdownPreview),
+  gradient: markRaw(GradientGenerator),
+  boxshadow: markRaw(BoxShadowGenerator),
+  formatter: markRaw(CodeFormatter),
+  http: markRaw(HttpStatusCode),
+  flexbox: markRaw(FlexboxPlayground),
+  yaml: markRaw(YamlJsonConverter),
+  sql: markRaw(SqlFormatter),
+  chmod: markRaw(ChmodCalculator),
+  linux: markRaw(LinuxCommands),
+}
+
+const activeCategory = ref<ToolCategory>('all')
+const activeTool = ref('regex')
+
+const filteredTools = computed(() => {
+  if (activeCategory.value === 'all') return tools
+  return tools.filter(t => t.category === activeCategory.value)
+})
+
+// 切换分类时，如果当前工具不在新分类中，自动选择第一个
+const handleCategoryChange = (cat: ToolCategory) => {
+  activeCategory.value = cat
+  const filtered = cat === 'all' ? tools : tools.filter(t => t.category === cat)
+  if (!filtered.find(t => t.value === activeTool.value)) {
+    activeTool.value = filtered[0]?.value || 'regex'
+  }
+}
 
 // 从 sessionStorage 恢复 tab 状态
 onMounted(() => {
   const savedTool = sessionStorage.getItem('activeTool')
-  if (savedTool && ['regex', 'json', 'base64', 'timestamp', 'color', 'hash', 'textstat', 'radix', 'uuid', 'jwt', 'url', 'cron', 'markdown'].includes(savedTool)) {
-    activeTool.value = savedTool as any
+  if (savedTool && tools.some(t => t.value === savedTool)) {
+    activeTool.value = savedTool
+    // 自动选中对应的分类
+    const tool = tools.find(t => t.value === savedTool)
+    if (tool) {
+      activeCategory.value = tool.category
+    }
     sessionStorage.removeItem('activeTool')
   }
 })

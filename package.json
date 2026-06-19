@@ -12,14 +12,18 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
+    "@types/js-yaml": "^4.0.9",
     "dexie": "^4.4.2",
     "element-plus": "^2.13.7",
+    "js-yaml": "^4.2.0",
     "jsqr": "^1.4.0",
     "markdown-it": "^14.1.1",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^5.7.284",
     "pinia": "^3.0.4",
+    "prettier": "^3.8.4",
     "qrcode": "^1.5.4",
+    "sql-formatter": "^15.8.1",
     "tesseract.js": "^7.0.0",
     "vue": "^3.5.32",
     "vue-router": "^4.6.4"
