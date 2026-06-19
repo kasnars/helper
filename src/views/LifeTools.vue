@@ -44,6 +44,21 @@
             <span class="hidden sm:inline">加密解密</span>
             <span class="sm:hidden">加密</span>
           </el-radio-button>
+          <el-radio-button label="bmi">
+            <el-icon><DataLine /></el-icon>
+            <span class="hidden sm:inline">BMI 计算</span>
+            <span class="sm:hidden">BMI</span>
+          </el-radio-button>
+          <el-radio-button label="age">
+            <el-icon><Calendar /></el-icon>
+            <span class="hidden sm:inline">年龄星座</span>
+            <span class="sm:hidden">年龄</span>
+          </el-radio-button>
+          <el-radio-button label="datecalc">
+            <el-icon><Timer /></el-icon>
+            <span class="hidden sm:inline">日期计算</span>
+            <span class="sm:hidden">日期</span>
+          </el-radio-button>
         </el-radio-group>
       </div>
 
@@ -66,6 +81,15 @@
 
         <!-- Text Encryptor -->
         <TextEncryptor v-if="activeTool === 'encrypt'" />
+
+        <!-- BMI Calculator -->
+        <BmiCalculator v-if="activeTool === 'bmi'" />
+
+        <!-- Age Calculator -->
+        <AgeCalculator v-if="activeTool === 'age'" />
+
+        <!-- Date Calculator -->
+        <DateCalculator v-if="activeTool === 'datecalc'" />
       </div>
     </div>
   </div>
@@ -73,21 +97,24 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { Food, CircleCheckFilled, FullScreen, ScaleToOriginal, Lock, Key } from '@element-plus/icons-vue'
+import { Food, CircleCheckFilled, FullScreen, ScaleToOriginal, Lock, Key, DataLine, Calendar, Timer } from '@element-plus/icons-vue'
 import FoodPicker from '../views/FoodPicker.vue'
 import RandomNumber from '../views/RandomNumber.vue'
 import QrCodeTool from '../components/dev/QrCodeTool.vue'
 import UnitConverter from '../components/dev/UnitConverter.vue'
 import PasswordGenerator from '../components/life/PasswordGenerator.vue'
 import TextEncryptor from '../components/life/TextEncryptor.vue'
+import BmiCalculator from '../components/life/BmiCalculator.vue'
+import AgeCalculator from '../components/life/AgeCalculator.vue'
+import DateCalculator from '../components/life/DateCalculator.vue'
 
-const activeTool = ref<'food' | 'random' | 'qrcode' | 'unit' | 'password' | 'encrypt'>('food')
+const activeTool = ref('food')
 
 // 从 sessionStorage 恢复 tab 状态
 onMounted(() => {
   const savedTool = sessionStorage.getItem('activeTool')
-  if (savedTool && ['food', 'random', 'qrcode', 'unit', 'password', 'encrypt'].includes(savedTool)) {
-    activeTool.value = savedTool as any
+  if (savedTool && ['food', 'random', 'qrcode', 'unit', 'password', 'encrypt', 'bmi', 'age', 'datecalc'].includes(savedTool)) {
+    activeTool.value = savedTool
     sessionStorage.removeItem('activeTool')
   }
 })

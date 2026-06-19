@@ -103,6 +103,12 @@
                   <el-icon v-else-if="item.icon === 'Sort'" :size="16" class="text-gray-500"><Sort /></el-icon>
                   <el-icon v-else-if="item.icon === 'Postcard'" :size="16" class="text-gray-500"><Postcard /></el-icon>
                   <el-icon v-else-if="item.icon === 'Link'" :size="16" class="text-gray-500"><Link /></el-icon>
+                  <el-icon v-else-if="item.icon === 'DataLine'" :size="16" class="text-gray-500"><DataLine /></el-icon>
+                  <el-icon v-else-if="item.icon === 'Calendar'" :size="16" class="text-gray-500"><Calendar /></el-icon>
+                  <el-icon v-else-if="item.icon === 'Lock'" :size="16" class="text-gray-500"><Lock /></el-icon>
+                  <el-icon v-else-if="item.icon === 'Crop'" :size="16" class="text-gray-500"><Crop /></el-icon>
+                  <el-icon v-else-if="item.icon === 'Avatar'" :size="16" class="text-gray-500"><Avatar /></el-icon>
+                  <el-icon v-else-if="item.icon === 'Edit'" :size="16" class="text-gray-500"><Edit /></el-icon>
                 </div>
                 <div>
                   <div class="text-sm font-medium">{{ item.name }}</div>
@@ -119,11 +125,12 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { 
+import {
   Menu, FolderOpened, Fold, Expand, Search,
   Food, CircleCheckFilled, FullScreen, ScaleToOriginal,
   Picture, DocumentChecked, EditPen, Document,
-  Share, Timer, Brush, Key, Sort, Postcard, Link
+  Share, Timer, Brush, Key, Sort, Postcard, Link,
+  DataLine, Calendar, Lock, Crop, Avatar, Edit
 } from '@element-plus/icons-vue'
 import { useAppStore } from '../../stores'
 
@@ -138,6 +145,11 @@ const allTools = [
   { name: '随机数生成', category: '生活工具', path: '/life', tab: 'random', icon: 'CircleCheckFilled' },
   { name: '二维码工具', category: '生活工具', path: '/life', tab: 'qrcode', icon: 'FullScreen' },
   { name: '单位换算', category: '生活工具', path: '/life', tab: 'unit', icon: 'ScaleToOriginal' },
+  { name: '密码生成', category: '生活工具', path: '/life', tab: 'password', icon: 'Lock' },
+  { name: '加密解密', category: '生活工具', path: '/life', tab: 'encrypt', icon: 'Key' },
+  { name: 'BMI 计算', category: '生活工具', path: '/life', tab: 'bmi', icon: 'DataLine' },
+  { name: '年龄星座', category: '生活工具', path: '/life', tab: 'age', icon: 'Calendar' },
+  { name: '日期计算', category: '生活工具', path: '/life', tab: 'datecalc', icon: 'Timer' },
   
   // 文件工具
   { name: '图片处理', category: '文件工具', path: '/file', tab: 'image', icon: 'Picture' },
@@ -145,6 +157,10 @@ const allTools = [
   { name: '在线画板', category: '文件工具', path: '/file', tab: 'whiteboard', icon: 'EditPen' },
   { name: '文字提取', category: '文件工具', path: '/file', tab: 'text', icon: 'Document' },
   { name: '图片水印', category: '文件工具', path: '/file', tab: 'watermark', icon: 'Picture' },
+  { name: '图片裁剪', category: '文件工具', path: '/file', tab: 'crop', icon: 'Crop' },
+  { name: '文件对比', category: '文件工具', path: '/file', tab: 'diff', icon: 'Document' },
+  { name: '证件照换底色', category: '文件工具', path: '/file', tab: 'idphoto', icon: 'Avatar' },
+  { name: 'SVG 编辑器', category: '文件工具', path: '/file', tab: 'svg', icon: 'Edit' },
   
   // 开发工具
   { name: '正则测试', category: '开发工具', path: '/devtools', tab: 'regex', icon: 'Search' },

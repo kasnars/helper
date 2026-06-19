@@ -49,6 +49,16 @@
             <span class="hidden sm:inline">文件对比</span>
             <span class="sm:hidden">对比</span>
           </el-radio-button>
+          <el-radio-button label="idphoto">
+            <el-icon><Avatar /></el-icon>
+            <span class="hidden sm:inline">证件照换底色</span>
+            <span class="sm:hidden">证件照</span>
+          </el-radio-button>
+          <el-radio-button label="svg">
+            <el-icon><Edit /></el-icon>
+            <span class="hidden sm:inline">SVG 编辑器</span>
+            <span class="sm:hidden">SVG</span>
+          </el-radio-button>
         </el-radio-group>
       </div>
 
@@ -74,6 +84,12 @@
 
         <!-- File Diff -->
         <FileDiff v-if="activeTool === 'diff'" />
+
+        <!-- ID Photo Background -->
+        <IdPhotoBg v-if="activeTool === 'idphoto'" />
+
+        <!-- SVG Editor -->
+        <SvgEditor v-if="activeTool === 'svg'" />
       </div>
     </div>
   </div>
@@ -81,7 +97,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { Picture, DocumentChecked, EditPen, Document, Crop } from '@element-plus/icons-vue'
+import { Picture, DocumentChecked, EditPen, Document, Crop, Avatar, Edit } from '@element-plus/icons-vue'
 import ImageProcessor from '../views/ImageProcessor.vue'
 import PdfTool from '../components/dev/PdfTool.vue'
 import Whiteboard from '../components/dev/Whiteboard.vue'
@@ -89,14 +105,16 @@ import TextExtractor from '../components/dev/TextExtractor.vue'
 import ImageWatermark from '../components/dev/ImageWatermark.vue'
 import ImageCropper from '../components/file/ImageCropper.vue'
 import FileDiff from '../components/file/FileDiff.vue'
+import IdPhotoBg from '../components/file/IdPhotoBg.vue'
+import SvgEditor from '../components/file/SvgEditor.vue'
 
-const activeTool = ref<'image' | 'pdf' | 'whiteboard' | 'text' | 'watermark' | 'crop' | 'diff'>('image')
+const activeTool = ref('image')
 
 // 从 sessionStorage 恢复 tab 状态
 onMounted(() => {
   const savedTool = sessionStorage.getItem('activeTool')
-  if (savedTool && ['image', 'pdf', 'whiteboard', 'text', 'watermark', 'crop', 'diff'].includes(savedTool)) {
-    activeTool.value = savedTool as any
+  if (savedTool && ['image', 'pdf', 'whiteboard', 'text', 'watermark', 'crop', 'diff', 'idphoto', 'svg'].includes(savedTool)) {
+    activeTool.value = savedTool
     sessionStorage.removeItem('activeTool')
   }
 })
