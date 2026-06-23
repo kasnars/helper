@@ -11,75 +11,73 @@
         </p>
       </div>
 
-      <!-- Tools Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <router-link
-          v-for="tool in tools"
-          :key="tool.path"
-          :to="tool.path"
-          class="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-500 hover:shadow-md transition-all duration-200 group"
-        >
-          <div class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-2xl" :class="tool.bgClass">
-            {{ tool.icon }}
-          </div>
-          <div class="flex-1 min-w-0">
-            <h3 class="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-              {{ tool.title }}
-            </h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ tool.description }}</p>
-          </div>
-          <el-icon class="text-gray-400 group-hover:text-blue-500 transition-colors"><ArrowRight /></el-icon>
-        </router-link>
+      <!-- Tool Navigation -->
+      <div class="flex flex-wrap gap-2 justify-center mb-8">
+        <el-radio-group v-model="activeTool" size="large">
+          <el-radio-button label="qrcode">
+            <el-icon><FullScreen /></el-icon>
+            <span class="hidden sm:inline">二维码工具</span>
+            <span class="sm:hidden">二维码</span>
+          </el-radio-button>
+          <el-radio-button label="whiteboard">
+            <el-icon><EditPen /></el-icon>
+            <span class="hidden sm:inline">在线画板</span>
+            <span class="sm:hidden">画板</span>
+          </el-radio-button>
+          <el-radio-button label="svg">
+            <el-icon><Edit /></el-icon>
+            <span class="hidden sm:inline">SVG 编辑器</span>
+            <span class="sm:hidden">SVG</span>
+          </el-radio-button>
+          <el-radio-button label="pdf">
+            <el-icon><Document /></el-icon>
+            <span class="hidden sm:inline">PDF 工具</span>
+            <span class="sm:hidden">PDF</span>
+          </el-radio-button>
+          <el-radio-button label="responsive">
+            <el-icon><View /></el-icon>
+            <span class="hidden sm:inline">响应式测试</span>
+            <span class="sm:hidden">响应式</span>
+          </el-radio-button>
+          <el-radio-button label="gridsplitter">
+            <el-icon><Grid /></el-icon>
+            <span class="hidden sm:inline">九宫格切图</span>
+            <span class="sm:hidden">切图</span>
+          </el-radio-button>
+        </el-radio-group>
+      </div>
+
+      <!-- Tool Content -->
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+        <QrCodeTool v-if="activeTool === 'qrcode'" />
+        <Whiteboard v-if="activeTool === 'whiteboard'" />
+        <SvgEditor v-if="activeTool === 'svg'" />
+        <PdfTool v-if="activeTool === 'pdf'" />
+        <ResponsiveTester v-if="activeTool === 'responsive'" />
+        <ImageGridSplitter v-if="activeTool === 'gridsplitter'" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ArrowRight } from '@element-plus/icons-vue'
+import { ref, onMounted } from 'vue'
+import { FullScreen, EditPen, Edit, Document, View, Grid } from '@element-plus/icons-vue'
+import QrCodeTool from '../components/dev/QrCodeTool.vue'
+import Whiteboard from '../components/dev/Whiteboard.vue'
+import SvgEditor from '../components/file/SvgEditor.vue'
+import PdfTool from '../components/dev/PdfTool.vue'
+import ResponsiveTester from '../components/dev/ResponsiveTester.vue'
+import ImageGridSplitter from '../components/image/ImageGridSplitter.vue'
 
-const tools = [
-  {
-    title: '二维码工具',
-    description: '生成和解析二维码',
-    icon: '📱',
-    path: '/qrcode',
-    bgClass: 'bg-purple-100 dark:bg-purple-900/30',
-  },
-  {
-    title: '白板',
-    description: '自由绘制和涂鸦',
-    icon: '🎨',
-    path: '/whiteboard',
-    bgClass: 'bg-green-100 dark:bg-green-900/30',
-  },
-  {
-    title: 'SVG编辑器',
-    description: '在线编辑SVG矢量图形',
-    icon: '✏️',
-    path: '/svg-editor',
-    bgClass: 'bg-blue-100 dark:bg-blue-900/30',
-  },
-  {
-    title: 'PDF工具',
-    description: 'PDF查看、转换和编辑',
-    icon: '📄',
-    path: '/pdf-tool',
-    bgClass: 'bg-red-100 dark:bg-red-900/30',
-  },
-  {
-    title: '响应式断点测试',
-    description: '测试不同屏幕尺寸下的布局',
-    icon: '📐',
-    path: '/responsive-tester',
-    bgClass: 'bg-yellow-100 dark:bg-yellow-900/30',
-  },
-  {
-    title: '九宫格切图',
-    description: '将图片切割为九宫格样式',
-    icon: '🖼️',
-    path: '/image-grid-splitter',
-    bgClass: 'bg-pink-100 dark:bg-pink-900/30',
-  },
-]
+const activeTool = ref('qrcode')
+const toolList = ['qrcode', 'whiteboard', 'svg', 'pdf', 'responsive', 'gridsplitter']
+
+onMounted(() => {
+  const savedTool = sessionStorage.getItem('activeOtherTool')
+  if (savedTool && toolList.includes(savedTool)) {
+    activeTool.value = savedTool
+    sessionStorage.removeItem('activeOtherTool')
+  }
+})
 </script>

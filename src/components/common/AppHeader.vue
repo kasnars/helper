@@ -92,7 +92,6 @@
                   <el-icon v-else-if="item.icon === 'FullScreen'" :size="16" class="text-gray-500"><FullScreen /></el-icon>
                   <el-icon v-else-if="item.icon === 'ScaleToOriginal'" :size="16" class="text-gray-500"><ScaleToOriginal /></el-icon>
                   <el-icon v-else-if="item.icon === 'Picture'" :size="16" class="text-gray-500"><Picture /></el-icon>
-                  <el-icon v-else-if="item.icon === 'DocumentChecked'" :size="16" class="text-gray-500"><DocumentChecked /></el-icon>
                   <el-icon v-else-if="item.icon === 'EditPen'" :size="16" class="text-gray-500"><EditPen /></el-icon>
                   <el-icon v-else-if="item.icon === 'Document'" :size="16" class="text-gray-500"><Document /></el-icon>
                   <el-icon v-else-if="item.icon === 'Search'" :size="16" class="text-gray-500"><Search /></el-icon>
@@ -109,6 +108,8 @@
                   <el-icon v-else-if="item.icon === 'Crop'" :size="16" class="text-gray-500"><Crop /></el-icon>
                   <el-icon v-else-if="item.icon === 'Avatar'" :size="16" class="text-gray-500"><Avatar /></el-icon>
                   <el-icon v-else-if="item.icon === 'Edit'" :size="16" class="text-gray-500"><Edit /></el-icon>
+                  <el-icon v-else-if="item.icon === 'Grid'" :size="16" class="text-gray-500"><Grid /></el-icon>
+                  <el-icon v-else-if="item.icon === 'SetUp'" :size="16" class="text-gray-500"><SetUp /></el-icon>
                 </div>
                 <div>
                   <div class="text-sm font-medium">{{ item.name }}</div>
@@ -126,11 +127,12 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import {
-  Menu, FolderOpened, Fold, Expand, Search,
+  Menu, Fold, Expand, Search,
   Food, CircleCheckFilled, FullScreen, ScaleToOriginal,
-  Picture, DocumentChecked, EditPen, Document,
+  Picture, EditPen, Document,
   Share, Timer, Brush, Key, Sort, Postcard, Link,
-  DataLine, Calendar, Lock, Crop, Avatar, Edit
+  DataLine, Calendar, Lock, Crop, Avatar, Edit,
+  Grid, SetUp
 } from '@element-plus/icons-vue'
 import { useAppStore } from '../../stores'
 
@@ -138,44 +140,91 @@ const appStore = useAppStore()
 const router = useRouter()
 const searchQuery = ref('')
 
+// 路径 → sessionStorage key 映射
+const tabStorageKeys: Record<string, string> = {
+  '/life': 'activeLifeTool',
+  '/imagetools': 'activeImageTool',
+  '/utility': 'activeUtilityTool',
+  '/devtools': 'activeDevTool',
+  '/texttools': 'activeTextTool',
+  '/other': 'activeOtherTool',
+}
+
 // 工具搜索数据
 const allTools = [
   // 生活工具
   { name: '今天吃什么', category: '生活工具', path: '/life', tab: 'food', icon: 'Food' },
   { name: '随机数生成', category: '生活工具', path: '/life', tab: 'random', icon: 'CircleCheckFilled' },
-  { name: '二维码工具', category: '生活工具', path: '/life', tab: 'qrcode', icon: 'FullScreen' },
-  { name: '单位换算', category: '生活工具', path: '/life', tab: 'unit', icon: 'ScaleToOriginal' },
-  { name: '密码生成', category: '生活工具', path: '/life', tab: 'password', icon: 'Lock' },
-  { name: '加密解密', category: '生活工具', path: '/life', tab: 'encrypt', icon: 'Key' },
   { name: 'BMI 计算', category: '生活工具', path: '/life', tab: 'bmi', icon: 'DataLine' },
   { name: '年龄星座', category: '生活工具', path: '/life', tab: 'age', icon: 'Calendar' },
   { name: '日期计算', category: '生活工具', path: '/life', tab: 'datecalc', icon: 'Timer' },
-  
-  // 文件工具
-  { name: '图片处理', category: '文件工具', path: '/file', tab: 'image', icon: 'Picture' },
-  { name: 'PDF 工具', category: '文件工具', path: '/file', tab: 'pdf', icon: 'DocumentChecked' },
-  { name: '在线画板', category: '文件工具', path: '/file', tab: 'whiteboard', icon: 'EditPen' },
-  { name: '文字提取', category: '文件工具', path: '/file', tab: 'text', icon: 'Document' },
-  { name: '图片水印', category: '文件工具', path: '/file', tab: 'watermark', icon: 'Picture' },
-  { name: '图片裁剪', category: '文件工具', path: '/file', tab: 'crop', icon: 'Crop' },
-  { name: '文件对比', category: '文件工具', path: '/file', tab: 'diff', icon: 'Document' },
-  { name: '证件照换底色', category: '文件工具', path: '/file', tab: 'idphoto', icon: 'Avatar' },
-  { name: 'SVG 编辑器', category: '文件工具', path: '/file', tab: 'svg', icon: 'Edit' },
-  
+
+  // 图片工具
+  { name: '图片处理', category: '图片工具', path: '/imagetools', tab: 'processor', icon: 'Picture' },
+  { name: '图片裁剪', category: '图片工具', path: '/imagetools', tab: 'crop', icon: 'Crop' },
+  { name: '图片水印', category: '图片工具', path: '/imagetools', tab: 'watermark', icon: 'Picture' },
+  { name: 'EXIF 信息', category: '图片工具', path: '/imagetools', tab: 'exif', icon: 'Document' },
+  { name: '证件照换底色', category: '图片工具', path: '/imagetools', tab: 'idphoto', icon: 'Avatar' },
+  { name: '像素画', category: '图片工具', path: '/imagetools', tab: 'pixelart', icon: 'Grid' },
+  { name: 'Favicon生成', category: '图片工具', path: '/imagetools', tab: 'favicon', icon: 'Picture' },
+  { name: '图片格式检测', category: '图片工具', path: '/imagetools', tab: 'formatdetect', icon: 'Document' },
+
+  // 实用工具
+  { name: '单位换算', category: '实用工具', path: '/utility', tab: 'unit', icon: 'ScaleToOriginal' },
+  { name: '密码生成', category: '实用工具', path: '/utility', tab: 'password', icon: 'Lock' },
+  { name: '加密解密', category: '实用工具', path: '/utility', tab: 'encrypt', icon: 'Key' },
+  { name: 'Cron 生成器', category: '实用工具', path: '/utility', tab: 'cron', icon: 'Timer' },
+  { name: 'JSON转Excel', category: '实用工具', path: '/utility', tab: 'json2excel', icon: 'Grid' },
+  { name: '金额大写', category: '实用工具', path: '/utility', tab: 'amount', icon: 'DataLine' },
+  { name: '文字转语音', category: '实用工具', path: '/utility', tab: 'tts', icon: 'Document' },
+  { name: 'Mock数据', category: '实用工具', path: '/utility', tab: 'mock', icon: 'DataLine' },
+  { name: 'CSS单位转换', category: '实用工具', path: '/utility', tab: 'cssunit', icon: 'SetUp' },
+  { name: 'JSON查看器', category: '实用工具', path: '/utility', tab: 'jsontree', icon: 'Share' },
+  { name: '音频可视化', category: '实用工具', path: '/utility', tab: 'audioviz', icon: 'Document' },
+  { name: '密码强度检测', category: '实用工具', path: '/utility', tab: 'pwcheck', icon: 'Lock' },
+  { name: 'TOTP验证码', category: '实用工具', path: '/utility', tab: 'totp', icon: 'Key' },
+
   // 开发工具
-  { name: '正则测试', category: '开发工具', path: '/devtools', tab: 'regex', icon: 'Search' },
   { name: 'JSON 工具', category: '开发工具', path: '/devtools', tab: 'json', icon: 'Document' },
   { name: 'Base64', category: '开发工具', path: '/devtools', tab: 'base64', icon: 'Share' },
   { name: '时间戳', category: '开发工具', path: '/devtools', tab: 'timestamp', icon: 'Timer' },
   { name: '颜色工具', category: '开发工具', path: '/devtools', tab: 'color', icon: 'Brush' },
   { name: '哈希', category: '开发工具', path: '/devtools', tab: 'hash', icon: 'Key' },
-  { name: '文本统计', category: '开发工具', path: '/devtools', tab: 'textstat', icon: 'Document' },
   { name: '进制转换', category: '开发工具', path: '/devtools', tab: 'radix', icon: 'Sort' },
   { name: 'UUID', category: '开发工具', path: '/devtools', tab: 'uuid', icon: 'Postcard' },
   { name: 'JWT 解码', category: '开发工具', path: '/devtools', tab: 'jwt', icon: 'Key' },
   { name: 'URL 编解码', category: '开发工具', path: '/devtools', tab: 'url', icon: 'Link' },
-  { name: 'Cron 生成器', category: '开发工具', path: '/devtools', tab: 'cron', icon: 'Timer' },
-  { name: 'Markdown 预览', category: '开发工具', path: '/devtools', tab: 'markdown', icon: 'Document' },
+  { name: '渐变生成', category: '开发工具', path: '/devtools', tab: 'gradient', icon: 'Brush' },
+  { name: '阴影生成', category: '开发工具', path: '/devtools', tab: 'boxshadow', icon: 'Document' },
+  { name: '代码格式化', category: '开发工具', path: '/devtools', tab: 'formatter', icon: 'Edit' },
+  { name: 'HTTP状态码', category: '开发工具', path: '/devtools', tab: 'http', icon: 'Link' },
+  { name: 'Flexbox', category: '开发工具', path: '/devtools', tab: 'flexbox', icon: 'Grid' },
+  { name: 'YAML/JSON', category: '开发工具', path: '/devtools', tab: 'yaml', icon: 'Document' },
+  { name: 'SQL格式化', category: '开发工具', path: '/devtools', tab: 'sql', icon: 'Document' },
+  { name: 'Chmod计算', category: '开发工具', path: '/devtools', tab: 'chmod', icon: 'SetUp' },
+  { name: 'Linux命令', category: '开发工具', path: '/devtools', tab: 'linux', icon: 'Document' },
+  { name: 'UA解析', category: '开发工具', path: '/devtools', tab: 'useragent', icon: 'Document' },
+
+  // 文本工具
+  { name: '正则测试', category: '文本工具', path: '/texttools', tab: 'regex', icon: 'Search' },
+  { name: '正则可视化', category: '文本工具', path: '/texttools', tab: 'regexviz', icon: 'Document' },
+  { name: '文本统计', category: '文本工具', path: '/texttools', tab: 'textstat', icon: 'Document' },
+  { name: '文本去重', category: '文本工具', path: '/texttools', tab: 'textdedup', icon: 'Document' },
+  { name: 'Markdown 预览', category: '文本工具', path: '/texttools', tab: 'markdown', icon: 'Document' },
+  { name: 'HTML实体', category: '文本工具', path: '/texttools', tab: 'htmlentity', icon: 'Document' },
+  { name: '字符频次', category: '文本工具', path: '/texttools', tab: 'charfreq', icon: 'Document' },
+  { name: 'SQL建表', category: '文本工具', path: '/texttools', tab: 'sqlcreate', icon: 'Grid' },
+  { name: '文本提取', category: '文本工具', path: '/texttools', tab: 'textextractor', icon: 'Document' },
+  { name: '文件对比', category: '文本工具', path: '/texttools', tab: 'filediff', icon: 'Document' },
+  { name: 'ROT13/凯撒密码', category: '文本工具', path: '/texttools', tab: 'rot13', icon: 'Key' },
+
+  // 其他工具
+  { name: '二维码工具', category: '其他工具', path: '/other', tab: 'qrcode', icon: 'FullScreen' },
+  { name: '在线画板', category: '其他工具', path: '/other', tab: 'whiteboard', icon: 'EditPen' },
+  { name: 'SVG 编辑器', category: '其他工具', path: '/other', tab: 'svg', icon: 'Edit' },
+  { name: 'PDF 工具', category: '其他工具', path: '/other', tab: 'pdf', icon: 'Document' },
+  { name: '响应式测试', category: '其他工具', path: '/other', tab: 'responsive', icon: 'Document' },
+  { name: '九宫格切图', category: '其他工具', path: '/other', tab: 'gridsplitter', icon: 'Grid' },
 ]
 
 const searchTools = (queryString: string, cb: Function) => {
@@ -215,15 +264,17 @@ const handleFirstSelect = () => {
 }
 
 const navigateToTool = (tool: any) => {
+  // 设置对应的 tab（使用页面特定的 key）
+  if (tool.tab) {
+    const storageKey = tabStorageKeys[tool.path]
+    if (storageKey) {
+      sessionStorage.setItem(storageKey, tool.tab)
+    }
+  }
+
   // 跳转到对应页面
   router.push(tool.path)
-  
-  // 设置对应的 tab
-  if (tool.tab) {
-    // 使用 sessionStorage 传递 tab 信息
-    sessionStorage.setItem('activeTool', tool.tab)
-  }
-  
+
   // 清空搜索
   searchQuery.value = ''
 }

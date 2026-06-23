@@ -51,7 +51,7 @@
 import { ref, computed, onMounted, markRaw } from 'vue'
 import {
   Document, Share, Timer, Brush, Key, Sort, Postcard, Link,
-  Box, Grid, Monitor, Edit, SetUp, Memo, View
+  Box, Grid, Monitor, Edit, SetUp, Memo
 } from '@element-plus/icons-vue'
 
 // Components
@@ -73,9 +73,9 @@ import YamlJsonConverter from '../components/dev/YamlJsonConverter.vue'
 import SqlFormatter from '../components/dev/SqlFormatter.vue'
 import ChmodCalculator from '../components/dev/ChmodCalculator.vue'
 import LinuxCommands from '../components/dev/LinuxCommands.vue'
-import ResponsiveTester from '../components/dev/ResponsiveTester.vue'
+import UserAgentParser from '../components/dev/UserAgentParser.vue'
 
-type ToolCategory = 'all' | 'encode' | 'format' | 'css' | 'system' | 'preview'
+type ToolCategory = 'all' | 'encode' | 'format' | 'css' | 'system'
 
 interface ToolItem {
   value: string
@@ -91,7 +91,6 @@ const categories = [
   { label: '数据格式', value: 'format' as ToolCategory, icon: '📄' },
   { label: 'Web/CSS', value: 'css' as ToolCategory, icon: '🎨' },
   { label: '系统/运维', value: 'system' as ToolCategory, icon: '⚙️' },
-  { label: '预览/测试', value: 'preview' as ToolCategory, icon: '👁️' },
 ]
 
 const tools: ToolItem[] = [
@@ -120,9 +119,7 @@ const tools: ToolItem[] = [
   { value: 'radix', label: '进制转换', shortLabel: '进制', icon: markRaw(Sort), category: 'system' },
   { value: 'chmod', label: 'Chmod计算', shortLabel: 'Chmod', icon: markRaw(SetUp), category: 'system' },
   { value: 'linux', label: 'Linux命令', shortLabel: 'Linux', icon: markRaw(Monitor), category: 'system' },
-
-  // 预览/测试
-  { value: 'responsive', label: '响应式测试', shortLabel: '响应式', icon: markRaw(View), category: 'preview' },
+  { value: 'useragent', label: 'UA解析', shortLabel: 'UA', icon: markRaw(Monitor), category: 'system' },
 ]
 
 const toolComponents: Record<string, any> = {
@@ -144,7 +141,7 @@ const toolComponents: Record<string, any> = {
   sql: markRaw(SqlFormatter),
   chmod: markRaw(ChmodCalculator),
   linux: markRaw(LinuxCommands),
-  responsive: markRaw(ResponsiveTester),
+  useragent: markRaw(UserAgentParser),
 }
 
 const activeCategory = ref<ToolCategory>('all')

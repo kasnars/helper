@@ -119,11 +119,19 @@ html.dark ::-webkit-scrollbar-thumb {
   }
 }
 
-/* Radio button icon and text alignment */
+/* Radio button icon and text alignment + uniform width */
+.el-radio-button {
+  min-width: 100px !important;
+  flex-shrink: 0 !important;
+}
+
 .el-radio-button__inner {
   display: flex !important;
   align-items: center !important;
+  justify-content: center !important;
   gap: 6px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .el-radio-button__inner .el-icon {

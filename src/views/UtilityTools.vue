@@ -14,11 +14,6 @@
       <!-- Tool Navigation -->
       <div class="flex flex-wrap gap-2 justify-center mb-8">
         <el-radio-group v-model="activeTool" size="large">
-          <el-radio-button label="qrcode">
-            <el-icon><FullScreen /></el-icon>
-            <span class="hidden sm:inline">二维码工具</span>
-            <span class="sm:hidden">二维码</span>
-          </el-radio-button>
           <el-radio-button label="unit">
             <el-icon><ScaleToOriginal /></el-icon>
             <span class="hidden sm:inline">单位换算</span>
@@ -38,16 +33,6 @@
             <el-icon><Timer /></el-icon>
             <span class="hidden sm:inline">Cron 生成器</span>
             <span class="sm:hidden">Cron</span>
-          </el-radio-button>
-          <el-radio-button label="pdf">
-            <el-icon><Document /></el-icon>
-            <span class="hidden sm:inline">PDF 工具</span>
-            <span class="sm:hidden">PDF</span>
-          </el-radio-button>
-          <el-radio-button label="svg">
-            <el-icon><Edit /></el-icon>
-            <span class="hidden sm:inline">SVG 编辑器</span>
-            <span class="sm:hidden">SVG</span>
           </el-radio-button>
           <el-radio-button label="json2excel">
             <el-icon><Grid /></el-icon>
@@ -84,18 +69,25 @@
             <span class="hidden sm:inline">音频可视化</span>
             <span class="sm:hidden">波形</span>
           </el-radio-button>
+          <el-radio-button label="pwcheck">
+            <el-icon><Lock /></el-icon>
+            <span class="hidden sm:inline">密码强度</span>
+            <span class="sm:hidden">强度</span>
+          </el-radio-button>
+          <el-radio-button label="totp">
+            <el-icon><Key /></el-icon>
+            <span class="hidden sm:inline">TOTP验证码</span>
+            <span class="sm:hidden">TOTP</span>
+          </el-radio-button>
         </el-radio-group>
       </div>
 
       <!-- Tool Content -->
       <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
-        <QrCodeTool v-if="activeTool === 'qrcode'" />
         <UnitConverter v-if="activeTool === 'unit'" />
         <PasswordGenerator v-if="activeTool === 'password'" />
         <TextEncryptor v-if="activeTool === 'encrypt'" />
         <CronGenerator v-if="activeTool === 'cron'" />
-        <PdfTool v-if="activeTool === 'pdf'" />
-        <SvgEditor v-if="activeTool === 'svg'" />
         <JsonToExcel v-if="activeTool === 'json2excel'" />
         <AmountToChinese v-if="activeTool === 'amount'" />
         <TextToSpeech v-if="activeTool === 'tts'" />
@@ -103,6 +95,8 @@
         <CssUnitConverter v-if="activeTool === 'cssunit'" />
         <JsonTreeView v-if="activeTool === 'jsontree'" />
         <AudioVisualizer v-if="activeTool === 'audioviz'" />
+        <PasswordStrengthChecker v-if="activeTool === 'pwcheck'" />
+        <TotpGenerator v-if="activeTool === 'totp'" />
       </div>
     </div>
   </div>
@@ -110,14 +104,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { FullScreen, ScaleToOriginal, Lock, Key, Timer, Document, Edit, Grid, Money, Microphone, DataLine, SetUp, Share, Headset } from '@element-plus/icons-vue'
-import QrCodeTool from '../components/dev/QrCodeTool.vue'
+import { ScaleToOriginal, Lock, Key, Timer, Grid, Money, Microphone, DataLine, SetUp, Share, Headset } from '@element-plus/icons-vue'
 import UnitConverter from '../components/dev/UnitConverter.vue'
 import PasswordGenerator from '../components/life/PasswordGenerator.vue'
 import TextEncryptor from '../components/life/TextEncryptor.vue'
 import CronGenerator from '../components/dev/CronGenerator.vue'
-import PdfTool from '../components/dev/PdfTool.vue'
-import SvgEditor from '../components/file/SvgEditor.vue'
 import JsonToExcel from '../components/utility/JsonToExcel.vue'
 import AmountToChinese from '../components/utility/AmountToChinese.vue'
 import TextToSpeech from '../components/utility/TextToSpeech.vue'
@@ -125,9 +116,11 @@ import MockDataGenerator from '../components/utility/MockDataGenerator.vue'
 import CssUnitConverter from '../components/utility/CssUnitConverter.vue'
 import JsonTreeView from '../components/utility/JsonTreeView.vue'
 import AudioVisualizer from '../components/utility/AudioVisualizer.vue'
+import PasswordStrengthChecker from '../components/utility/PasswordStrengthChecker.vue'
+import TotpGenerator from '../components/utility/TotpGenerator.vue'
 
-const activeTool = ref('qrcode')
-const toolList = ['qrcode', 'unit', 'password', 'encrypt', 'cron', 'pdf', 'svg', 'json2excel', 'amount', 'tts', 'mock', 'cssunit', 'jsontree', 'audioviz']
+const activeTool = ref('unit')
+const toolList = ['unit', 'password', 'encrypt', 'cron', 'json2excel', 'amount', 'tts', 'mock', 'cssunit', 'jsontree', 'audioviz', 'pwcheck', 'totp']
 
 onMounted(() => {
   const savedTool = sessionStorage.getItem('activeUtilityTool')

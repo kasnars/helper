@@ -39,20 +39,20 @@
             <span class="hidden sm:inline">证件照换底色</span>
             <span class="sm:hidden">证件照</span>
           </el-radio-button>
-          <el-radio-button label="whiteboard">
-            <el-icon><EditPen /></el-icon>
-            <span class="hidden sm:inline">在线画板</span>
-            <span class="sm:hidden">画板</span>
-          </el-radio-button>
           <el-radio-button label="pixelart">
             <el-icon><Grid /></el-icon>
             <span class="hidden sm:inline">像素画</span>
             <span class="sm:hidden">像素</span>
           </el-radio-button>
-          <el-radio-button label="gridsplitter">
-            <el-icon><Grid /></el-icon>
-            <span class="hidden sm:inline">九宫格切图</span>
-            <span class="sm:hidden">切图</span>
+          <el-radio-button label="favicon">
+            <el-icon><Picture /></el-icon>
+            <span class="hidden sm:inline">Favicon生成</span>
+            <span class="sm:hidden">Favicon</span>
+          </el-radio-button>
+          <el-radio-button label="formatdetect">
+            <el-icon><InfoFilled /></el-icon>
+            <span class="hidden sm:inline">格式检测</span>
+            <span class="sm:hidden">检测</span>
           </el-radio-button>
         </el-radio-group>
       </div>
@@ -64,9 +64,9 @@
         <ImageWatermark v-if="activeTool === 'watermark'" />
         <ImageExif v-if="activeTool === 'exif'" />
         <IdPhotoBg v-if="activeTool === 'idphoto'" />
-        <Whiteboard v-if="activeTool === 'whiteboard'" />
         <ImagePixelArt v-if="activeTool === 'pixelart'" />
-        <ImageGridSplitter v-if="activeTool === 'gridsplitter'" />
+        <FaviconGenerator v-if="activeTool === 'favicon'" />
+        <ImageFormatDetector v-if="activeTool === 'formatdetect'" />
       </div>
     </div>
   </div>
@@ -74,18 +74,18 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { Picture, Crop, InfoFilled, Avatar, EditPen, Grid } from '@element-plus/icons-vue'
+import { Picture, Crop, InfoFilled, Avatar } from '@element-plus/icons-vue'
 import ImageProcessor from './ImageProcessor.vue'
 import ImageCropper from '../components/file/ImageCropper.vue'
 import ImageWatermark from '../components/dev/ImageWatermark.vue'
 import ImageExif from '../components/file/ImageExif.vue'
 import IdPhotoBg from '../components/file/IdPhotoBg.vue'
-import Whiteboard from '../components/dev/Whiteboard.vue'
 import ImagePixelArt from '../components/image/ImagePixelArt.vue'
-import ImageGridSplitter from '../components/image/ImageGridSplitter.vue'
+import FaviconGenerator from '../components/image/FaviconGenerator.vue'
+import ImageFormatDetector from '../components/image/ImageFormatDetector.vue'
 
 const activeTool = ref('processor')
-const toolList = ['processor', 'crop', 'watermark', 'exif', 'idphoto', 'whiteboard', 'pixelart', 'gridsplitter']
+const toolList = ['processor', 'crop', 'watermark', 'exif', 'idphoto', 'pixelart', 'favicon', 'formatdetect']
 
 onMounted(() => {
   const savedTool = sessionStorage.getItem('activeImageTool')

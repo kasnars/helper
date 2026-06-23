@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, markRaw } from 'vue'
-import { Search, Reading, Delete, Memo, Document, View, Grid } from '@element-plus/icons-vue'
+import { Search, Reading, Delete, Memo, Document, View, Grid, Key } from '@element-plus/icons-vue'
 
 // Components
 import RegexTester from '../components/dev/RegexTester.vue'
@@ -62,6 +62,7 @@ import FileDiff from '../components/file/FileDiff.vue'
 import SqlCreateTable from '../components/text/SqlCreateTable.vue'
 import HtmlEntityTool from '../components/text/HtmlEntityTool.vue'
 import CharFrequency from '../components/text/CharFrequency.vue'
+import Rot13Cipher from '../components/text/Rot13Cipher.vue'
 
 type ToolCategory = 'all' | 'text' | 'file' | 'dev'
 
@@ -89,6 +90,7 @@ const tools: ToolItem[] = [
   { value: 'markdown', label: 'Markdown', shortLabel: 'MD', icon: markRaw(Memo), category: 'text' },
   { value: 'htmlentity', label: 'HTML实体', shortLabel: '实体', icon: markRaw(Document), category: 'text' },
   { value: 'charfreq', label: '字符频次', shortLabel: '频次', icon: markRaw(Reading), category: 'text' },
+  { value: 'rot13', label: 'ROT13/凯撒', shortLabel: 'ROT13', icon: markRaw(Key), category: 'text' },
 
   // 开发辅助
   { value: 'sqlcreate', label: 'SQL建表', shortLabel: 'SQL', icon: markRaw(Grid), category: 'dev' },
@@ -109,6 +111,7 @@ const toolComponents: Record<string, any> = {
   sqlcreate: markRaw(SqlCreateTable),
   textextractor: markRaw(TextExtractor),
   filediff: markRaw(FileDiff),
+  rot13: markRaw(Rot13Cipher),
 }
 
 const activeCategory = ref<ToolCategory>('all')
