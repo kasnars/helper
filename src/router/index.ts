@@ -1,8 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import LifeTools from '../views/LifeTools.vue'
-import FileTools from '../views/FileTools.vue'
+import OtherTools from '../views/OtherTools.vue'
 import DevTools from '../views/DevTools.vue'
+import TextTools from '../views/TextTools.vue'
+import UtilityTools from '../views/UtilityTools.vue'
+import ImageTools from '../views/ImageTools.vue'
 
 const routes = [
   {
@@ -18,10 +21,28 @@ const routes = [
     meta: { title: '生活工具', icon: 'Star' },
   },
   {
-    path: '/file',
-    name: 'FileTools',
-    component: FileTools,
-    meta: { title: '文件工具', icon: 'FolderOpened' },
+    path: '/imagetools',
+    name: 'ImageTools',
+    component: ImageTools,
+    meta: { title: '图片工具', icon: 'Picture' },
+  },
+  {
+    path: '/utility',
+    name: 'UtilityTools',
+    component: UtilityTools,
+    meta: { title: '实用工具', icon: 'Suitcase' },
+  },
+  {
+    path: '/other',
+    name: 'OtherTools',
+    component: OtherTools,
+    meta: { title: '其他工具', icon: 'More' },
+  },
+  {
+    path: '/texttools',
+    name: 'TextTools',
+    component: TextTools,
+    meta: { title: '文本工具', icon: 'Note' },
   },
   {
     path: '/devtools',

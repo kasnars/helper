@@ -7,7 +7,7 @@
           🌟 生活工具
         </h1>
         <p class="text-gray-600 dark:text-gray-400">
-          日常生活中的实用小工具
+          日常生活中的实用计算器
         </p>
       </div>
 
@@ -23,26 +23,6 @@
             <el-icon><CircleCheckFilled /></el-icon>
             <span class="hidden sm:inline">随机数生成</span>
             <span class="sm:hidden">随机数</span>
-          </el-radio-button>
-          <el-radio-button label="qrcode">
-            <el-icon><FullScreen /></el-icon>
-            <span class="hidden sm:inline">二维码工具</span>
-            <span class="sm:hidden">二维码</span>
-          </el-radio-button>
-          <el-radio-button label="unit">
-            <el-icon><ScaleToOriginal /></el-icon>
-            <span class="hidden sm:inline">单位换算</span>
-            <span class="sm:hidden">换算</span>
-          </el-radio-button>
-          <el-radio-button label="password">
-            <el-icon><Lock /></el-icon>
-            <span class="hidden sm:inline">密码生成</span>
-            <span class="sm:hidden">密码</span>
-          </el-radio-button>
-          <el-radio-button label="encrypt">
-            <el-icon><Key /></el-icon>
-            <span class="hidden sm:inline">加密解密</span>
-            <span class="sm:hidden">加密</span>
           </el-radio-button>
           <el-radio-button label="bmi">
             <el-icon><DataLine /></el-icon>
@@ -70,18 +50,6 @@
         <!-- Random Number -->
         <RandomNumber v-if="activeTool === 'random'" />
 
-        <!-- QR Code Tool -->
-        <QrCodeTool v-if="activeTool === 'qrcode'" />
-
-        <!-- Unit Converter -->
-        <UnitConverter v-if="activeTool === 'unit'" />
-
-        <!-- Password Generator -->
-        <PasswordGenerator v-if="activeTool === 'password'" />
-
-        <!-- Text Encryptor -->
-        <TextEncryptor v-if="activeTool === 'encrypt'" />
-
         <!-- BMI Calculator -->
         <BmiCalculator v-if="activeTool === 'bmi'" />
 
@@ -97,13 +65,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { Food, CircleCheckFilled, FullScreen, ScaleToOriginal, Lock, Key, DataLine, Calendar, Timer } from '@element-plus/icons-vue'
+import { Food, CircleCheckFilled, DataLine, Calendar, Timer } from '@element-plus/icons-vue'
 import FoodPicker from '../views/FoodPicker.vue'
 import RandomNumber from '../views/RandomNumber.vue'
-import QrCodeTool from '../components/dev/QrCodeTool.vue'
-import UnitConverter from '../components/dev/UnitConverter.vue'
-import PasswordGenerator from '../components/life/PasswordGenerator.vue'
-import TextEncryptor from '../components/life/TextEncryptor.vue'
 import BmiCalculator from '../components/life/BmiCalculator.vue'
 import AgeCalculator from '../components/life/AgeCalculator.vue'
 import DateCalculator from '../components/life/DateCalculator.vue'
@@ -112,10 +76,10 @@ const activeTool = ref('food')
 
 // 从 sessionStorage 恢复 tab 状态
 onMounted(() => {
-  const savedTool = sessionStorage.getItem('activeTool')
-  if (savedTool && ['food', 'random', 'qrcode', 'unit', 'password', 'encrypt', 'bmi', 'age', 'datecalc'].includes(savedTool)) {
+  const savedTool = sessionStorage.getItem('activeLifeTool')
+  if (savedTool && ['food', 'random', 'bmi', 'age', 'datecalc'].includes(savedTool)) {
     activeTool.value = savedTool
-    sessionStorage.removeItem('activeTool')
+    sessionStorage.removeItem('activeLifeTool')
   }
 })
 </script>

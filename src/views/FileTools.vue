@@ -7,115 +7,36 @@
           📁 文件工具
         </h1>
         <p class="text-gray-600 dark:text-gray-400">
-          图片、PDF、画板和文字提取工具
+          图片、PDF、画板和文字提取工具已拆分到专属分类
         </p>
       </div>
 
-      <!-- Tool Navigation -->
-      <div class="flex flex-wrap gap-2 justify-center mb-8">
-        <el-radio-group v-model="activeTool" size="large">
-          <el-radio-button label="image">
+      <!-- Notice -->
+      <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6 text-center">
+        <el-icon :size="48" class="text-blue-500 mb-4"><InfoFilled /></el-icon>
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">工具已迁移</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">
+          原文件工具中的功能已拆分到以下分类：
+        </p>
+        <div class="flex flex-wrap justify-center gap-4">
+          <router-link to="/imagetools" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-colors">
             <el-icon><Picture /></el-icon>
-            <span class="hidden sm:inline">图片处理</span>
-            <span class="sm:hidden">图片</span>
-          </el-radio-button>
-          <el-radio-button label="pdf">
-            <el-icon><DocumentChecked /></el-icon>
-            <span class="hidden sm:inline">PDF 工具</span>
-            <span class="sm:hidden">PDF</span>
-          </el-radio-button>
-          <el-radio-button label="whiteboard">
-            <el-icon><EditPen /></el-icon>
-            <span class="hidden sm:inline">在线画板</span>
-            <span class="sm:hidden">画板</span>
-          </el-radio-button>
-          <el-radio-button label="text">
+            <span>图片工具</span>
+          </router-link>
+          <router-link to="/texttools" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-colors">
             <el-icon><Document /></el-icon>
-            <span class="hidden sm:inline">文字提取</span>
-            <span class="sm:hidden">文字</span>
-          </el-radio-button>
-          <el-radio-button label="watermark">
-            <el-icon><Picture /></el-icon>
-            <span class="hidden sm:inline">图片水印</span>
-            <span class="sm:hidden">水印</span>
-          </el-radio-button>
-          <el-radio-button label="crop">
-            <el-icon><Crop /></el-icon>
-            <span class="hidden sm:inline">图片裁剪</span>
-            <span class="sm:hidden">裁剪</span>
-          </el-radio-button>
-          <el-radio-button label="diff">
-            <el-icon><Document /></el-icon>
-            <span class="hidden sm:inline">文件对比</span>
-            <span class="sm:hidden">对比</span>
-          </el-radio-button>
-          <el-radio-button label="idphoto">
-            <el-icon><Avatar /></el-icon>
-            <span class="hidden sm:inline">证件照换底色</span>
-            <span class="sm:hidden">证件照</span>
-          </el-radio-button>
-          <el-radio-button label="svg">
-            <el-icon><Edit /></el-icon>
-            <span class="hidden sm:inline">SVG 编辑器</span>
-            <span class="sm:hidden">SVG</span>
-          </el-radio-button>
-        </el-radio-group>
-      </div>
-
-      <!-- Tool Content -->
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
-        <!-- Image Processor -->
-        <ImageProcessor v-if="activeTool === 'image'" />
-
-        <!-- PDF Tool -->
-        <PdfTool v-if="activeTool === 'pdf'" />
-
-        <!-- Whiteboard -->
-        <Whiteboard v-if="activeTool === 'whiteboard'" />
-
-        <!-- Text Extractor -->
-        <TextExtractor v-if="activeTool === 'text'" />
-
-        <!-- Image Watermark -->
-        <ImageWatermark v-if="activeTool === 'watermark'" />
-
-        <!-- Image Cropper -->
-        <ImageCropper v-if="activeTool === 'crop'" />
-
-        <!-- File Diff -->
-        <FileDiff v-if="activeTool === 'diff'" />
-
-        <!-- ID Photo Background -->
-        <IdPhotoBg v-if="activeTool === 'idphoto'" />
-
-        <!-- SVG Editor -->
-        <SvgEditor v-if="activeTool === 'svg'" />
+            <span>文本工具</span>
+          </router-link>
+          <router-link to="/utility" class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-colors">
+            <el-icon><Suitcase /></el-icon>
+            <span>实用工具</span>
+          </router-link>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { Picture, DocumentChecked, EditPen, Document, Crop, Avatar, Edit } from '@element-plus/icons-vue'
-import ImageProcessor from '../views/ImageProcessor.vue'
-import PdfTool from '../components/dev/PdfTool.vue'
-import Whiteboard from '../components/dev/Whiteboard.vue'
-import TextExtractor from '../components/dev/TextExtractor.vue'
-import ImageWatermark from '../components/dev/ImageWatermark.vue'
-import ImageCropper from '../components/file/ImageCropper.vue'
-import FileDiff from '../components/file/FileDiff.vue'
-import IdPhotoBg from '../components/file/IdPhotoBg.vue'
-import SvgEditor from '../components/file/SvgEditor.vue'
-
-const activeTool = ref('image')
-
-// 从 sessionStorage 恢复 tab 状态
-onMounted(() => {
-  const savedTool = sessionStorage.getItem('activeTool')
-  if (savedTool && ['image', 'pdf', 'whiteboard', 'text', 'watermark', 'crop', 'diff', 'idphoto', 'svg'].includes(savedTool)) {
-    activeTool.value = savedTool
-    sessionStorage.removeItem('activeTool')
-  }
-})
+import { Picture, Document, Suitcase, InfoFilled } from '@element-plus/icons-vue'
 </script>

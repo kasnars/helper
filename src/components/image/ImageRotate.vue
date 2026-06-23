@@ -109,7 +109,7 @@ const loadImage = (file: File) => {
   img.src = imageSrc.value
 }
 
-const drawImage = (img: HTMLImageElement, rot: number, flipH: boolean, flipV: number) => {
+const drawImage = (img: HTMLImageElement, rot: number, flipH: boolean, flipV: boolean) => {
   const canvas = canvasRef.value
   if (!canvas) return
   const ctx = canvas.getContext('2d')!

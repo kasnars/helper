@@ -288,7 +288,7 @@ const download = (format: 'png' | 'jpg') => {
   const url = previewCanvas.value.toDataURL(mimeType, 0.95)
   const a = document.createElement('a')
   a.href = url
-  a.download = `id_photo_${targetBgColor.value.replace('#', '')}_${Date.now()}.${format === 'jpeg' ? 'jpg' : format}`
+  a.download = `id_photo_${targetBgColor.value.replace('#', '')}_${Date.now()}.${format}`
   a.click()
 }
 </script>

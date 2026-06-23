@@ -50,24 +50,20 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, markRaw } from 'vue'
 import {
-  Search, Document, Share, Timer, Brush, Key, Sort, Postcard, Link,
-  Box, Grid, Monitor, Edit, Reading, SetUp, DataLine, Memo
+  Document, Share, Timer, Brush, Key, Sort, Postcard, Link,
+  Box, Grid, Monitor, Edit, SetUp, Memo, View
 } from '@element-plus/icons-vue'
 
 // Components
-import RegexTester from '../components/dev/RegexTester.vue'
 import JsonEditor from '../components/dev/JsonEditor.vue'
 import Base64Tool from '../components/dev/Base64Tool.vue'
 import TimestampTool from '../components/dev/TimestampTool.vue'
 import ColorTool from '../components/dev/ColorTool.vue'
 import HashTool from '../components/dev/HashTool.vue'
-import TextStatTool from '../components/dev/TextStatTool.vue'
 import RadixTool from '../components/dev/RadixTool.vue'
 import UUIDTool from '../components/dev/UUIDTool.vue'
 import JWTDecoder from '../components/dev/JWTDecoder.vue'
 import URLEncoder from '../components/dev/URLEncoder.vue'
-import CronGenerator from '../components/dev/CronGenerator.vue'
-import MarkdownPreview from '../components/dev/MarkdownPreview.vue'
 import GradientGenerator from '../components/dev/GradientGenerator.vue'
 import BoxShadowGenerator from '../components/dev/BoxShadowGenerator.vue'
 import CodeFormatter from '../components/dev/CodeFormatter.vue'
@@ -77,8 +73,9 @@ import YamlJsonConverter from '../components/dev/YamlJsonConverter.vue'
 import SqlFormatter from '../components/dev/SqlFormatter.vue'
 import ChmodCalculator from '../components/dev/ChmodCalculator.vue'
 import LinuxCommands from '../components/dev/LinuxCommands.vue'
+import ResponsiveTester from '../components/dev/ResponsiveTester.vue'
 
-type ToolCategory = 'all' | 'encode' | 'format' | 'css' | 'text' | 'system'
+type ToolCategory = 'all' | 'encode' | 'format' | 'css' | 'system' | 'preview'
 
 interface ToolItem {
   value: string
@@ -93,8 +90,8 @@ const categories = [
   { label: '编码/加密', value: 'encode' as ToolCategory, icon: '🔐' },
   { label: '数据格式', value: 'format' as ToolCategory, icon: '📄' },
   { label: 'Web/CSS', value: 'css' as ToolCategory, icon: '🎨' },
-  { label: '文本处理', value: 'text' as ToolCategory, icon: '📝' },
   { label: '系统/运维', value: 'system' as ToolCategory, icon: '⚙️' },
+  { label: '预览/测试', value: 'preview' as ToolCategory, icon: '👁️' },
 ]
 
 const tools: ToolItem[] = [
@@ -117,34 +114,27 @@ const tools: ToolItem[] = [
   { value: 'flexbox', label: 'Flexbox', shortLabel: 'Flex', icon: markRaw(Grid), category: 'css' },
   { value: 'http', label: 'HTTP状态码', shortLabel: 'HTTP', icon: markRaw(Link), category: 'css' },
 
-  // 文本处理
-  { value: 'regex', label: '正则测试', shortLabel: '正则', icon: markRaw(Search), category: 'text' },
-  { value: 'textstat', label: '文本统计', shortLabel: '文本', icon: markRaw(Reading), category: 'text' },
-  { value: 'markdown', label: 'Markdown', shortLabel: 'MD', icon: markRaw(Memo), category: 'text' },
-  { value: 'cron', label: 'Cron 生成器', shortLabel: 'Cron', icon: markRaw(Timer), category: 'text' },
-
   // 系统/运维
   { value: 'timestamp', label: '时间戳', shortLabel: '时间戳', icon: markRaw(Timer), category: 'system' },
   { value: 'uuid', label: 'UUID', shortLabel: 'UUID', icon: markRaw(Postcard), category: 'system' },
   { value: 'radix', label: '进制转换', shortLabel: '进制', icon: markRaw(Sort), category: 'system' },
   { value: 'chmod', label: 'Chmod计算', shortLabel: 'Chmod', icon: markRaw(SetUp), category: 'system' },
   { value: 'linux', label: 'Linux命令', shortLabel: 'Linux', icon: markRaw(Monitor), category: 'system' },
+
+  // 预览/测试
+  { value: 'responsive', label: '响应式测试', shortLabel: '响应式', icon: markRaw(View), category: 'preview' },
 ]
 
 const toolComponents: Record<string, any> = {
-  regex: markRaw(RegexTester),
   json: markRaw(JsonEditor),
   base64: markRaw(Base64Tool),
   timestamp: markRaw(TimestampTool),
   color: markRaw(ColorTool),
   hash: markRaw(HashTool),
-  textstat: markRaw(TextStatTool),
   radix: markRaw(RadixTool),
   uuid: markRaw(UUIDTool),
   jwt: markRaw(JWTDecoder),
   url: markRaw(URLEncoder),
-  cron: markRaw(CronGenerator),
-  markdown: markRaw(MarkdownPreview),
   gradient: markRaw(GradientGenerator),
   boxshadow: markRaw(BoxShadowGenerator),
   formatter: markRaw(CodeFormatter),
@@ -154,10 +144,11 @@ const toolComponents: Record<string, any> = {
   sql: markRaw(SqlFormatter),
   chmod: markRaw(ChmodCalculator),
   linux: markRaw(LinuxCommands),
+  responsive: markRaw(ResponsiveTester),
 }
 
 const activeCategory = ref<ToolCategory>('all')
-const activeTool = ref('regex')
+const activeTool = ref('json')
 
 const filteredTools = computed(() => {
   if (activeCategory.value === 'all') return tools
@@ -169,13 +160,13 @@ const handleCategoryChange = (cat: ToolCategory) => {
   activeCategory.value = cat
   const filtered = cat === 'all' ? tools : tools.filter(t => t.category === cat)
   if (!filtered.find(t => t.value === activeTool.value)) {
-    activeTool.value = filtered[0]?.value || 'regex'
+    activeTool.value = filtered[0]?.value || 'json'
   }
 }
 
 // 从 sessionStorage 恢复 tab 状态
 onMounted(() => {
-  const savedTool = sessionStorage.getItem('activeTool')
+  const savedTool = sessionStorage.getItem('activeDevTool')
   if (savedTool && tools.some(t => t.value === savedTool)) {
     activeTool.value = savedTool
     // 自动选中对应的分类
@@ -183,7 +174,7 @@ onMounted(() => {
     if (tool) {
       activeCategory.value = tool.category
     }
-    sessionStorage.removeItem('activeTool')
+    sessionStorage.removeItem('activeDevTool')
   }
 })
 </script>

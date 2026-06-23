@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { HomeFilled, Star, FolderOpened, Tools } from '@element-plus/icons-vue'
+import { HomeFilled, Star, More, Tools, Memo, Suitcase, Picture } from '@element-plus/icons-vue'
 import { useAppStore } from '../../stores'
 
 const appStore = useAppStore()
@@ -98,9 +98,12 @@ onUnmounted(() => {
 
 const menuRoutes = computed(() => [
   { path: '/', title: '首页', icon: HomeFilled },
-  { path: '/life', title: '生活工具', icon: Star },
-  { path: '/file', title: '文件工具', icon: FolderOpened },
+  { path: '/imagetools', title: '图片工具', icon: Picture },
+  { path: '/texttools', title: '文本工具', icon: Memo },
+  { path: '/utility', title: '实用工具', icon: Suitcase },
   { path: '/devtools', title: '开发工具', icon: Tools },
+  { path: '/life', title: '生活工具', icon: Star },
+  { path: '/other', title: '其他工具', icon: More },
 ])
 
 // 点击菜单项时，仅在移动端关闭菜单
