@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import { Upload, Close, Delete, Switch, Download } from '@element-plus/icons-vue'
 
 const fileInput = ref<HTMLInputElement>()
@@ -185,4 +185,12 @@ const download = () => {
   a.download = `stitched_${Date.now()}.png`
   a.click()
 }
+
+// 清理所有 Object URL 防止内存泄漏
+onUnmounted(() => {
+  images.value.forEach(img => {
+    if (img.preview) URL.revokeObjectURL(img.preview)
+  })
+  if (resultUrl.value) URL.revokeObjectURL(resultUrl.value)
+})
 </script>

@@ -64,6 +64,7 @@
 </template>
 
 <script setup lang="ts">
+import { copyToClipboard } from '@/utils/clipboard'
 import { ref } from 'vue'
 import { Refresh, DocumentCopy } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -149,8 +150,15 @@ const generate = () => {
   if (outputFormat.value === 'json') {
     output.value = JSON.stringify(rows, null, 2)
   } else if (outputFormat.value === 'csv') {
+    const escapeCsv = (val: any) => {
+      const str = String(val ?? '')
+      if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+        return `"${str.replace(/"/g, '""')}"`
+      }
+      return str
+    }
     const headers = selectedTypes.value.join(',')
-    const csvRows = rows.map(r => selectedTypes.value.map(k => r[k]).join(','))
+    const csvRows = rows.map(r => selectedTypes.value.map(k => escapeCsv(r[k])).join(','))
     output.value = [headers, ...csvRows].join('\n')
   } else {
     // SQL INSERT
@@ -164,7 +172,7 @@ const generate = () => {
 }
 
 const copyOutput = () => {
-  navigator.clipboard.writeText(output.value)
+  copyToClipboard(output.value)
   ElMessage.success('已复制')
 }
 </script>

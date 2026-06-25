@@ -168,14 +168,18 @@ const validateUUID = () => {
   }
 }
 
-const copyToClipboard = (text: string) => {
-  navigator.clipboard.writeText(text)
-  ElMessage.success('已复制')
+const copyToClipboard = async (text: string) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    ElMessage.success('已复制')
+  } catch {
+    ElMessage.error('复制失败')
+  }
 }
 
 const copyAll = () => {
   const allUUIDs = uuids.value.join('\n')
-  navigator.clipboard.writeText(allUUIDs)
+  copyToClipboard(allUUIDs)
   ElMessage.success(`已复制 ${uuids.value.length} 个 UUID`)
 }
 

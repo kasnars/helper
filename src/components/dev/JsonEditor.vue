@@ -179,6 +179,7 @@
 </template>
 
 <script setup lang="ts">
+import { copyToClipboard } from '@/utils/clipboard'
 import { ref, computed, watch } from 'vue'
 import { Delete, CopyDocument, Refresh, Sort } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -248,7 +249,7 @@ const clearEditor = () => {
 }
 
 const copyOutput = () => {
-  navigator.clipboard.writeText(jsonOutput.value)
+  copyToClipboard(jsonOutput.value)
   ElMessage.success('已复制')
 }
 
@@ -282,7 +283,14 @@ const convertToCsv = () => {
   const arr = parsedJson.value as any[]
   if (!arr.length) return
   const headers = Object.keys(arr[0])
-  const rows = arr.map(obj => headers.map(h => obj[h]).join(','))
+  const escapeCsv = (val: any) => {
+    const str = String(val ?? '')
+    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+      return `"${str.replace(/"/g, '""')}"`
+    }
+    return str
+  }
+  const rows = arr.map(obj => headers.map(h => escapeCsv(obj[h])).join(','))
   jsonOutput.value = [headers.join(','), ...rows].join('\n')
 }
 

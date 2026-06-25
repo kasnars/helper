@@ -114,7 +114,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, nextTick , onUnmounted} from 'vue'
 import { Upload, Grid, RefreshRight, Download, View } from '@element-plus/icons-vue'
 import JSZip from 'jszip'
 
@@ -325,4 +325,9 @@ const resetImage = () => {
   splits.value = []
   selectedSplit.value = -1
 }
+
+// 清理 Object URL 防止内存泄漏
+onUnmounted(() => {
+  if (imageSrc.value && typeof imageSrc.value === "string") URL.revokeObjectURL(imageSrc.value)
+})
 </script>

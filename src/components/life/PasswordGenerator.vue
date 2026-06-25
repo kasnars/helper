@@ -165,13 +165,17 @@ const getStrength = (password: string): { score: number; label: string; type: 'd
   return { score: Math.min(score, 100), label: '强', type: 'success' }
 }
 
-const copyToClipboard = (text: string) => {
-  navigator.clipboard.writeText(text)
-  ElMessage.success('已复制')
+const copyToClipboard = async (text: string) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    ElMessage.success('已复制')
+  } catch {
+    ElMessage.error('复制失败')
+  }
 }
 
 const copyAll = () => {
-  navigator.clipboard.writeText(passwords.value.join('\n'))
+  copyToClipboard(passwords.value.join('\n'))
   ElMessage.success('已复制全部密码')
 }
 </script>

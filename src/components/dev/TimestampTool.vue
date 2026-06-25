@@ -202,7 +202,7 @@ const getRelativeTime = (date: Date): string => {
 }
 
 const copyToClipboard = (text: string | number) => {
-  navigator.clipboard.writeText(text.toString())
+  copyToClipboard(text.toString())
   ElMessage.success('已复制')
 }
 

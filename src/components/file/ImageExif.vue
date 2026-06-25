@@ -229,7 +229,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed , onUnmounted} from 'vue'
 import { Upload, Loading, Warning, Camera, Setting, Picture, Location, Document } from '@element-plus/icons-vue'
 import exifr from 'exifr'
 
@@ -386,4 +386,9 @@ const formatAltitude = (altitude: number) => {
 const formatDirection = (direction: number) => {
   return `${direction.toFixed(1)}°`
 }
+
+// 清理 Object URL 防止内存泄漏
+onUnmounted(() => {
+  if (imageSrc.value && typeof imageSrc.value === "string") URL.revokeObjectURL(imageSrc.value)
+})
 </script>

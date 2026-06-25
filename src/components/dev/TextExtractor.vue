@@ -152,7 +152,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { copyToClipboard } from '@/utils/clipboard'
+import { ref, onUnmounted } from 'vue'
 import { Upload, CopyDocument } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import type { UploadFile } from 'element-plus'
@@ -228,7 +229,7 @@ const extractPdfText = async () => {
 
 const copyExtractedText = async () => {
   try {
-    await navigator.clipboard.writeText(extractedText.value)
+    await copyToClipboard(extractedText.value)
     ElMessage.success('已复制到剪贴板')
   } catch {
     ElMessage.error('复制失败')
@@ -276,7 +277,7 @@ const recognizeText = async () => {
 
 const copyRecognizedText = async () => {
   try {
-    await navigator.clipboard.writeText(recognizedText.value)
+    await copyToClipboard(recognizedText.value)
     ElMessage.success('已复制到剪贴板')
   } catch {
     ElMessage.error('复制失败')
@@ -290,4 +291,9 @@ const formatSize = (bytes: number): string => {
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
+
+// 清理 Object URL 防止内存泄漏
+onUnmounted(() => {
+  if (imagePreview.value && typeof imagePreview.value === "string") URL.revokeObjectURL(imagePreview.value)
+})
 </script>

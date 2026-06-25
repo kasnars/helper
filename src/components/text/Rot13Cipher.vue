@@ -66,6 +66,7 @@
 </template>
 
 <script setup lang="ts">
+import { copyToClipboard } from '@/utils/clipboard'
 import { ref, computed, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 
@@ -99,7 +100,7 @@ const swap = () => {
 const copyText = async (text: string) => {
   if (!text) return
   try {
-    await navigator.clipboard.writeText(text)
+    await copyToClipboard(text)
     ElMessage.success('已复制')
   } catch {
     ElMessage.error('复制失败')

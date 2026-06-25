@@ -197,7 +197,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { copyToClipboard } from '@/utils/clipboard'
+import { ref, onUnmounted } from 'vue'
 import { Upload, Download, CopyDocument, Camera, Link, Search } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import QRCode from 'qrcode'
@@ -386,7 +387,7 @@ const scanFromVideo = () => {
 }
 
 const copyScanResult = () => {
-  navigator.clipboard.writeText(scanResult.value)
+  copyToClipboard(scanResult.value)
   ElMessage.success('已复制')
 }
 
@@ -399,4 +400,9 @@ const openScanResult = () => {
     window.open(scanResult.value, '_blank')
   }
 }
+
+// 清理摄像头和定时器
+onUnmounted(() => {
+  stopCamera()
+})
 </script>

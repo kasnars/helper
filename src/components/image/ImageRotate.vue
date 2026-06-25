@@ -72,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick } from 'vue'
+import { ref, nextTick , onUnmounted} from 'vue'
 import { Upload, RefreshLeft, RefreshRight, Sort, Download } from '@element-plus/icons-vue'
 
 const fileInput = ref<HTMLInputElement>()
@@ -175,4 +175,9 @@ const download = () => {
   a.download = `rotated_${Date.now()}.${ext}`
   a.click()
 }
+
+// 清理 Object URL 防止内存泄漏
+onUnmounted(() => {
+  if (imageSrc.value && typeof imageSrc.value === "string") URL.revokeObjectURL(imageSrc.value)
+})
 </script>

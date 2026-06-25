@@ -105,6 +105,7 @@
 </template>
 
 <script setup lang="ts">
+import { copyToClipboard } from '@/utils/clipboard'
 import { ref, computed } from 'vue'
 import { Upload, CopyDocument, Download } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -168,7 +169,7 @@ const formatSize = (bytes: number): string => {
 }
 
 const copyBase64 = () => {
-  navigator.clipboard.writeText(base64Output.value)
+  copyToClipboard(base64Output.value)
   ElMessage.success('已复制到剪贴板')
 }
 

@@ -109,7 +109,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch , onUnmounted} from 'vue'
 import { Upload, Download, Refresh } from '@element-plus/icons-vue'
 
 const fileInput = ref<HTMLInputElement>()
@@ -218,4 +218,9 @@ const download = (format: 'png' | 'jpg') => {
   a.download = `pixel_art_${pixelSize.value}px_${colorCount.value}colors_${Date.now()}.${format}`
   a.click()
 }
+
+// 清理 Object URL 防止内存泄漏
+onUnmounted(() => {
+  if (imageSrc.value && typeof imageSrc.value === "string") URL.revokeObjectURL(imageSrc.value)
+})
 </script>

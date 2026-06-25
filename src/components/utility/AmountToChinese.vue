@@ -50,6 +50,7 @@
 </template>
 
 <script setup lang="ts">
+import { copyToClipboard } from '@/utils/clipboard'
 import { ref } from 'vue'
 import { DocumentCopy } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -147,7 +148,7 @@ const amountToChinese = (num: number): string => {
 }
 
 const copyResult = () => {
-  navigator.clipboard.writeText(result.value)
+  copyToClipboard(result.value)
   ElMessage.success('已复制')
 }
 </script>

@@ -229,7 +229,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, onUnmounted } from 'vue'
 import { Upload, Delete, Connection, Scissor, Close, Document } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import type { UploadFile } from 'element-plus'
@@ -546,4 +546,11 @@ const convertImagesToPdf = async () => {
     converting.value = false
   }
 }
+
+// 清理所有 Object URL 防止内存泄漏
+onUnmounted(() => {
+  images.value.forEach(img => {
+    if (img.url) URL.revokeObjectURL(img.url)
+  })
+})
 </script>

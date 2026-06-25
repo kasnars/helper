@@ -98,6 +98,7 @@
 </template>
 
 <script setup lang="ts">
+import { copyToClipboard } from '@/utils/clipboard'
 import { ref, watch } from 'vue'
 import { Delete, CopyDocument, UploadFilled } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -130,7 +131,7 @@ const clearInput = () => {
 }
 
 const copyOutput = () => {
-  navigator.clipboard.writeText(output.value)
+  copyToClipboard(output.value)
   ElMessage.success('已复制')
 }
 
@@ -144,7 +145,7 @@ const handleFileChange = (file: any) => {
 }
 
 const copyFileBase64 = () => {
-  navigator.clipboard.writeText(fileBase64.value)
+  copyToClipboard(fileBase64.value)
   ElMessage.success('文件 Base64 已复制')
 }
 

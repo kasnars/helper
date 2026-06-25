@@ -27,10 +27,24 @@
             color="orange"
           />
           <ToolCard
-            to="/file"
-            title="文件工具"
-            description="图片格式转换与压缩、PDF处理工具，纯前端处理保护隐私。"
-            :icon="FolderOpened"
+            to="/imagetools"
+            title="图片工具"
+            description="图片压缩、格式转换、裁剪旋转、像素化、拼接等图片处理工具。"
+            :icon="Picture"
+            color="pink"
+          />
+          <ToolCard
+            to="/texttools"
+            title="文本工具"
+            description="HTML实体、SQL建表、ROT13加密、字符频率分析、正则可视化等。"
+            :icon="Document"
+            color="purple"
+          />
+          <ToolCard
+            to="/utility"
+            title="实用工具"
+            description="金额大写、JSON转Excel、模拟数据生成、密码强度检测、TTS语音等。"
+            :icon="Suitcase"
             color="blue"
           />
           <ToolCard
@@ -39,6 +53,13 @@
             description="Base64、时间戳、颜色工具、哈希生成、JSON编辑器、二维码等开发必备工具。"
             :icon="Tools"
             color="green"
+          />
+          <ToolCard
+            to="/other"
+            title="其他工具"
+            description="二维码扫描、PDF工具、白板画板等更多实用功能。"
+            :icon="Grid"
+            color="red"
           />
         </div>
       </div>
@@ -83,6 +104,6 @@
 </template>
 
 <script setup lang="ts">
-import { Star, FolderOpened, Tools, Moon, Cellphone, Files } from '@element-plus/icons-vue'
+import { Star, Tools, Moon, Cellphone, Files, Picture, Document, Suitcase, Grid } from '@element-plus/icons-vue'
 import ToolCard from '../components/common/ToolCard.vue'
 </script>

@@ -96,6 +96,8 @@
 </template>
 
 <script setup lang="ts">
+
+import { copyToClipboard } from '@/utils/clipboard'
 import { ref, reactive, computed } from 'vue'
 import { View, CopyDocument, Search } from '@element-plus/icons-vue'
 import TreeNode from './TreeNode.vue'
@@ -206,7 +208,7 @@ const collapseAll = () => {
 const copyJson = async () => {
   if (parsedData.value === null) return
   try {
-    await navigator.clipboard.writeText(JSON.stringify(parsedData.value, null, 2))
+    await copyToClipboard(JSON.stringify(parsedData.value, null, 2))
   } catch {
     // fallback
     const ta = document.createElement('textarea')

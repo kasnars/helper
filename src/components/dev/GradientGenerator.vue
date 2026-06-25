@@ -99,6 +99,7 @@
 </template>
 
 <script setup lang="ts">
+import { copyToClipboard } from '@/utils/clipboard'
 import { ref, computed } from 'vue'
 import { Plus, Delete, CopyDocument } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -240,7 +241,7 @@ const applyPreset = (preset: Preset) => {
 }
 
 const copyCSS = () => {
-  navigator.clipboard.writeText(cssCode.value)
+  copyToClipboard(cssCode.value)
   ElMessage.success('已复制 CSS 代码')
 }
 </script>

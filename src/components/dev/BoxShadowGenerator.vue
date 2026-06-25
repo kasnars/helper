@@ -141,6 +141,7 @@
 </template>
 
 <script setup lang="ts">
+import { copyToClipboard } from '@/utils/clipboard'
 import { ref, computed } from 'vue'
 import { Plus, Delete, CopyDocument } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -231,12 +232,52 @@ const removeShadowLayer = (index: number) => {
 }
 
 const applyPreset = (preset: { shadow: string }) => {
-  // 简单应用预设，直接设置到当前层
+  // 解析预设阴影字符串并应用到当前层
+  const shadow = preset.shadow
+  const presetIsInset = shadow.includes('inset')
+  
+  // 提取数值：offsetX offsetY blur spread
+  const matches = shadow.match(/-?\d+(\.\d+)?/g)
+  if (matches && matches.length >= 3) {
+    isInset.value = presetIsInset
+    offsetX.value = parseFloat(matches[0]) || 0
+    offsetY.value = parseFloat(matches[1]) || 0
+    blur.value = parseFloat(matches[2]) || 0
+    spread.value = parseFloat(matches[3]) || 0
+    
+    // 提取颜色（rgba或hex）
+    const rgbaMatch = shadow.match(/rgba?\([^)]+\)/)
+    const hexMatch = shadow.match(/#[0-9a-fA-F]{3,8}/)
+    if (rgbaMatch) {
+      shadowColor.value = rgbaMatch[0]
+      // 从rgba提取透明度
+      const alphaMatch = rgbaMatch[0].match(/,\s*([\d.]+)\s*\)/)
+      if (alphaMatch) {
+        opacity.value = Math.round(parseFloat(alphaMatch[1]) * 100)
+      }
+    } else if (hexMatch) {
+      shadowColor.value = hexMatch[0]
+      opacity.value = 100
+    }
+    
+    // 更新第一层的值
+    if (shadowLayers.value.length > 0) {
+      shadowLayers.value[0] = {
+        offsetX: offsetX.value,
+        offsetY: offsetY.value,
+        blur: blur.value,
+        spread: spread.value,
+        color: shadowColor.value,
+        inset: presetIsInset,
+      }
+    }
+  }
+  
   ElMessage.success('已应用预设')
 }
 
 const copyCSS = () => {
-  navigator.clipboard.writeText(cssCode.value)
+  copyToClipboard(cssCode.value)
   ElMessage.success('已复制 CSS 代码')
 }
 </script>

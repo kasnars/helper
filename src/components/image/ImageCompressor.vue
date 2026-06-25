@@ -192,7 +192,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 import { Upload, Delete, Close, CircleCheckFilled, Download, Refresh } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
@@ -457,4 +457,12 @@ const formatSize = (bytes: number): string => {
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
+
+// 清理所有 Object URL 防止内存泄漏
+onUnmounted(() => {
+  images.value.forEach(img => {
+    if (img.preview) URL.revokeObjectURL(img.preview)
+    if (img.result?.url) URL.revokeObjectURL(img.result.url)
+  })
+})
 </script>

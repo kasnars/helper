@@ -98,6 +98,7 @@
 </template>
 
 <script setup lang="ts">
+import { copyToClipboard } from '@/utils/clipboard'
 import { ref, computed, watch } from 'vue'
 import { DocumentCopy } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -189,7 +190,7 @@ function parseQuickInput() {
 
 async function copyValue(value: string) {
   try {
-    await navigator.clipboard.writeText(value)
+    await copyToClipboard(value)
     ElMessage.success(`已复制: ${value}`)
   } catch {
     ElMessage.error('复制失败')

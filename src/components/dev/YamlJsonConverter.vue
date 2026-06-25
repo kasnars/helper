@@ -99,6 +99,7 @@
 </template>
 
 <script setup lang="ts">
+import { copyToClipboard } from '@/utils/clipboard'
 import { ref } from 'vue'
 import { Document, Delete, CopyDocument, Switch, Right, Warning } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -187,7 +188,7 @@ const convert = () => {
 }
 
 const copyOutput = () => {
-  navigator.clipboard.writeText(outputText.value)
+  copyToClipboard(outputText.value)
   ElMessage.success('已复制')
 }
 </script>

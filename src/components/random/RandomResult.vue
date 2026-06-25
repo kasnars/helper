@@ -88,6 +88,7 @@
 </template>
 
 <script setup lang="ts">
+import { copyToClipboard } from '@/utils/clipboard'
 import { ref, computed, watch } from 'vue'
 import { CopyDocument, CircleCheckFilled } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -136,7 +137,7 @@ watch(() => props.results, (newVal) => {
 
 const copySingle = async (num: number) => {
   try {
-    await navigator.clipboard.writeText(num.toString())
+    await copyToClipboard(num.toString())
     ElMessage.success('已复制到剪贴板')
   } catch {
     ElMessage.error('复制失败')
@@ -146,7 +147,7 @@ const copySingle = async (num: number) => {
 const copyAll = async () => {
   try {
     const text = props.results.join(', ')
-    await navigator.clipboard.writeText(text)
+    await copyToClipboard(text)
     ElMessage.success('已复制全部结果')
   } catch {
     ElMessage.error('复制失败')

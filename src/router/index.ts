@@ -1,11 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
-import LifeTools from '../views/LifeTools.vue'
-import OtherTools from '../views/OtherTools.vue'
-import DevTools from '../views/DevTools.vue'
-import TextTools from '../views/TextTools.vue'
-import UtilityTools from '../views/UtilityTools.vue'
-import ImageTools from '../views/ImageTools.vue'
+
+// 路由懒加载 - 按需加载组件
+const Home = () => import('../views/Home.vue')
+const LifeTools = () => import('../views/LifeTools.vue')
+const OtherTools = () => import('../views/OtherTools.vue')
+const DevTools = () => import('../views/DevTools.vue')
+const TextTools = () => import('../views/TextTools.vue')
+const UtilityTools = () => import('../views/UtilityTools.vue')
+const ImageTools = () => import('../views/ImageTools.vue')
 
 const routes = [
   {

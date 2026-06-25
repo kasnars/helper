@@ -216,41 +216,47 @@ export const useRandomStore = defineStore('random', () => {
   const generate = async () => {
     generating.value = true
 
-    const { min, max, count, unique, algorithm } = config.value
-    const range = max - min + 1
+    try {
+      const { min, max, count, unique, algorithm } = config.value
+      const range = max - min + 1
 
-    // 如果要求唯一且范围不够，调整数量
-    let actualCount = count
-    if (unique && count > range) {
-      actualCount = range
-    }
-
-    // 创建随机数生成器
-    const generator = RandomAlgorithmFactory.createGenerator(algorithm || 'random')
-    
-    const nums: number[] = []
-
-    if (unique) {
-      // 生成不重复的随机数
-      const pool = Array.from({ length: range }, (_, i) => min + i)
-      for (let i = 0; i < actualCount; i++) {
-        const randomIndex = Math.floor(generator.next() * pool.length)
-        nums.push(pool.splice(randomIndex, 1)[0])
+      // 如果要求唯一且范围不够，调整数量
+      let actualCount = count
+      if (unique && count > range) {
+        actualCount = range
       }
-    } else {
-      // 生成可能重复的随机数
-      for (let i = 0; i < actualCount; i++) {
-        nums.push(Math.floor(generator.next() * range) + min)
+
+      // 创建随机数生成器
+      const generator = RandomAlgorithmFactory.createGenerator(algorithm || 'random')
+      
+      const nums: number[] = []
+
+      if (unique) {
+        // 生成不重复的随机数
+        const pool = Array.from({ length: range }, (_, i) => min + i)
+        for (let i = 0; i < actualCount; i++) {
+          const randomIndex = Math.floor(generator.next() * pool.length)
+          nums.push(pool.splice(randomIndex, 1)[0])
+        }
+      } else {
+        // 生成可能重复的随机数
+        for (let i = 0; i < actualCount; i++) {
+          nums.push(Math.floor(generator.next() * range) + min)
+        }
       }
+
+      results.value = nums
+
+      // 保存配置
+      await saveConfig()
+
+      return nums
+    } catch (error) {
+      console.error('生成随机数失败:', error)
+      throw error
+    } finally {
+      generating.value = false
     }
-
-    results.value = nums
-    generating.value = false
-
-    // 保存配置
-    await saveConfig()
-
-    return nums
   }
 
   // 更新配置

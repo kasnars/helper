@@ -410,8 +410,12 @@ const getLuminance = (r: number, g: number, b: number) => {
   return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs
 }
 
-const copyToClipboard = (text: string) => {
-  navigator.clipboard.writeText(text)
-  ElMessage.success('已复制')
+const copyToClipboard = async (text: string) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    ElMessage.success('已复制')
+  } catch {
+    ElMessage.error('复制失败')
+  }
 }
 </script>

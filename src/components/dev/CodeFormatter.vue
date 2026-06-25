@@ -96,6 +96,7 @@
 </template>
 
 <script setup lang="ts">
+import { copyToClipboard } from '@/utils/clipboard'
 import { ref, computed } from 'vue'
 import { Document, Delete, Check, Download, CopyDocument, Warning } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -218,7 +219,7 @@ const minifyCode = () => {
 }
 
 const copyOutput = () => {
-  navigator.clipboard.writeText(outputCode.value)
+  copyToClipboard(outputCode.value)
   ElMessage.success('已复制')
 }
 </script>

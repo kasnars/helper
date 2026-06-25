@@ -83,6 +83,7 @@
 </template>
 
 <script setup lang="ts">
+import { copyToClipboard } from '@/utils/clipboard'
 import { ref, computed } from 'vue'
 import { Delete, DocumentCopy, Operation } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -173,7 +174,7 @@ const copyResult = async () => {
     return
   }
   try {
-    await navigator.clipboard.writeText(result.value)
+    await copyToClipboard(result.value)
     ElMessage.success('已复制到剪贴板')
   } catch {
     ElMessage.error('复制失败')

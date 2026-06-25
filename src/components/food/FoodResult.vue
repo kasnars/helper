@@ -84,6 +84,7 @@
 </template>
 
 <script setup lang="ts">
+import { copyToClipboard } from '@/utils/clipboard'
 import { ref } from 'vue'
 import { Close, CopyDocument } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -112,7 +113,7 @@ const onAgain = () => emit('again')
 
 const copyResult = async () => {
   try {
-    await navigator.clipboard.writeText(props.title)
+    await copyToClipboard(props.title)
     ElMessage.success('已复制到剪贴板')
   } catch (err) {
     ElMessage.error('复制失败，请手动复制')

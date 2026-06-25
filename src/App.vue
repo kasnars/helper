@@ -13,14 +13,16 @@
         :class="appStore.sideMenuOpen ? 'lg:pl-64' : 'lg:pl-0'"
       >
         <div class="pt-16">
-          <router-view v-slot="{ Component }">
-            <transition
-              name="fade"
-              mode="out-in"
-            >
-              <component :is="Component" />
-            </transition>
-          </router-view>
+          <ErrorBoundary>
+            <router-view v-slot="{ Component }">
+              <transition
+                name="fade"
+                mode="out-in"
+              >
+                <component :is="Component" />
+              </transition>
+            </router-view>
+          </ErrorBoundary>
         </div>
       </main>
     </div>
@@ -33,6 +35,7 @@ import { ElConfigProvider } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import AppHeader from './components/common/AppHeader.vue'
 import SideMenu from './components/common/SideMenu.vue'
+import ErrorBoundary from './components/common/ErrorBoundary.vue'
 import { useThemeStore, useFoodStore, useRandomStore, useAppStore } from './stores'
 import { initDatabase } from './db'
 

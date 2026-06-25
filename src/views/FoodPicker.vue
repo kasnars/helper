@@ -116,7 +116,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { copyToClipboard } from '@/utils/clipboard'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { Timer, CopyDocument } from '@element-plus/icons-vue'
 import { useFoodStore } from '../stores'
 import { ElMessage } from 'element-plus'
@@ -133,8 +134,22 @@ const showHistoryDetail = ref(false)
 const selectedHistory = ref<{ result: string; timestamp: Date } | null>(null)
 
 // Responsive wheel size
+const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
+
+const handleResize = () => {
+  windowWidth.value = window.innerWidth
+}
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+})
+
 const wheelSize = computed(() => {
-  const width = window.innerWidth
+  const width = windowWidth.value
   if (width < 640) return 260
   if (width < 1024) return 280
   return 320
@@ -185,7 +200,7 @@ const formatTime = (timestamp: Date) => {
 
 const copyHistory = async (text: string) => {
   try {
-    await navigator.clipboard.writeText(text)
+    await copyToClipboard(text)
     ElMessage.success('已复制到剪贴板')
   } catch (err) {
     ElMessage.error('复制失败，请手动复制')

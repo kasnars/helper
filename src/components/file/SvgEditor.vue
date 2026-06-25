@@ -105,6 +105,7 @@
 </template>
 
 <script setup lang="ts">
+import { copyToClipboard } from '@/utils/clipboard'
 import { ref, computed, onMounted } from 'vue'
 import { CopyDocument, Download, Warning } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -225,7 +226,7 @@ const formatCode = () => {
 }
 
 const copyCode = () => {
-  navigator.clipboard.writeText(svgCode.value)
+  copyToClipboard(svgCode.value)
   ElMessage.success('已复制 SVG 代码')
 }
 

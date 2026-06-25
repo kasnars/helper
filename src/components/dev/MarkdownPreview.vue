@@ -58,6 +58,7 @@
 </template>
 
 <script setup lang="ts">
+import { copyToClipboard } from '@/utils/clipboard'
 import { ref, onMounted } from 'vue'
 import { CopyDocument, Download } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -98,7 +99,7 @@ const insertText = (before: string, after: string) => {
 
 const copyMarkdown = async () => {
   try {
-    await navigator.clipboard.writeText(markdownInput.value)
+    await copyToClipboard(markdownInput.value)
     ElMessage.success('已复制到剪贴板')
   } catch {
     ElMessage.error('复制失败')
