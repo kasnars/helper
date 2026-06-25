@@ -74,6 +74,9 @@ import SqlFormatter from '../components/dev/SqlFormatter.vue'
 import ChmodCalculator from '../components/dev/ChmodCalculator.vue'
 import LinuxCommands from '../components/dev/LinuxCommands.vue'
 import UserAgentParser from '../components/dev/UserAgentParser.vue'
+import IpCalculator from '../components/dev/IpCalculator.vue'
+import PaletteGenerator from '../components/dev/PaletteGenerator.vue'
+import SvgOptimizer from '../components/dev/SvgOptimizer.vue'
 
 type ToolCategory = 'all' | 'encode' | 'format' | 'css' | 'system'
 
@@ -113,6 +116,12 @@ const tools: ToolItem[] = [
   { value: 'flexbox', label: 'Flexbox', shortLabel: 'Flex', icon: markRaw(Grid), category: 'css' },
   { value: 'http', label: 'HTTP状态码', shortLabel: 'HTTP', icon: markRaw(Link), category: 'css' },
 
+  // Web/CSS (continued)
+  { value: 'palette', label: '调色板生成', shortLabel: '调色板', icon: markRaw(Brush), category: 'css' },
+
+  // 数据格式 (continued)
+  { value: 'svgoptimize', label: 'SVG 优化', shortLabel: 'SVG', icon: markRaw(Document), category: 'format' },
+
   // 系统/运维
   { value: 'timestamp', label: '时间戳', shortLabel: '时间戳', icon: markRaw(Timer), category: 'system' },
   { value: 'uuid', label: 'UUID', shortLabel: 'UUID', icon: markRaw(Postcard), category: 'system' },
@@ -120,6 +129,7 @@ const tools: ToolItem[] = [
   { value: 'chmod', label: 'Chmod计算', shortLabel: 'Chmod', icon: markRaw(SetUp), category: 'system' },
   { value: 'linux', label: 'Linux命令', shortLabel: 'Linux', icon: markRaw(Monitor), category: 'system' },
   { value: 'useragent', label: 'UA解析', shortLabel: 'UA', icon: markRaw(Monitor), category: 'system' },
+  { value: 'ipcalc', label: 'IP 计算器', shortLabel: 'IP', icon: markRaw(Monitor), category: 'system' },
 ]
 
 const toolComponents: Record<string, any> = {
@@ -142,6 +152,9 @@ const toolComponents: Record<string, any> = {
   chmod: markRaw(ChmodCalculator),
   linux: markRaw(LinuxCommands),
   useragent: markRaw(UserAgentParser),
+  ipcalc: markRaw(IpCalculator),
+  palette: markRaw(PaletteGenerator),
+  svgoptimize: markRaw(SvgOptimizer),
 }
 
 const activeCategory = ref<ToolCategory>('all')

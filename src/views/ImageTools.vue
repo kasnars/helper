@@ -54,6 +54,36 @@
             <span class="hidden sm:inline">格式检测</span>
             <span class="sm:hidden">检测</span>
           </el-radio-button>
+          <el-radio-button label="collage">
+            <el-icon><Grid /></el-icon>
+            <span class="hidden sm:inline">图片拼贴</span>
+            <span class="sm:hidden">拼贴</span>
+          </el-radio-button>
+          <el-radio-button label="gifcreator">
+            <el-icon><VideoPlay /></el-icon>
+            <span class="hidden sm:inline">GIF 制作</span>
+            <span class="sm:hidden">GIF</span>
+          </el-radio-button>
+          <el-radio-button label="gifextractor">
+            <el-icon><Film /></el-icon>
+            <span class="hidden sm:inline">GIF 拆帧</span>
+            <span class="sm:hidden">拆帧</span>
+          </el-radio-button>
+          <el-radio-button label="annotator">
+            <el-icon><EditPen /></el-icon>
+            <span class="hidden sm:inline">图片标注</span>
+            <span class="sm:hidden">标注</span>
+          </el-radio-button>
+          <el-radio-button label="colorpicker">
+            <el-icon><Brush /></el-icon>
+            <span class="hidden sm:inline">颜色拾取</span>
+            <span class="sm:hidden">拾色</span>
+          </el-radio-button>
+          <el-radio-button label="ascii">
+            <el-icon><Memo /></el-icon>
+            <span class="hidden sm:inline">ASCII 艺术</span>
+            <span class="sm:hidden">ASCII</span>
+          </el-radio-button>
         </el-radio-group>
       </div>
 
@@ -67,6 +97,12 @@
         <ImagePixelArt v-if="activeTool === 'pixelart'" />
         <FaviconGenerator v-if="activeTool === 'favicon'" />
         <ImageFormatDetector v-if="activeTool === 'formatdetect'" />
+        <ImageCollage v-if="activeTool === 'collage'" />
+        <GifCreator v-if="activeTool === 'gifcreator'" />
+        <GifExtractor v-if="activeTool === 'gifextractor'" />
+        <ImageAnnotator v-if="activeTool === 'annotator'" />
+        <ImageColorPicker v-if="activeTool === 'colorpicker'" />
+        <AsciiArtGenerator v-if="activeTool === 'ascii'" />
       </div>
     </div>
   </div>
@@ -74,7 +110,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { Picture, Crop, InfoFilled, Avatar } from '@element-plus/icons-vue'
+import { Picture, Crop, InfoFilled, Avatar, VideoPlay, Film, EditPen, Brush, Memo } from '@element-plus/icons-vue'
 import ImageProcessor from './ImageProcessor.vue'
 import ImageCropper from '../components/file/ImageCropper.vue'
 import ImageWatermark from '../components/dev/ImageWatermark.vue'
@@ -83,9 +119,15 @@ import IdPhotoBg from '../components/file/IdPhotoBg.vue'
 import ImagePixelArt from '../components/image/ImagePixelArt.vue'
 import FaviconGenerator from '../components/image/FaviconGenerator.vue'
 import ImageFormatDetector from '../components/image/ImageFormatDetector.vue'
+import ImageCollage from '../components/image/ImageCollage.vue'
+import GifCreator from '../components/image/GifCreator.vue'
+import GifExtractor from '../components/image/GifExtractor.vue'
+import ImageAnnotator from '../components/image/ImageAnnotator.vue'
+import ImageColorPicker from '../components/image/ImageColorPicker.vue'
+import AsciiArtGenerator from '../components/image/AsciiArtGenerator.vue'
 
 const activeTool = ref('processor')
-const toolList = ['processor', 'crop', 'watermark', 'exif', 'idphoto', 'pixelart', 'favicon', 'formatdetect']
+const toolList = ['processor', 'crop', 'watermark', 'exif', 'idphoto', 'pixelart', 'favicon', 'formatdetect', 'collage', 'gifcreator', 'gifextractor', 'annotator', 'colorpicker', 'ascii']
 
 onMounted(() => {
   const savedTool = sessionStorage.getItem('activeImageTool')

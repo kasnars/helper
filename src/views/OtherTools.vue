@@ -44,6 +44,16 @@
             <span class="hidden sm:inline">九宫格切图</span>
             <span class="sm:hidden">切图</span>
           </el-radio-button>
+          <el-radio-button label="emoji">
+            <el-icon><Star /></el-icon>
+            <span class="hidden sm:inline">Emoji 搜索</span>
+            <span class="sm:hidden">Emoji</span>
+          </el-radio-button>
+          <el-radio-button label="flowchart">
+            <el-icon><Share /></el-icon>
+            <span class="hidden sm:inline">流程图画图</span>
+            <span class="sm:hidden">流程图</span>
+          </el-radio-button>
         </el-radio-group>
       </div>
 
@@ -55,6 +65,8 @@
         <PdfTool v-if="activeTool === 'pdf'" />
         <ResponsiveTester v-if="activeTool === 'responsive'" />
         <ImageGridSplitter v-if="activeTool === 'gridsplitter'" />
+        <EmojiSearch v-if="activeTool === 'emoji'" />
+        <FlowchartEditor v-if="activeTool === 'flowchart'" />
       </div>
     </div>
   </div>
@@ -62,16 +74,18 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { FullScreen, EditPen, Edit, Document, View, Grid } from '@element-plus/icons-vue'
+import { FullScreen, EditPen, Edit, Document, View, Grid, Star, Share } from '@element-plus/icons-vue'
 import QrCodeTool from '../components/dev/QrCodeTool.vue'
 import Whiteboard from '../components/dev/Whiteboard.vue'
 import SvgEditor from '../components/file/SvgEditor.vue'
 import PdfTool from '../components/dev/PdfTool.vue'
 import ResponsiveTester from '../components/dev/ResponsiveTester.vue'
 import ImageGridSplitter from '../components/image/ImageGridSplitter.vue'
+import EmojiSearch from '../components/other/EmojiSearch.vue'
+import FlowchartEditor from '../components/other/FlowchartEditor.vue'
 
 const activeTool = ref('qrcode')
-const toolList = ['qrcode', 'whiteboard', 'svg', 'pdf', 'responsive', 'gridsplitter']
+const toolList = ['qrcode', 'whiteboard', 'svg', 'pdf', 'responsive', 'gridsplitter', 'emoji', 'flowchart']
 
 onMounted(() => {
   const savedTool = sessionStorage.getItem('activeOtherTool')
