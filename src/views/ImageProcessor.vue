@@ -76,14 +76,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, markRaw } from 'vue'
+import { ref, markRaw, defineAsyncComponent } from 'vue'
 import { Switch, Crop, Lock, Lightning, Collection, Picture, RefreshRight, Brush, Document } from '@element-plus/icons-vue'
-import ImageConverter from '../components/image/ImageConverter.vue'
-import ImageCompressor from '../components/image/ImageCompressor.vue'
-import ImageStitch from '../components/image/ImageStitch.vue'
-import ImageRotate from '../components/image/ImageRotate.vue'
-import ImageGrayscale from '../components/image/ImageGrayscale.vue'
-import ImageBase64 from '../components/image/ImageBase64.vue'
+const ImageConverter = defineAsyncComponent(() => import('../components/image/ImageConverter.vue'))
+const ImageCompressor = defineAsyncComponent(() => import('../components/image/ImageCompressor.vue'))
+const ImageStitch = defineAsyncComponent(() => import('../components/image/ImageStitch.vue'))
+const ImageRotate = defineAsyncComponent(() => import('../components/image/ImageRotate.vue'))
+const ImageGrayscale = defineAsyncComponent(() => import('../components/image/ImageGrayscale.vue'))
+const ImageBase64 = defineAsyncComponent(() => import('../components/image/ImageBase64.vue'))
 
 const activeTab = ref('convert')
 

@@ -13,7 +13,7 @@
 
       <!-- Tool Navigation -->
       <div class="flex flex-wrap gap-2 justify-center mb-8">
-        <el-radio-group v-model="activeTool" size="large">
+        <el-radio-group v-model="activeTool" size="large" class="tool-switcher">
           <el-radio-button label="processor">
             <el-icon><Picture /></el-icon>
             <span class="hidden sm:inline">图片处理</span>
@@ -109,22 +109,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, defineAsyncComponent } from 'vue'
 import { Picture, Crop, InfoFilled, Avatar, VideoPlay, Film, EditPen, Brush, Memo } from '@element-plus/icons-vue'
-import ImageProcessor from './ImageProcessor.vue'
-import ImageCropper from '../components/file/ImageCropper.vue'
-import ImageWatermark from '../components/dev/ImageWatermark.vue'
-import ImageExif from '../components/file/ImageExif.vue'
-import IdPhotoBg from '../components/file/IdPhotoBg.vue'
-import ImagePixelArt from '../components/image/ImagePixelArt.vue'
-import FaviconGenerator from '../components/image/FaviconGenerator.vue'
-import ImageFormatDetector from '../components/image/ImageFormatDetector.vue'
-import ImageCollage from '../components/image/ImageCollage.vue'
-import GifCreator from '../components/image/GifCreator.vue'
-import GifExtractor from '../components/image/GifExtractor.vue'
-import ImageAnnotator from '../components/image/ImageAnnotator.vue'
-import ImageColorPicker from '../components/image/ImageColorPicker.vue'
-import AsciiArtGenerator from '../components/image/AsciiArtGenerator.vue'
+const ImageProcessor = defineAsyncComponent(() => import('./ImageProcessor.vue'))
+const ImageCropper = defineAsyncComponent(() => import('../components/file/ImageCropper.vue'))
+const ImageWatermark = defineAsyncComponent(() => import('../components/dev/ImageWatermark.vue'))
+const ImageExif = defineAsyncComponent(() => import('../components/file/ImageExif.vue'))
+const IdPhotoBg = defineAsyncComponent(() => import('../components/file/IdPhotoBg.vue'))
+const ImagePixelArt = defineAsyncComponent(() => import('../components/image/ImagePixelArt.vue'))
+const FaviconGenerator = defineAsyncComponent(() => import('../components/image/FaviconGenerator.vue'))
+const ImageFormatDetector = defineAsyncComponent(() => import('../components/image/ImageFormatDetector.vue'))
+const ImageCollage = defineAsyncComponent(() => import('../components/image/ImageCollage.vue'))
+const GifCreator = defineAsyncComponent(() => import('../components/image/GifCreator.vue'))
+const GifExtractor = defineAsyncComponent(() => import('../components/image/GifExtractor.vue'))
+const ImageAnnotator = defineAsyncComponent(() => import('../components/image/ImageAnnotator.vue'))
+const ImageColorPicker = defineAsyncComponent(() => import('../components/image/ImageColorPicker.vue'))
+const AsciiArtGenerator = defineAsyncComponent(() => import('../components/image/AsciiArtGenerator.vue'))
 
 const activeTool = ref('processor')
 const toolList = ['processor', 'crop', 'watermark', 'exif', 'idphoto', 'pixelart', 'favicon', 'formatdetect', 'collage', 'gifcreator', 'gifextractor', 'annotator', 'colorpicker', 'ascii']

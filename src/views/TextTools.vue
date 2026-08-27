@@ -26,7 +26,7 @@
 
       <!-- Tool Navigation -->
       <div class="flex flex-wrap gap-2 justify-center mb-8">
-        <el-radio-group v-model="activeTool" size="large">
+        <el-radio-group v-model="activeTool" size="large" class="tool-switcher">
           <el-radio-button
             v-for="tool in filteredTools"
             :key="tool.value"
@@ -48,21 +48,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, markRaw } from 'vue'
+import { ref, computed, onMounted, markRaw, defineAsyncComponent } from 'vue'
 import { Search, Reading, Delete, Memo, Document, View, Grid, Key } from '@element-plus/icons-vue'
 
 // Components
-import RegexTester from '../components/dev/RegexTester.vue'
-import RegexVisualizer from '../components/text/RegexVisualizer.vue'
-import TextStatTool from '../components/dev/TextStatTool.vue'
-import TextDedup from '../components/dev/TextDedup.vue'
-import MarkdownPreview from '../components/dev/MarkdownPreview.vue'
-import TextExtractor from '../components/dev/TextExtractor.vue'
-import FileDiff from '../components/file/FileDiff.vue'
-import SqlCreateTable from '../components/text/SqlCreateTable.vue'
-import HtmlEntityTool from '../components/text/HtmlEntityTool.vue'
-import CharFrequency from '../components/text/CharFrequency.vue'
-import Rot13Cipher from '../components/text/Rot13Cipher.vue'
+const RegexTester = defineAsyncComponent(() => import('../components/dev/RegexTester.vue'))
+const RegexVisualizer = defineAsyncComponent(() => import('../components/text/RegexVisualizer.vue'))
+const TextStatTool = defineAsyncComponent(() => import('../components/dev/TextStatTool.vue'))
+const TextDedup = defineAsyncComponent(() => import('../components/dev/TextDedup.vue'))
+const MarkdownPreview = defineAsyncComponent(() => import('../components/dev/MarkdownPreview.vue'))
+const TextExtractor = defineAsyncComponent(() => import('../components/dev/TextExtractor.vue'))
+const FileDiff = defineAsyncComponent(() => import('../components/file/FileDiff.vue'))
+const SqlCreateTable = defineAsyncComponent(() => import('../components/text/SqlCreateTable.vue'))
+const HtmlEntityTool = defineAsyncComponent(() => import('../components/text/HtmlEntityTool.vue'))
+const CharFrequency = defineAsyncComponent(() => import('../components/text/CharFrequency.vue'))
+const Rot13Cipher = defineAsyncComponent(() => import('../components/text/Rot13Cipher.vue'))
 
 type ToolCategory = 'all' | 'text' | 'file' | 'dev'
 

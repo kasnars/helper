@@ -13,7 +13,7 @@
 
       <!-- Tool Navigation -->
       <div class="flex flex-wrap gap-2 justify-center mb-8">
-        <el-radio-group v-model="activeTool" size="large">
+        <el-radio-group v-model="activeTool" size="large" class="tool-switcher">
           <el-radio-button label="food">
             <el-icon><Food /></el-icon>
             <span class="hidden sm:inline">今天吃什么</span>
@@ -64,13 +64,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, defineAsyncComponent } from 'vue'
 import { Food, CircleCheckFilled, DataLine, Calendar, Timer } from '@element-plus/icons-vue'
-import FoodPicker from '../views/FoodPicker.vue'
-import RandomNumber from '../views/RandomNumber.vue'
-import BmiCalculator from '../components/life/BmiCalculator.vue'
-import AgeCalculator from '../components/life/AgeCalculator.vue'
-import DateCalculator from '../components/life/DateCalculator.vue'
+const FoodPicker = defineAsyncComponent(() => import('../views/FoodPicker.vue'))
+const RandomNumber = defineAsyncComponent(() => import('../views/RandomNumber.vue'))
+const BmiCalculator = defineAsyncComponent(() => import('../components/life/BmiCalculator.vue'))
+const AgeCalculator = defineAsyncComponent(() => import('../components/life/AgeCalculator.vue'))
+const DateCalculator = defineAsyncComponent(() => import('../components/life/DateCalculator.vue'))
 
 const activeTool = ref('food')
 

@@ -26,7 +26,7 @@
 
       <!-- Tool Navigation -->
       <div class="flex flex-wrap gap-2 justify-center mb-8">
-        <el-radio-group v-model="activeTool" size="large">
+        <el-radio-group v-model="activeTool" size="large" class="tool-switcher">
           <el-radio-button
             v-for="tool in filteredTools"
             :key="tool.value"
@@ -48,35 +48,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, markRaw } from 'vue'
+import { ref, computed, onMounted, markRaw, defineAsyncComponent } from 'vue'
 import {
   Document, Share, Timer, Brush, Key, Sort, Postcard, Link,
   Box, Grid, Monitor, Edit, SetUp, Memo
 } from '@element-plus/icons-vue'
 
 // Components
-import JsonEditor from '../components/dev/JsonEditor.vue'
-import Base64Tool from '../components/dev/Base64Tool.vue'
-import TimestampTool from '../components/dev/TimestampTool.vue'
-import ColorTool from '../components/dev/ColorTool.vue'
-import HashTool from '../components/dev/HashTool.vue'
-import RadixTool from '../components/dev/RadixTool.vue'
-import UUIDTool from '../components/dev/UUIDTool.vue'
-import JWTDecoder from '../components/dev/JWTDecoder.vue'
-import URLEncoder from '../components/dev/URLEncoder.vue'
-import GradientGenerator from '../components/dev/GradientGenerator.vue'
-import BoxShadowGenerator from '../components/dev/BoxShadowGenerator.vue'
-import CodeFormatter from '../components/dev/CodeFormatter.vue'
-import HttpStatusCode from '../components/dev/HttpStatusCode.vue'
-import FlexboxPlayground from '../components/dev/FlexboxPlayground.vue'
-import YamlJsonConverter from '../components/dev/YamlJsonConverter.vue'
-import SqlFormatter from '../components/dev/SqlFormatter.vue'
-import ChmodCalculator from '../components/dev/ChmodCalculator.vue'
-import LinuxCommands from '../components/dev/LinuxCommands.vue'
-import UserAgentParser from '../components/dev/UserAgentParser.vue'
-import IpCalculator from '../components/dev/IpCalculator.vue'
-import PaletteGenerator from '../components/dev/PaletteGenerator.vue'
-import SvgOptimizer from '../components/dev/SvgOptimizer.vue'
+const JsonEditor = defineAsyncComponent(() => import('../components/dev/JsonEditor.vue'))
+const Base64Tool = defineAsyncComponent(() => import('../components/dev/Base64Tool.vue'))
+const TimestampTool = defineAsyncComponent(() => import('../components/dev/TimestampTool.vue'))
+const ColorTool = defineAsyncComponent(() => import('../components/dev/ColorTool.vue'))
+const HashTool = defineAsyncComponent(() => import('../components/dev/HashTool.vue'))
+const RadixTool = defineAsyncComponent(() => import('../components/dev/RadixTool.vue'))
+const UUIDTool = defineAsyncComponent(() => import('../components/dev/UUIDTool.vue'))
+const JWTDecoder = defineAsyncComponent(() => import('../components/dev/JWTDecoder.vue'))
+const URLEncoder = defineAsyncComponent(() => import('../components/dev/URLEncoder.vue'))
+const GradientGenerator = defineAsyncComponent(() => import('../components/dev/GradientGenerator.vue'))
+const BoxShadowGenerator = defineAsyncComponent(() => import('../components/dev/BoxShadowGenerator.vue'))
+const CodeFormatter = defineAsyncComponent(() => import('../components/dev/CodeFormatter.vue'))
+const HttpStatusCode = defineAsyncComponent(() => import('../components/dev/HttpStatusCode.vue'))
+const FlexboxPlayground = defineAsyncComponent(() => import('../components/dev/FlexboxPlayground.vue'))
+const YamlJsonConverter = defineAsyncComponent(() => import('../components/dev/YamlJsonConverter.vue'))
+const SqlFormatter = defineAsyncComponent(() => import('../components/dev/SqlFormatter.vue'))
+const ChmodCalculator = defineAsyncComponent(() => import('../components/dev/ChmodCalculator.vue'))
+const LinuxCommands = defineAsyncComponent(() => import('../components/dev/LinuxCommands.vue'))
+const UserAgentParser = defineAsyncComponent(() => import('../components/dev/UserAgentParser.vue'))
+const IpCalculator = defineAsyncComponent(() => import('../components/dev/IpCalculator.vue'))
+const PaletteGenerator = defineAsyncComponent(() => import('../components/dev/PaletteGenerator.vue'))
+const SvgOptimizer = defineAsyncComponent(() => import('../components/dev/SvgOptimizer.vue'))
 
 type ToolCategory = 'all' | 'encode' | 'format' | 'css' | 'system'
 

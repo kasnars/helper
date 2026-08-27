@@ -13,7 +13,7 @@
 
       <!-- Tool Navigation -->
       <div class="flex flex-wrap gap-2 justify-center mb-8">
-        <el-radio-group v-model="activeTool" size="large">
+        <el-radio-group v-model="activeTool" size="large" class="tool-switcher">
           <el-radio-button label="unit">
             <el-icon><ScaleToOriginal /></el-icon>
             <span class="hidden sm:inline">单位换算</span>
@@ -103,21 +103,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, defineAsyncComponent } from 'vue'
 import { ScaleToOriginal, Lock, Key, Timer, Grid, Money, Microphone, DataLine, SetUp, Share, Headset } from '@element-plus/icons-vue'
-import UnitConverter from '../components/dev/UnitConverter.vue'
-import PasswordGenerator from '../components/life/PasswordGenerator.vue'
-import TextEncryptor from '../components/life/TextEncryptor.vue'
-import CronGenerator from '../components/dev/CronGenerator.vue'
-import JsonToExcel from '../components/utility/JsonToExcel.vue'
-import AmountToChinese from '../components/utility/AmountToChinese.vue'
-import TextToSpeech from '../components/utility/TextToSpeech.vue'
-import MockDataGenerator from '../components/utility/MockDataGenerator.vue'
-import CssUnitConverter from '../components/utility/CssUnitConverter.vue'
-import JsonTreeView from '../components/utility/JsonTreeView.vue'
-import AudioVisualizer from '../components/utility/AudioVisualizer.vue'
-import PasswordStrengthChecker from '../components/utility/PasswordStrengthChecker.vue'
-import TotpGenerator from '../components/utility/TotpGenerator.vue'
+const UnitConverter = defineAsyncComponent(() => import('../components/dev/UnitConverter.vue'))
+const PasswordGenerator = defineAsyncComponent(() => import('../components/life/PasswordGenerator.vue'))
+const TextEncryptor = defineAsyncComponent(() => import('../components/life/TextEncryptor.vue'))
+const CronGenerator = defineAsyncComponent(() => import('../components/dev/CronGenerator.vue'))
+const JsonToExcel = defineAsyncComponent(() => import('../components/utility/JsonToExcel.vue'))
+const AmountToChinese = defineAsyncComponent(() => import('../components/utility/AmountToChinese.vue'))
+const TextToSpeech = defineAsyncComponent(() => import('../components/utility/TextToSpeech.vue'))
+const MockDataGenerator = defineAsyncComponent(() => import('../components/utility/MockDataGenerator.vue'))
+const CssUnitConverter = defineAsyncComponent(() => import('../components/utility/CssUnitConverter.vue'))
+const JsonTreeView = defineAsyncComponent(() => import('../components/utility/JsonTreeView.vue'))
+const AudioVisualizer = defineAsyncComponent(() => import('../components/utility/AudioVisualizer.vue'))
+const PasswordStrengthChecker = defineAsyncComponent(() => import('../components/utility/PasswordStrengthChecker.vue'))
+const TotpGenerator = defineAsyncComponent(() => import('../components/utility/TotpGenerator.vue'))
 
 const activeTool = ref('unit')
 const toolList = ['unit', 'password', 'encrypt', 'cron', 'json2excel', 'amount', 'tts', 'mock', 'cssunit', 'jsontree', 'audioviz', 'pwcheck', 'totp']

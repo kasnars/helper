@@ -13,7 +13,7 @@
 
       <!-- Tool Navigation -->
       <div class="flex flex-wrap gap-2 justify-center mb-8">
-        <el-radio-group v-model="activeTool" size="large">
+        <el-radio-group v-model="activeTool" size="large" class="tool-switcher">
           <el-radio-button label="qrcode">
             <el-icon><FullScreen /></el-icon>
             <span class="hidden sm:inline">二维码工具</span>
@@ -73,16 +73,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, defineAsyncComponent } from 'vue'
 import { FullScreen, EditPen, Edit, Document, View, Grid, Star, Share } from '@element-plus/icons-vue'
-import QrCodeTool from '../components/dev/QrCodeTool.vue'
-import Whiteboard from '../components/dev/Whiteboard.vue'
-import SvgEditor from '../components/file/SvgEditor.vue'
-import PdfTool from '../components/dev/PdfTool.vue'
-import ResponsiveTester from '../components/dev/ResponsiveTester.vue'
-import ImageGridSplitter from '../components/image/ImageGridSplitter.vue'
-import EmojiSearch from '../components/other/EmojiSearch.vue'
-import FlowchartEditor from '../components/other/FlowchartEditor.vue'
+const QrCodeTool = defineAsyncComponent(() => import('../components/dev/QrCodeTool.vue'))
+const Whiteboard = defineAsyncComponent(() => import('../components/dev/Whiteboard.vue'))
+const SvgEditor = defineAsyncComponent(() => import('../components/file/SvgEditor.vue'))
+const PdfTool = defineAsyncComponent(() => import('../components/dev/PdfTool.vue'))
+const ResponsiveTester = defineAsyncComponent(() => import('../components/dev/ResponsiveTester.vue'))
+const ImageGridSplitter = defineAsyncComponent(() => import('../components/image/ImageGridSplitter.vue'))
+const EmojiSearch = defineAsyncComponent(() => import('../components/other/EmojiSearch.vue'))
+const FlowchartEditor = defineAsyncComponent(() => import('../components/other/FlowchartEditor.vue'))
 
 const activeTool = ref('qrcode')
 const toolList = ['qrcode', 'whiteboard', 'svg', 'pdf', 'responsive', 'gridsplitter', 'emoji', 'flowchart']
