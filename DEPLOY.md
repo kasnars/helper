@@ -141,3 +141,22 @@ module.exports = {
 
 - [deploy-cli-service 文档](https://www.npmjs.com/package/deploy-cli-service)
 - [SSH 密钥配置指南](https://docs.github.com/en/authentication/connecting-to-github-with-ssh)
+
+## Docker 部署
+
+项目提供了多阶段 Docker 构建配置：构建阶段执行 `pnpm run build`，运行阶段使用 Nginx 提供 `dist` 静态文件。
+
+```bash
+docker compose up -d --build
+```
+
+访问地址：`http://localhost:8080/helper/`
+
+也可以直接使用 Docker：
+
+```bash
+docker build -t helper .
+docker run -d --name helper -p 8080:80 --restart unless-stopped helper
+```
+
+当前 Vite 基础路径和 Vue Router history 均为 `/helper/`，Nginx 已配置对应的静态资源路径和前端路由回退。
