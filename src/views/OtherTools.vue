@@ -54,6 +54,9 @@
             <span class="hidden sm:inline">流程图画图</span>
             <span class="sm:hidden">流程图</span>
           </el-radio-button>
+          <el-radio-button label="zip">
+            <el-icon><Document /></el-icon><span class="hidden sm:inline">ZIP解压</span><span class="sm:hidden">ZIP</span>
+          </el-radio-button>
         </el-radio-group>
       </div>
 
@@ -67,6 +70,7 @@
         <ImageGridSplitter v-if="activeTool === 'gridsplitter'" />
         <EmojiSearch v-if="activeTool === 'emoji'" />
         <FlowchartEditor v-if="activeTool === 'flowchart'" />
+        <ZipExtractor v-if="activeTool === 'zip'" />
       </div>
     </div>
   </div>
@@ -83,9 +87,10 @@ const ResponsiveTester = defineAsyncComponent(() => import('../components/dev/Re
 const ImageGridSplitter = defineAsyncComponent(() => import('../components/image/ImageGridSplitter.vue'))
 const EmojiSearch = defineAsyncComponent(() => import('../components/other/EmojiSearch.vue'))
 const FlowchartEditor = defineAsyncComponent(() => import('../components/other/FlowchartEditor.vue'))
+const ZipExtractor = defineAsyncComponent(() => import('../components/other/ZipExtractor.vue'))
 
 const activeTool = ref('qrcode')
-const toolList = ['qrcode', 'whiteboard', 'svg', 'pdf', 'responsive', 'gridsplitter', 'emoji', 'flowchart']
+const toolList = ['qrcode', 'whiteboard', 'svg', 'pdf', 'responsive', 'gridsplitter', 'emoji', 'flowchart', 'zip']
 
 onMounted(() => {
   const savedTool = sessionStorage.getItem('activeOtherTool')

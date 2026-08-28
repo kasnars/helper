@@ -8,7 +8,7 @@
         <!-- 数据类型 -->
         <div class="mb-4">
           <label class="text-sm text-gray-600 dark:text-gray-400 mb-2 block">选择数据类型</label>
-          <div class="grid grid-cols-2 gap-2">
+          <div class="grid grid-cols-2 gap-2 mock-type-grid">
             <el-button
               v-for="t in dataTypes"
               :key="t.value"
@@ -19,6 +19,21 @@
             >
               {{ t.icon }} {{ t.label }}
             </el-button>
+          </div>
+        </div>
+
+        <!-- 字段英文名 -->
+        <div class="mb-4">
+          <label class="text-sm text-gray-600 dark:text-gray-400 mb-2 block">字段英文名</label>
+          <div class="space-y-2">
+            <div v-for="type in selectedTypes" :key="type" class="flex items-center gap-2">
+              <span class="w-20 shrink-0 text-sm text-gray-500 dark:text-gray-400">{{ getTypeLabel(type) }}</span>
+              <el-input
+                v-model="fieldNames[type]"
+                size="small"
+                :placeholder="`请输入${getTypeLabel(type)}字段名`"
+              />
+            </div>
           </div>
         </div>
 
@@ -73,6 +88,7 @@ const dataTypes = [
   { value: 'name', label: '姓名', icon: '👤' },
   { value: 'phone', label: '手机号', icon: '📱' },
   { value: 'email', label: '邮箱', icon: '📧' },
+  { value: 'idcard', label: '身份证', icon: '🆔' },
   { value: 'address', label: '地址', icon: '📍' },
   { value: 'company', label: '公司', icon: '🏢' },
   { value: 'date', label: '日期', icon: '📅' },
@@ -83,6 +99,19 @@ const dataTypes = [
 ]
 
 const selectedTypes = ref<string[]>(['name', 'phone', 'email'])
+const fieldNames = ref<Record<string, string>>({
+  name: 'name',
+  phone: 'phone',
+  email: 'email',
+  idcard: 'id_card',
+  address: 'address',
+  company: 'company',
+  date: 'date',
+  number: 'number',
+  uuid: 'uuid',
+  word: 'word',
+  sentence: 'sentence',
+})
 const count = ref(10)
 const outputFormat = ref('json')
 const tableName = ref('mock_data')
@@ -93,6 +122,9 @@ const toggleType = (type: string) => {
   if (idx >= 0) selectedTypes.value.splice(idx, 1)
   else selectedTypes.value.push(type)
 }
+
+const getTypeLabel = (type: string) => dataTypes.find(item => item.value === type)?.label || type
+const getFieldName = (type: string) => fieldNames.value[type]?.trim() || type
 
 // 简单的伪随机生成器
 const randomFrom = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)]
@@ -114,6 +146,7 @@ const generateValue = (type: string) => {
     case 'name': return randomFrom(surnames) + randomFrom(names)
     case 'phone': return '1' + randomFrom(['3', '5', '7', '8', '9']) + randomInt(100000000, 999999999)
     case 'email': return randomChar(randomInt(5, 10)) + '@' + randomFrom(domains)
+    case 'idcard': return `${randomInt(110000, 659999)}${randomInt(1000, 9999)}${randomInt(1, 12).toString().padStart(2, '0')}${randomInt(1, 28).toString().padStart(2, '0')}${randomInt(100, 999)}${randomInt(0, 9)}`
     case 'address': return randomFrom(cities) + randomFrom(streets) + randomInt(1, 200) + '号'
     case 'company': return randomFrom(cities) + randomFrom(companies) + '有限公司'
     case 'date': {
@@ -142,7 +175,7 @@ const generate = () => {
   for (let i = 0; i < count.value; i++) {
     const row: Record<string, any> = {}
     for (const type of selectedTypes.value) {
-      row[type] = generateValue(type)
+      row[getFieldName(type)] = generateValue(type)
     }
     rows.push(row)
   }
@@ -157,14 +190,14 @@ const generate = () => {
       }
       return str
     }
-    const headers = selectedTypes.value.join(',')
-    const csvRows = rows.map(r => selectedTypes.value.map(k => escapeCsv(r[k])).join(','))
+    const headers = selectedTypes.value.map(getFieldName).join(',')
+    const csvRows = rows.map(r => selectedTypes.value.map(type => escapeCsv(r[getFieldName(type)])).join(','))
     output.value = [headers, ...csvRows].join('\n')
   } else {
     // SQL INSERT
-    const cols = selectedTypes.value.join(', ')
+    const cols = selectedTypes.value.map(getFieldName).join(', ')
     const sqlRows = rows.map(r => {
-      const vals = selectedTypes.value.map(k => `'${r[k]}'`).join(', ')
+      const vals = selectedTypes.value.map(type => `'${r[getFieldName(type)]}'`).join(', ')
       return `INSERT INTO ${tableName.value} (${cols}) VALUES (${vals});`
     })
     output.value = sqlRows.join('\n')

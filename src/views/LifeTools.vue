@@ -39,6 +39,11 @@
             <span class="hidden sm:inline">日期计算</span>
             <span class="sm:hidden">日期</span>
           </el-radio-button>
+          <el-radio-button label="countdown"><el-icon><Timer /></el-icon><span class="hidden sm:inline">倒计时</span><span class="sm:hidden">倒计时</span></el-radio-button>
+          <el-radio-button label="calorie"><el-icon><DataLine /></el-icon><span class="hidden sm:inline">热量计算</span><span class="sm:hidden">热量</span></el-radio-button>
+          <el-radio-button label="lottery"><el-icon><CircleCheckFilled /></el-icon><span class="hidden sm:inline">彩票号码</span><span class="sm:hidden">彩票</span></el-radio-button>
+          <el-radio-button label="group"><el-icon><DataLine /></el-icon><span class="hidden sm:inline">随机分组</span><span class="sm:hidden">分组</span></el-radio-button>
+          <el-radio-button label="draw"><el-icon><CircleCheckFilled /></el-icon><span class="hidden sm:inline">随机抽签</span><span class="sm:hidden">抽签</span></el-radio-button>
         </el-radio-group>
       </div>
 
@@ -58,6 +63,11 @@
 
         <!-- Date Calculator -->
         <DateCalculator v-if="activeTool === 'datecalc'" />
+        <CountdownTool v-if="activeTool === 'countdown'" />
+        <CalorieCalculator v-if="activeTool === 'calorie'" />
+        <LotteryGenerator v-if="activeTool === 'lottery'" />
+        <RandomGroup v-if="activeTool === 'group'" />
+        <RandomDraw v-if="activeTool === 'draw'" />
       </div>
     </div>
   </div>
@@ -71,13 +81,18 @@ const RandomNumber = defineAsyncComponent(() => import('../views/RandomNumber.vu
 const BmiCalculator = defineAsyncComponent(() => import('../components/life/BmiCalculator.vue'))
 const AgeCalculator = defineAsyncComponent(() => import('../components/life/AgeCalculator.vue'))
 const DateCalculator = defineAsyncComponent(() => import('../components/life/DateCalculator.vue'))
+const CountdownTool = defineAsyncComponent(() => import('../components/life/CountdownTool.vue'))
+const CalorieCalculator = defineAsyncComponent(() => import('../components/life/CalorieCalculator.vue'))
+const LotteryGenerator = defineAsyncComponent(() => import('../components/life/LotteryGenerator.vue'))
+const RandomGroup = defineAsyncComponent(() => import('../components/life/RandomGroup.vue'))
+const RandomDraw = defineAsyncComponent(() => import('../components/life/RandomDraw.vue'))
 
 const activeTool = ref('food')
 
 // 从 sessionStorage 恢复 tab 状态
 onMounted(() => {
   const savedTool = sessionStorage.getItem('activeLifeTool')
-  if (savedTool && ['food', 'random', 'bmi', 'age', 'datecalc'].includes(savedTool)) {
+  if (savedTool && ['food', 'random', 'bmi', 'age', 'datecalc', 'countdown', 'calorie', 'lottery', 'group', 'draw'].includes(savedTool)) {
     activeTool.value = savedTool
     sessionStorage.removeItem('activeLifeTool')
   }

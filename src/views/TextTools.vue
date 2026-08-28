@@ -11,24 +11,11 @@
         </p>
       </div>
 
-      <!-- Category Filter -->
-      <div class="flex flex-wrap gap-2 justify-center mb-6">
-        <el-button
-          v-for="cat in categories"
-          :key="cat.value"
-          :type="activeCategory === cat.value ? 'primary' : ''"
-          :plain="activeCategory !== cat.value"
-          @click="handleCategoryChange(cat.value)"
-        >
-          {{ cat.icon }} {{ cat.label }}
-        </el-button>
-      </div>
-
       <!-- Tool Navigation -->
       <div class="flex flex-wrap gap-2 justify-center mb-8">
         <el-radio-group v-model="activeTool" size="large" class="tool-switcher">
           <el-radio-button
-            v-for="tool in filteredTools"
+            v-for="tool in tools"
             :key="tool.value"
             :label="tool.value"
           >
@@ -48,8 +35,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, markRaw, defineAsyncComponent } from 'vue'
-import { Search, Reading, Delete, Memo, Document, View, Grid, Key } from '@element-plus/icons-vue'
+import { ref, onMounted, markRaw, defineAsyncComponent } from 'vue'
+import { Search, Reading, Delete, Memo, Document, View, Grid, Key, Sort } from '@element-plus/icons-vue'
 
 // Components
 const RegexTester = defineAsyncComponent(() => import('../components/dev/RegexTester.vue'))
@@ -59,10 +46,11 @@ const TextDedup = defineAsyncComponent(() => import('../components/dev/TextDedup
 const MarkdownPreview = defineAsyncComponent(() => import('../components/dev/MarkdownPreview.vue'))
 const TextExtractor = defineAsyncComponent(() => import('../components/dev/TextExtractor.vue'))
 const FileDiff = defineAsyncComponent(() => import('../components/file/FileDiff.vue'))
-const SqlCreateTable = defineAsyncComponent(() => import('../components/text/SqlCreateTable.vue'))
 const HtmlEntityTool = defineAsyncComponent(() => import('../components/text/HtmlEntityTool.vue'))
 const CharFrequency = defineAsyncComponent(() => import('../components/text/CharFrequency.vue'))
 const Rot13Cipher = defineAsyncComponent(() => import('../components/text/Rot13Cipher.vue'))
+const XmlFormatter = defineAsyncComponent(() => import('../components/text/XmlFormatter.vue'))
+const TextSortFilter = defineAsyncComponent(() => import('../components/text/TextSortFilter.vue'))
 
 type ToolCategory = 'all' | 'text' | 'file' | 'dev'
 
@@ -74,13 +62,6 @@ interface ToolItem {
   category: ToolCategory
 }
 
-const categories = [
-  { label: '全部', value: 'all' as ToolCategory, icon: '📋' },
-  { label: '文本处理', value: 'text' as ToolCategory, icon: '📝' },
-  { label: '开发辅助', value: 'dev' as ToolCategory, icon: '💻' },
-  { label: '文件分析', value: 'file' as ToolCategory, icon: '📄' },
-]
-
 const tools: ToolItem[] = [
   // 文本处理
   { value: 'regex', label: '正则测试', shortLabel: '正则', icon: markRaw(Search), category: 'text' },
@@ -91,9 +72,10 @@ const tools: ToolItem[] = [
   { value: 'htmlentity', label: 'HTML实体', shortLabel: '实体', icon: markRaw(Document), category: 'text' },
   { value: 'charfreq', label: '字符频次', shortLabel: '频次', icon: markRaw(Reading), category: 'text' },
   { value: 'rot13', label: 'ROT13/凯撒', shortLabel: 'ROT13', icon: markRaw(Key), category: 'text' },
+  { value: 'xml', label: 'XML格式化', shortLabel: 'XML', icon: markRaw(Document), category: 'text' },
+  { value: 'textsort', label: '文本排序', shortLabel: '排序', icon: markRaw(Sort), category: 'text' },
 
   // 开发辅助
-  { value: 'sqlcreate', label: 'SQL建表', shortLabel: 'SQL', icon: markRaw(Grid), category: 'dev' },
 
   // 文件分析
   { value: 'textextractor', label: '文本提取', shortLabel: '提取', icon: markRaw(Document), category: 'file' },
@@ -108,36 +90,19 @@ const toolComponents: Record<string, any> = {
   markdown: markRaw(MarkdownPreview),
   htmlentity: markRaw(HtmlEntityTool),
   charfreq: markRaw(CharFrequency),
-  sqlcreate: markRaw(SqlCreateTable),
   textextractor: markRaw(TextExtractor),
   filediff: markRaw(FileDiff),
   rot13: markRaw(Rot13Cipher),
+  xml: markRaw(XmlFormatter),
+  textsort: markRaw(TextSortFilter),
 }
 
-const activeCategory = ref<ToolCategory>('all')
 const activeTool = ref('regex')
-
-const filteredTools = computed(() => {
-  if (activeCategory.value === 'all') return tools
-  return tools.filter(t => t.category === activeCategory.value)
-})
-
-const handleCategoryChange = (cat: ToolCategory) => {
-  activeCategory.value = cat
-  const filtered = cat === 'all' ? tools : tools.filter(t => t.category === cat)
-  if (!filtered.find(t => t.value === activeTool.value)) {
-    activeTool.value = filtered[0]?.value || 'regex'
-  }
-}
 
 onMounted(() => {
   const savedTool = sessionStorage.getItem('activeTextTool')
   if (savedTool && tools.some(t => t.value === savedTool)) {
     activeTool.value = savedTool
-    const tool = tools.find(t => t.value === savedTool)
-    if (tool) {
-      activeCategory.value = tool.category
-    }
     sessionStorage.removeItem('activeTextTool')
   }
 })

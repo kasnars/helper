@@ -84,6 +84,9 @@
             <span class="hidden sm:inline">ASCII 艺术</span>
             <span class="sm:hidden">ASCII</span>
           </el-radio-button>
+          <el-radio-button label="batchresize">
+            <el-icon><Picture /></el-icon><span class="hidden sm:inline">批量调整尺寸</span><span class="sm:hidden">尺寸</span>
+          </el-radio-button>
         </el-radio-group>
       </div>
 
@@ -103,6 +106,7 @@
         <ImageAnnotator v-if="activeTool === 'annotator'" />
         <ImageColorPicker v-if="activeTool === 'colorpicker'" />
         <AsciiArtGenerator v-if="activeTool === 'ascii'" />
+        <BatchImageResizer v-if="activeTool === 'batchresize'" />
       </div>
     </div>
   </div>
@@ -125,9 +129,10 @@ const GifExtractor = defineAsyncComponent(() => import('../components/image/GifE
 const ImageAnnotator = defineAsyncComponent(() => import('../components/image/ImageAnnotator.vue'))
 const ImageColorPicker = defineAsyncComponent(() => import('../components/image/ImageColorPicker.vue'))
 const AsciiArtGenerator = defineAsyncComponent(() => import('../components/image/AsciiArtGenerator.vue'))
+const BatchImageResizer = defineAsyncComponent(() => import('../components/image/BatchImageResizer.vue'))
 
 const activeTool = ref('processor')
-const toolList = ['processor', 'crop', 'watermark', 'exif', 'idphoto', 'pixelart', 'favicon', 'formatdetect', 'collage', 'gifcreator', 'gifextractor', 'annotator', 'colorpicker', 'ascii']
+const toolList = ['processor', 'crop', 'watermark', 'exif', 'idphoto', 'pixelart', 'favicon', 'formatdetect', 'collage', 'gifcreator', 'gifextractor', 'annotator', 'colorpicker', 'ascii', 'batchresize']
 
 onMounted(() => {
   const savedTool = sessionStorage.getItem('activeImageTool')

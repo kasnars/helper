@@ -4,31 +4,18 @@
       <!-- Header -->
       <div class="text-center mb-8">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          🛠️ 开发工具箱
+          {{ pageTitle }}
         </h1>
         <p class="text-gray-600 dark:text-gray-400">
           常用开发工具集合，纯前端实现
         </p>
       </div>
 
-      <!-- Category Filter -->
-      <div class="flex flex-wrap gap-2 justify-center mb-6">
-        <el-button
-          v-for="cat in categories"
-          :key="cat.value"
-          :type="activeCategory === cat.value ? 'primary' : ''"
-          :plain="activeCategory !== cat.value"
-          @click="handleCategoryChange(cat.value)"
-        >
-          {{ cat.icon }} {{ cat.label }}
-        </el-button>
-      </div>
-
       <!-- Tool Navigation -->
       <div class="flex flex-wrap gap-2 justify-center mb-8">
         <el-radio-group v-model="activeTool" size="large" class="tool-switcher">
           <el-radio-button
-            v-for="tool in filteredTools"
+            v-for="tool in visibleTools"
             :key="tool.value"
             :label="tool.value"
           >
@@ -48,7 +35,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, markRaw, defineAsyncComponent } from 'vue'
+import { ref, computed, onMounted, watch, markRaw, defineAsyncComponent } from 'vue'
+import { useRoute } from 'vue-router'
 import {
   Document, Share, Timer, Brush, Key, Sort, Postcard, Link,
   Box, Grid, Monitor, Edit, SetUp, Memo
@@ -77,6 +65,11 @@ const UserAgentParser = defineAsyncComponent(() => import('../components/dev/Use
 const IpCalculator = defineAsyncComponent(() => import('../components/dev/IpCalculator.vue'))
 const PaletteGenerator = defineAsyncComponent(() => import('../components/dev/PaletteGenerator.vue'))
 const SvgOptimizer = defineAsyncComponent(() => import('../components/dev/SvgOptimizer.vue'))
+const SqlCreateTable = defineAsyncComponent(() => import('../components/text/SqlCreateTable.vue'))
+const JwtGenerator = defineAsyncComponent(() => import('../components/dev/JwtGenerator.vue'))
+const HmacTool = defineAsyncComponent(() => import('../components/dev/HmacTool.vue'))
+const CssAnimationGenerator = defineAsyncComponent(() => import('../components/dev/CssAnimationGenerator.vue'))
+const CssFilterGenerator = defineAsyncComponent(() => import('../components/dev/CssFilterGenerator.vue'))
 
 type ToolCategory = 'all' | 'encode' | 'format' | 'css' | 'system'
 
@@ -88,20 +81,14 @@ interface ToolItem {
   category: ToolCategory
 }
 
-const categories = [
-  { label: '全部', value: 'all' as ToolCategory, icon: '📋' },
-  { label: '编码/加密', value: 'encode' as ToolCategory, icon: '🔐' },
-  { label: '数据格式', value: 'format' as ToolCategory, icon: '📄' },
-  { label: 'Web/CSS', value: 'css' as ToolCategory, icon: '🎨' },
-  { label: '系统/运维', value: 'system' as ToolCategory, icon: '⚙️' },
-]
-
 const tools: ToolItem[] = [
   // 编码/加密
   { value: 'base64', label: 'Base64', shortLabel: 'Base64', icon: markRaw(Share), category: 'encode' },
   { value: 'url', label: 'URL 编解码', shortLabel: 'URL', icon: markRaw(Link), category: 'encode' },
   { value: 'jwt', label: 'JWT 解码', shortLabel: 'JWT', icon: markRaw(Key), category: 'encode' },
   { value: 'hash', label: '哈希', shortLabel: '哈希', icon: markRaw(Key), category: 'encode' },
+  { value: 'jwtgenerate', label: 'JWT生成', shortLabel: 'JWT', icon: markRaw(Key), category: 'encode' },
+  { value: 'hmac', label: 'HMAC签名', shortLabel: 'HMAC', icon: markRaw(Key), category: 'encode' },
 
   // 数据格式
   { value: 'json', label: 'JSON 工具', shortLabel: 'JSON', icon: markRaw(Document), category: 'format' },
@@ -118,9 +105,12 @@ const tools: ToolItem[] = [
 
   // Web/CSS (continued)
   { value: 'palette', label: '调色板生成', shortLabel: '调色板', icon: markRaw(Brush), category: 'css' },
+  { value: 'cssanimation', label: 'CSS动画', shortLabel: '动画', icon: markRaw(Brush), category: 'css' },
+  { value: 'cssfilter', label: 'CSS Filter', shortLabel: 'Filter', icon: markRaw(Brush), category: 'css' },
 
   // 数据格式 (continued)
   { value: 'svgoptimize', label: 'SVG 优化', shortLabel: 'SVG', icon: markRaw(Document), category: 'format' },
+  { value: 'sqlcreate', label: 'SQL建表', shortLabel: 'SQL', icon: markRaw(Document), category: 'format' },
 
   // 系统/运维
   { value: 'timestamp', label: '时间戳', shortLabel: '时间戳', icon: markRaw(Timer), category: 'system' },
@@ -155,36 +145,35 @@ const toolComponents: Record<string, any> = {
   ipcalc: markRaw(IpCalculator),
   palette: markRaw(PaletteGenerator),
   svgoptimize: markRaw(SvgOptimizer),
+  sqlcreate: markRaw(SqlCreateTable),
+  jwtgenerate: markRaw(JwtGenerator),
+  hmac: markRaw(HmacTool),
+  cssanimation: markRaw(CssAnimationGenerator),
+  cssfilter: markRaw(CssFilterGenerator),
 }
 
-const activeCategory = ref<ToolCategory>('all')
 const activeTool = ref('json')
+const route = useRoute()
+const currentGroup = computed(() => route.meta.toolGroup as ToolCategory | undefined)
+const visibleTools = computed(() => currentGroup.value ? tools.filter(tool => tool.category === currentGroup.value) : tools)
+const pageTitle = computed(() => route.meta.title === '开发工具' ? '🛠️ 开发工具箱' : `${route.meta.title || '开发工具'}`)
 
-const filteredTools = computed(() => {
-  if (activeCategory.value === 'all') return tools
-  return tools.filter(t => t.category === activeCategory.value)
-})
-
-// 切换分类时，如果当前工具不在新分类中，自动选择第一个
-const handleCategoryChange = (cat: ToolCategory) => {
-  activeCategory.value = cat
-  const filtered = cat === 'all' ? tools : tools.filter(t => t.category === cat)
-  if (!filtered.find(t => t.value === activeTool.value)) {
-    activeTool.value = filtered[0]?.value || 'json'
+const selectSavedTool = () => {
+  const savedTool = sessionStorage.getItem('activeDevTool')
+  if (savedTool && visibleTools.value.some(t => t.value === savedTool)) {
+    activeTool.value = savedTool
+    sessionStorage.removeItem('activeDevTool')
+    return
+  }
+  if (!visibleTools.value.some(t => t.value === activeTool.value)) {
+    activeTool.value = visibleTools.value[0]?.value || 'json'
   }
 }
 
 // 从 sessionStorage 恢复 tab 状态
 onMounted(() => {
-  const savedTool = sessionStorage.getItem('activeDevTool')
-  if (savedTool && tools.some(t => t.value === savedTool)) {
-    activeTool.value = savedTool
-    // 自动选中对应的分类
-    const tool = tools.find(t => t.value === savedTool)
-    if (tool) {
-      activeCategory.value = tool.category
-    }
-    sessionStorage.removeItem('activeDevTool')
-  }
+  selectSavedTool()
 })
+
+watch(() => route.path, selectSavedTool)
 </script>

@@ -132,6 +132,27 @@ html.dark ::-webkit-scrollbar-thumb {
   max-width: 8.5rem !important;
 }
 
+.mock-type-grid .el-button {
+  width: 100%;
+  margin-left: 0;
+}
+
+.lottery-type-switcher .el-radio-button {
+  width: 7rem;
+  min-width: 7rem;
+}
+
+.lottery-type-switcher .el-radio-button__inner {
+  width: 100%;
+}
+
+.lottery-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
 @media (max-width: 640px) {
   .tool-switcher .el-radio-button {
     width: 7rem !important;

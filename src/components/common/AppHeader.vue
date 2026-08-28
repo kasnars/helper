@@ -146,6 +146,9 @@ const tabStorageKeys: Record<string, string> = {
   '/imagetools': 'activeImageTool',
   '/utility': 'activeUtilityTool',
   '/devtools': 'activeDevTool',
+  '/securitytools': 'activeDevTool',
+  '/webtools': 'activeDevTool',
+  '/systemtools': 'activeDevTool',
   '/texttools': 'activeTextTool',
   '/other': 'activeOtherTool',
 }
@@ -158,6 +161,11 @@ const allTools = [
   { name: 'BMI 计算', category: '生活工具', path: '/life', tab: 'bmi', icon: 'DataLine' },
   { name: '年龄星座', category: '生活工具', path: '/life', tab: 'age', icon: 'Calendar' },
   { name: '日期计算', category: '生活工具', path: '/life', tab: 'datecalc', icon: 'Timer' },
+  { name: '倒计时', category: '生活工具', path: '/life', tab: 'countdown', icon: 'Timer' },
+  { name: '热量与基础代谢', category: '生活工具', path: '/life', tab: 'calorie', icon: 'DataLine' },
+  { name: '彩票号码生成', category: '生活工具', path: '/life', tab: 'lottery', icon: 'CircleCheckFilled' },
+  { name: '随机分组', category: '生活工具', path: '/life', tab: 'group', icon: 'DataLine' },
+  { name: '随机抽签', category: '生活工具', path: '/life', tab: 'draw', icon: 'CircleCheckFilled' },
 
   // 图片工具
   { name: '图片处理', category: '图片工具', path: '/imagetools', tab: 'processor', icon: 'Picture' },
@@ -168,6 +176,7 @@ const allTools = [
   { name: '像素画', category: '图片工具', path: '/imagetools', tab: 'pixelart', icon: 'Grid' },
   { name: 'Favicon生成', category: '图片工具', path: '/imagetools', tab: 'favicon', icon: 'Picture' },
   { name: '图片格式检测', category: '图片工具', path: '/imagetools', tab: 'formatdetect', icon: 'Document' },
+  { name: '图片批量调整尺寸', category: '图片工具', path: '/imagetools', tab: 'batchresize', icon: 'Picture' },
 
   // 实用工具
   { name: '单位换算', category: '实用工具', path: '/utility', tab: 'unit', icon: 'ScaleToOriginal' },
@@ -186,24 +195,31 @@ const allTools = [
 
   // 开发工具
   { name: 'JSON 工具', category: '开发工具', path: '/devtools', tab: 'json', icon: 'Document' },
-  { name: 'Base64', category: '开发工具', path: '/devtools', tab: 'base64', icon: 'Share' },
-  { name: '时间戳', category: '开发工具', path: '/devtools', tab: 'timestamp', icon: 'Timer' },
-  { name: '颜色工具', category: '开发工具', path: '/devtools', tab: 'color', icon: 'Brush' },
-  { name: '哈希', category: '开发工具', path: '/devtools', tab: 'hash', icon: 'Key' },
-  { name: '进制转换', category: '开发工具', path: '/devtools', tab: 'radix', icon: 'Sort' },
-  { name: 'UUID', category: '开发工具', path: '/devtools', tab: 'uuid', icon: 'Postcard' },
-  { name: 'JWT 解码', category: '开发工具', path: '/devtools', tab: 'jwt', icon: 'Key' },
-  { name: 'URL 编解码', category: '开发工具', path: '/devtools', tab: 'url', icon: 'Link' },
-  { name: '渐变生成', category: '开发工具', path: '/devtools', tab: 'gradient', icon: 'Brush' },
-  { name: '阴影生成', category: '开发工具', path: '/devtools', tab: 'boxshadow', icon: 'Document' },
   { name: '代码格式化', category: '开发工具', path: '/devtools', tab: 'formatter', icon: 'Edit' },
-  { name: 'HTTP状态码', category: '开发工具', path: '/devtools', tab: 'http', icon: 'Link' },
-  { name: 'Flexbox', category: '开发工具', path: '/devtools', tab: 'flexbox', icon: 'Grid' },
   { name: 'YAML/JSON', category: '开发工具', path: '/devtools', tab: 'yaml', icon: 'Document' },
   { name: 'SQL格式化', category: '开发工具', path: '/devtools', tab: 'sql', icon: 'Document' },
-  { name: 'Chmod计算', category: '开发工具', path: '/devtools', tab: 'chmod', icon: 'SetUp' },
-  { name: 'Linux命令', category: '开发工具', path: '/devtools', tab: 'linux', icon: 'Document' },
-  { name: 'UA解析', category: '开发工具', path: '/devtools', tab: 'useragent', icon: 'Document' },
+  { name: 'SQL建表', category: '开发工具', path: '/devtools', tab: 'sqlcreate', icon: 'Grid' },
+  { name: 'Base64', category: '编码与安全', path: '/securitytools', tab: 'base64', icon: 'Share' },
+  { name: 'URL 编解码', category: '编码与安全', path: '/securitytools', tab: 'url', icon: 'Link' },
+  { name: 'JWT 解码', category: '编码与安全', path: '/securitytools', tab: 'jwt', icon: 'Key' },
+  { name: '哈希', category: '编码与安全', path: '/securitytools', tab: 'hash', icon: 'Key' },
+  { name: 'UUID', category: '编码与安全', path: '/securitytools', tab: 'uuid', icon: 'Postcard' },
+  { name: '颜色工具', category: 'Web 与 CSS', path: '/webtools', tab: 'color', icon: 'Brush' },
+  { name: '渐变生成', category: 'Web 与 CSS', path: '/webtools', tab: 'gradient', icon: 'Brush' },
+  { name: '阴影生成', category: 'Web 与 CSS', path: '/webtools', tab: 'boxshadow', icon: 'Document' },
+  { name: 'Flexbox', category: 'Web 与 CSS', path: '/webtools', tab: 'flexbox', icon: 'Grid' },
+  { name: 'HTTP状态码', category: 'Web 与 CSS', path: '/webtools', tab: 'http', icon: 'Link' },
+  { name: '调色板生成', category: 'Web 与 CSS', path: '/webtools', tab: 'palette', icon: 'Brush' },
+  { name: '时间戳', category: '系统与网络', path: '/systemtools', tab: 'timestamp', icon: 'Timer' },
+  { name: '进制转换', category: '系统与网络', path: '/systemtools', tab: 'radix', icon: 'Sort' },
+  { name: 'Chmod计算', category: '系统与网络', path: '/systemtools', tab: 'chmod', icon: 'SetUp' },
+  { name: 'Linux命令', category: '系统与网络', path: '/systemtools', tab: 'linux', icon: 'Document' },
+  { name: 'UA解析', category: '系统与网络', path: '/systemtools', tab: 'useragent', icon: 'Document' },
+  { name: 'IP计算器', category: '系统与网络', path: '/systemtools', tab: 'ipcalc', icon: 'Monitor' },
+  { name: 'JWT生成器', category: '编码与安全', path: '/securitytools', tab: 'jwtgenerate', icon: 'Key' },
+  { name: 'HMAC签名', category: '编码与安全', path: '/securitytools', tab: 'hmac', icon: 'Key' },
+  { name: 'CSS动画生成器', category: 'Web 与 CSS', path: '/webtools', tab: 'cssanimation', icon: 'Brush' },
+  { name: 'CSS Filter', category: 'Web 与 CSS', path: '/webtools', tab: 'cssfilter', icon: 'Brush' },
 
   // 文本工具
   { name: '正则测试', category: '文本工具', path: '/texttools', tab: 'regex', icon: 'Search' },
@@ -213,10 +229,11 @@ const allTools = [
   { name: 'Markdown 预览', category: '文本工具', path: '/texttools', tab: 'markdown', icon: 'Document' },
   { name: 'HTML实体', category: '文本工具', path: '/texttools', tab: 'htmlentity', icon: 'Document' },
   { name: '字符频次', category: '文本工具', path: '/texttools', tab: 'charfreq', icon: 'Document' },
-  { name: 'SQL建表', category: '文本工具', path: '/texttools', tab: 'sqlcreate', icon: 'Grid' },
   { name: '文本提取', category: '文本工具', path: '/texttools', tab: 'textextractor', icon: 'Document' },
   { name: '文件对比', category: '文本工具', path: '/texttools', tab: 'filediff', icon: 'Document' },
   { name: 'ROT13/凯撒密码', category: '文本工具', path: '/texttools', tab: 'rot13', icon: 'Key' },
+  { name: 'XML格式化', category: '文本工具', path: '/texttools', tab: 'xml', icon: 'Document' },
+  { name: '文本排序与过滤', category: '文本工具', path: '/texttools', tab: 'textsort', icon: 'Sort' },
 
   // 其他工具
   { name: '二维码工具', category: '其他工具', path: '/other', tab: 'qrcode', icon: 'FullScreen' },
@@ -225,6 +242,7 @@ const allTools = [
   { name: 'PDF 工具', category: '其他工具', path: '/other', tab: 'pdf', icon: 'Document' },
   { name: '响应式测试', category: '其他工具', path: '/other', tab: 'responsive', icon: 'Document' },
   { name: '九宫格切图', category: '其他工具', path: '/other', tab: 'gridsplitter', icon: 'Grid' },
+  { name: 'ZIP浏览与解压', category: '其他工具', path: '/other', tab: 'zip', icon: 'Document' },
 ]
 
 const searchTools = (queryString: string, cb: Function) => {

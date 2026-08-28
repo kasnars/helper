@@ -50,7 +50,25 @@ const routes = [
     path: '/devtools',
     name: 'DevTools',
     component: DevTools,
-    meta: { title: '开发工具', icon: 'Tools' },
+    meta: { title: '开发工具', icon: 'Tools', toolGroup: 'format' },
+  },
+  {
+    path: '/securitytools',
+    name: 'SecurityTools',
+    component: DevTools,
+    meta: { title: '编码与安全', icon: 'Lock', toolGroup: 'encode' },
+  },
+  {
+    path: '/webtools',
+    name: 'WebTools',
+    component: DevTools,
+    meta: { title: 'Web 与 CSS', icon: 'Brush', toolGroup: 'css' },
+  },
+  {
+    path: '/systemtools',
+    name: 'SystemTools',
+    component: DevTools,
+    meta: { title: '系统与网络', icon: 'Monitor', toolGroup: 'system' },
   },
 ]
 
