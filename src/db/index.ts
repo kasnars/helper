@@ -33,6 +33,12 @@ export interface AppSetting {
   value: any
 }
 
+export interface PomodoroDay {
+  date: string
+  minutes: number
+  note: string
+}
+
 // 内置外卖数据
 export const builtinFoodOptions: Omit<FoodOption, 'id' | 'createdAt'>[] = [
   // 午餐选项 (15种)
@@ -141,6 +147,7 @@ export class HelperDatabase extends Dexie {
   foodHistory!: Table<FoodHistory>
   randomConfig!: Table<RandomConfig>
   appSettings!: Table<AppSetting>
+  pomodoroDays!: Table<PomodoroDay, string>
 
   private lsDB: LocalStorageDB | null = null
   private useIndexedDB: boolean = true
@@ -158,6 +165,9 @@ export class HelperDatabase extends Dexie {
         foodHistory: '++id, timestamp',
         randomConfig: 'id',
         appSettings: 'id',
+      })
+      this.version(3).stores({
+        pomodoroDays: 'date',
       })
     } else {
       // 使用 localStorage 降级

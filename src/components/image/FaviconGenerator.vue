@@ -61,8 +61,9 @@
 
     <!-- 批量下载 -->
     <div v-if="originalSrc" class="mt-4 flex justify-center">
-      <el-button type="primary" @click="downloadAll">
-        打包下载全部
+      <el-input v-model="appName" class="mr-2 w-40" placeholder="应用名称" />
+      <el-button type="primary" data-testid="favicon-zip" @click="downloadAll">
+        打包 zip 和 manifest
       </el-button>
     </div>
   </div>
@@ -71,6 +72,7 @@
 <script setup lang="ts">
 import { ref, nextTick, watch } from 'vue'
 import { ElMessage } from 'element-plus'
+import JSZip from 'jszip'
 
 const fileInput = ref<HTMLInputElement>()
 const isDragging = ref(false)
@@ -151,11 +153,24 @@ const downloadSingle = async (size: number) => {
   URL.revokeObjectURL(a.href)
 }
 
+const appName = ref('Helper')
+
 const downloadAll = async () => {
+  const zip = new JSZip()
+  const icons = []
   for (const size of selectedSizes.value) {
-    await downloadSingle(size)
-    await new Promise((r) => setTimeout(r, 100))
+    const blob = await getBlob(size)
+    if (!blob) continue
+    zip.file(`icons/icon-${size}.png`, blob)
+    icons.push({ src: `icons/icon-${size}.png`, sizes: `${size}x${size}`, type: 'image/png' })
   }
-  ElMessage.success('已下载全部尺寸')
+  zip.file('site.webmanifest', JSON.stringify({ name: appName.value, short_name: appName.value, icons }, null, 2))
+  const blob = await zip.generateAsync({ type: 'blob' })
+  const link = document.createElement('a')
+  link.href = URL.createObjectURL(blob)
+  link.download = 'icons.zip'
+  link.click()
+  URL.revokeObjectURL(link.href)
+  ElMessage.success('已打包图标和 manifest')
 }
 </script>

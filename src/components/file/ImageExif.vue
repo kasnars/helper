@@ -16,6 +16,10 @@
       <p class="text-sm text-gray-400 dark:text-gray-500">支持 JPG、PNG、TIFF、HEIC 等常见格式</p>
     </div>
 
+    <div v-if="sourceFile" class="flex justify-end">
+      <el-button type="primary" data-testid="exif-strip" @click="downloadClean">下载清除元数据的副本</el-button>
+    </div>
+
     <!-- 结果区域 -->
     <div v-if="imageSrc" class="space-y-4">
       <!-- 图片预览 -->
@@ -232,8 +236,10 @@
 import { ref, computed , onUnmounted} from 'vue'
 import { Upload, Loading, Warning, Camera, Setting, Picture, Location, Document } from '@element-plus/icons-vue'
 import exifr from 'exifr'
+import { stripImageMetadata } from '@/lib/metadata'
 
 const fileInput = ref<HTMLInputElement>()
+const sourceFile = ref<File | null>(null)
 const isDragging = ref(false)
 const loading = ref(false)
 const imageSrc = ref('')
@@ -264,6 +270,7 @@ const handleDrop = (e: DragEvent) => {
 }
 
 const loadImage = async (file: File) => {
+  sourceFile.value = file
   imageSrc.value = URL.createObjectURL(file)
   loading.value = true
   exifData.value = {}
@@ -292,6 +299,38 @@ const loadImage = async (file: File) => {
   } finally {
     loading.value = false
   }
+}
+
+const downloadClean = async () => {
+  if (!sourceFile.value) return
+  const bytes = new Uint8Array(await sourceFile.value.arrayBuffer())
+  let cleaned = stripImageMetadata(bytes)
+  let type = sourceFile.value.type || 'application/octet-stream'
+  if (cleaned === bytes || (cleaned.length === bytes.length && cleaned.every((value, index) => value === bytes[index]))) {
+    const image = new Image()
+    const url = URL.createObjectURL(sourceFile.value)
+    await new Promise<void>((resolve, reject) => {
+      image.onload = () => resolve()
+      image.onerror = () => reject(new Error('无法重编码这张图片'))
+      image.src = url
+    })
+    const canvas = document.createElement('canvas')
+    canvas.width = image.width
+    canvas.height = image.height
+    canvas.getContext('2d')?.drawImage(image, 0, 0)
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'))
+    URL.revokeObjectURL(url)
+    if (!blob) return
+    cleaned = new Uint8Array(await blob.arrayBuffer())
+    type = 'image/png'
+  }
+  const link = document.createElement('a')
+  const copy = new Uint8Array(cleaned.byteLength)
+  copy.set(cleaned)
+  link.href = URL.createObjectURL(new Blob([copy.buffer], { type }))
+  link.download = `clean-${sourceFile.value.name.replace(/\.\w+$/, '')}.` + (type === 'image/png' ? 'png' : 'jpg')
+  link.click()
+  URL.revokeObjectURL(link.href)
 }
 
 // 格式化曝光时间

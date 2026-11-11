@@ -1,5 +1,6 @@
 export const BACKUP_VERSION = 1
-export const BACKUP_TABLES = ['foodOptions', 'foodHistory', 'randomConfig', 'appSettings'] as const
+export const BACKUP_TABLES = ['foodOptions', 'foodHistory', 'randomConfig', 'appSettings', 'pomodoroDays'] as const
+const OPTIONAL_TABLES = new Set<string>(['pomodoroDays'])
 
 export interface HelperBackup {
   app: 'helper'
@@ -21,7 +22,7 @@ export function validateBackup(input: unknown): HelperBackup {
   if (!isRecord(input.indexedDB)) throw new Error('缺少 IndexedDB 数据')
   const indexedDB = {} as HelperBackup['indexedDB']
   for (const table of BACKUP_TABLES) {
-    const rows = input.indexedDB[table]
+    const rows = input.indexedDB[table] ?? (OPTIONAL_TABLES.has(table) ? [] : undefined)
     if (!Array.isArray(rows)) throw new Error(`${table} 必须是数组`)
     if (rows.some((row) => !isRecord(row))) throw new Error(`${table} 中存在无效记录`)
     indexedDB[table] = rows as Record<string, unknown>[]
