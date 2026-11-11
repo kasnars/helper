@@ -9,7 +9,8 @@ import { taxOnTaxable, withholdingSchedule } from './tax'
 import { mortgageSchedule } from './mortgage'
 import { compareModels, estimateCost } from './cost'
 import { convertUnit } from './units'
-import { convertCurrency, loadRates } from './currency'
+import { convertCurrency, CURRENCY_ENDPOINT, loadRates } from './currency'
+import { resolveTheme } from './theme'
 import { generateRecords, parseSchema, recordsToCsv } from './mock'
 import { serializeBackup, validateBackup } from './backup'
 import { stripJpegMetadata, stripPngMetadata } from './metadata'
@@ -169,12 +170,26 @@ describe('cost and units', () => {
   })
 })
 
+describe('theme preference', () => {
+  it('follows auto, light and dark', () => {
+    expect(resolveTheme('auto', false)).toBe('light')
+    expect(resolveTheme('auto', true)).toBe('dark')
+    expect(resolveTheme('light', true)).toBe('light')
+    expect(resolveTheme('dark', false)).toBe('dark')
+  })
+})
+
 describe('currency, mock and backup', () => {
   it('converts with cached rates and falls back offline', async () => {
     expect(convertCurrency(100, 'CNY', 'USD', { CNY: 1, USD: 0.14 })).toBeCloseTo(14)
     const storage = memory()
-    const liveFetch = (async () => ({ ok: true, json: async () => ({ date: '2026-01-01', rates: { USD: 0.14 } }) })) as unknown as typeof fetch
+    let requested = ''
+    const liveFetch = (async (input: RequestInfo | URL) => {
+      requested = String(input)
+      return { ok: true, json: async () => ({ date: '2026-01-01', rates: { USD: 0.14 } }) }
+    }) as unknown as typeof fetch
     const live = await loadRates(liveFetch, storage)
+    expect(requested).toBe(CURRENCY_ENDPOINT)
     expect(live.source).toBe('live')
     const cached = await loadRates(async () => { throw new Error('offline') }, storage)
     expect(cached.source).toBe('cache')

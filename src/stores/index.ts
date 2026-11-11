@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { getDB, type FoodOption, type RandomConfig } from '../db'
+import { resolveTheme } from '../lib/theme'
 import { RandomAlgorithmFactory, type RandomAlgorithm } from '../utils/randomAlgorithms'
 
 // 主题 Store
@@ -18,13 +19,9 @@ export const useThemeStore = defineStore('theme', () => {
 
   // 应用主题
   const applyTheme = () => {
-    let theme: 'light' | 'dark'
-    if (systemPreference.value === 'auto') {
-      theme = detectSystemTheme()
-    } else {
-      theme = systemPreference.value
-    }
+    const theme = resolveTheme(systemPreference.value, detectSystemTheme() === 'dark')
     isDark.value = theme === 'dark'
+    document.documentElement.dataset.theme = theme
 
     if (isDark.value) {
       document.documentElement.classList.add('dark')

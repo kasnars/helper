@@ -39,4 +39,19 @@
 - [x] OCR：英文样张识别为 `HELLO 123`，中文样张识别为 `你 好 世 界`。语言包使用解压后的 `.traineddata`，避免静态服务器把 `.gz` 再标成 gzip
 - [x] 视频转 GIF：1 秒纯色 mp4 经单线程 ffmpeg.wasm 转出 GIF，页面出现结果图
 
+## 2026-11-11 截图问题修复
+
+| 命令 | 结果 |
+| --- | --- |
+| `npx vue-tsc -b` | 通过，随后 `npm run build` 再次通过 |
+| `npx eslint .` | 通过 |
+| `npx vitest run` | 通过，20 个用例。新增主题 auto/light/dark，汇率请求地址改为 `api.frankfurter.dev` |
+| `npx playwright test` | 通过，9 个用例。浅色系统配色下点击主题按钮后，`dark:` 背景色和 Element Plus `--el-bg-color` 都会变 |
+| `pnpm install --frozen-lockfile --ignore-scripts` | 通过。用 pnpm 10.15.0 重写锁文件后，在干净目录安装 845 个包，没有改写锁文件 |
+| `npm run build` | 通过 |
+
+- 暗色不再跟着 `prefers-color-scheme`。`src/style.css` 用 `@custom-variant dark (&:where(.dark, .dark *))`，并 `@config` 接上原来的 `tailwind.config.js`。Element Plus 的 `theme-chalk/dark/css-vars.css` 只在 `html.dark` 下生效。
+- 汇率改为 `https://api.frankfurter.dev/v1/latest?base=CNY`。无头 Chromium 里 `fetch` 返回 200 和 `type: cors`。旧的 `api.frankfurter.app` 在同一浏览器里是 `Failed to fetch`。失败时仍是缓存，再没有缓存才是内置估算。端到端允许这三种来源文案，避免网络抖动把用例打红。
+- Dockerfile 继续用 pnpm 10.15.0，安装改为 `--frozen-lockfile`。本环境没有 Docker，装包命令与 Dockerfile 里的一致，已单独跑通。
+
 后两项的界面、本地资源和失败提示已经接上。冒烟测试只确认控件出现，没有在无头浏览器里加载约 30MB 的 wasm 和语言包做一次完整转换。构建已把这些文件放到 `public/` 和 `dist/`。

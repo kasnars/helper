@@ -9,7 +9,7 @@
     <div class="rounded-2xl bg-gray-950 p-6 text-white">
       <p class="text-sm text-gray-400">{{ amount }} {{ from }}</p>
       <p class="mt-2 text-4xl font-semibold" data-testid="currency-result">{{ resultText }} {{ to }}</p>
-      <p class="mt-3 text-sm" :class="source === 'live' ? 'text-emerald-300' : 'text-amber-300'">{{ sourceLabel }} <span v-if="updatedAt">· {{ updatedAt }}</span></p>
+      <p class="mt-3 text-sm" data-testid="currency-source" :class="source === 'live' ? 'text-emerald-300' : 'text-amber-300'">{{ sourceLabel }} <span v-if="updatedAt">· {{ updatedAt }}</span></p>
     </div>
     <p class="text-sm text-gray-500">汇率来自欧洲央行公开接口。离线时先用上次成功的缓存，没有缓存就用内置估算，界面会标明来源。</p>
   </div>

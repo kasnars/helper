@@ -146,6 +146,33 @@ test('life calculators produce a result', async ({ page }) => {
   await expect(page.getByText('首月月供')).toBeVisible()
 })
 
+test.describe('dark mode follows the class, not the system scheme', () => {
+  test.use({ colorScheme: 'light' })
+
+  test('toggle changes a dark: background', async ({ page }) => {
+    await page.goto('./')
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+    const shell = page.locator('.min-h-screen').first()
+    const before = await shell.evaluate((element) => getComputedStyle(element).backgroundColor)
+    const beforeElement = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--el-bg-color').trim())
+    await page.getByRole('button', { name: '切换主题' }).click()
+    await expect(page.locator('html')).toHaveClass(/dark/)
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+    const after = await shell.evaluate((element) => getComputedStyle(element).backgroundColor)
+    const afterElement = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--el-bg-color').trim())
+    expect(after).not.toBe(before)
+    expect(afterElement.toLowerCase()).not.toBe(beforeElement.toLowerCase())
+  })
+})
+
+test('currency reports a live rate or an offline fallback', async ({ page }) => {
+  await page.addInitScript(() => localStorage.removeItem('helper_currency_rates'))
+  await openTool(page, 'utility', 'activeUtilityTool', 'currency')
+  const source = page.getByTestId('currency-source')
+  await expect(source).toBeVisible()
+  await expect(source).toHaveText(/实时汇率|使用本地缓存|离线估算/)
+})
+
 test('favorite appears on the home page', async ({ page }) => {
   await openTool(page, 'life', 'activeLifeTool', 'tax')
   await page.getByRole('button', { name: '收藏' }).click()

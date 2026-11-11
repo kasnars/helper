@@ -1,5 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  // Tailwind v4 不读取这里的 darkMode。暗色由 src/style.css 的
+  // @custom-variant dark (&:where(.dark, .dark *)) 跟 html.dark 走。
   darkMode: 'selector',
   content: [
     "./index.html",

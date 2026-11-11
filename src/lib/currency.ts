@@ -1,4 +1,5 @@
 export const CURRENCY_CACHE_KEY = 'helper_currency_rates'
+export const CURRENCY_ENDPOINT = 'https://api.frankfurter.dev/v1/latest?base=CNY'
 
 export const FALLBACK_PER_CNY: Record<string, number> = {
   CNY: 1,
@@ -34,7 +35,7 @@ export function convertCurrency(amount: number, from: string, to: string, rates:
 
 export async function loadRates(fetchImpl: typeof fetch, storage: RateStorage): Promise<RateTable> {
   try {
-    const response = await fetchImpl('https://api.frankfurter.app/latest?from=CNY')
+    const response = await fetchImpl(CURRENCY_ENDPOINT)
     if (!response.ok) throw new Error(String(response.status))
     const data = await response.json() as { rates?: Record<string, number>; date?: string }
     if (!data.rates || typeof data.rates !== 'object') throw new Error('汇率数据无效')

@@ -138,7 +138,7 @@ mermaid 只在围栏语言为 `mermaid` 时渲染。导出 PDF 打开仅含正�
 
 ### 汇率
 
-请求 `https://api.frankfurter.app/latest?from=CNY`。`rates` 表示 1 人民币可兑换的外币数量。换算：`amount / rates[from] * rates[to]`。界面标明“实时”“缓存”或“离线估算”。
+请求 `https://api.frankfurter.dev/v1/latest?base=CNY`。旧域名 `api.frankfurter.app` 会把浏览器请求重定向走，且没有 CORS 头。`rates` 表示 1 人民币可兑换的外币数量。换算：`amount / rates[from] * rates[to]`。界面标明“实时”“缓存”或“离线估算”。
 
 ### 命令面板与收藏
 
