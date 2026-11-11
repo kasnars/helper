@@ -173,7 +173,8 @@ describe('currency, mock and backup', () => {
   it('converts with cached rates and falls back offline', async () => {
     expect(convertCurrency(100, 'CNY', 'USD', { CNY: 1, USD: 0.14 })).toBeCloseTo(14)
     const storage = memory()
-    const live = await loadRates(async () => ({ ok: true, json: async () => ({ date: '2026-01-01', rates: { USD: 0.14 } }) }) as unknown as typeof fetch, storage)
+    const liveFetch = (async () => ({ ok: true, json: async () => ({ date: '2026-01-01', rates: { USD: 0.14 } }) })) as unknown as typeof fetch
+    const live = await loadRates(liveFetch, storage)
     expect(live.source).toBe('live')
     const cached = await loadRates(async () => { throw new Error('offline') }, storage)
     expect(cached.source).toBe('cache')
@@ -198,12 +199,15 @@ describe('currency, mock and backup', () => {
       app: 'helper' as const,
       version: 1 as const,
       exportedAt: '2026-01-01T00:00:00.000Z',
-      indexedDB: { foodOptions: [], foodHistory: [], randomConfig: [{ id: 'default' }], appSettings: [{ id: 'theme' }] },
+      indexedDB: { foodOptions: [], foodHistory: [], randomConfig: [{ id: 'default' }], appSettings: [{ id: 'theme' }], pomodoroDays: [{ date: '2026-01-01', minutes: 25, note: '写完规格' }] },
       localStorage: { helper_favorites: '[]' },
     }
     expect(JSON.parse(serializeBackup(backup)).app).toBe('helper')
     expect(() => validateBackup({ ...backup, version: 2 })).toThrow(/版本/)
     expect(() => validateBackup({ ...backup, localStorage: { helper_favorites: [] } })).toThrow(/字符串/)
+    const legacy = { ...backup, indexedDB: { ...backup.indexedDB } }
+    delete (legacy.indexedDB as { pomodoroDays?: unknown }).pomodoroDays
+    expect(validateBackup(legacy).indexedDB.pomodoroDays).toEqual([])
   })
 })
 

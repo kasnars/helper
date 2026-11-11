@@ -45,7 +45,7 @@ export function rgbToHsl({ r, g, b }: RgbColor): HslColor {
   if (max === min) return { h: 0, s: 0, l: lightness * 100 }
   const delta = max - min
   const saturation = lightness > 0.5 ? delta / (2 - max - min) : delta / (max + min)
-  let hue = 0
+  let hue: number
   if (max === red) hue = (green - blue) / delta + (green < blue ? 6 : 0)
   else if (max === green) hue = (blue - red) / delta + 2
   else hue = (red - green) / delta + 4

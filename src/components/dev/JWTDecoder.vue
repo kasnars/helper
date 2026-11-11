@@ -13,11 +13,14 @@
           @input="decodeJWT"
         />
 
-        <div class="mt-4">
-          <el-button type="primary" class="w-full" @click="decodeJWT" :disabled="!jwtToken">
+        <el-input v-model="secret" class="mt-4" placeholder="HS256 / HS384 / HS512 密钥，留空则只解码" data-testid="jwt-secret" />
+        <div class="mt-4 flex gap-2">
+          <el-button type="primary" class="flex-1" data-testid="jwt-decode" @click="decodeJWT" :disabled="!jwtToken">
             解码 Token
           </el-button>
+          <el-button class="flex-1" data-testid="jwt-verify" :disabled="!jwtToken" @click="verify">校验签名</el-button>
         </div>
+        <p v-if="verifyResult" class="mt-3 text-sm" :class="verifyResult.ok ? 'text-emerald-600' : 'text-red-500'">{{ verifyResult.reason }}</p>
 
         <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
           <p class="text-sm text-blue-800 dark:text-blue-200">
@@ -107,8 +110,11 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { decodeJwt, verifyJwtHs } from '@/lib/jwt'
 
 const jwtToken = ref('')
+const secret = ref('')
+const verifyResult = ref<{ ok: boolean; reason: string } | null>(null)
 const decoded = ref<{
   header: string
   payload: string
@@ -131,125 +137,28 @@ const decoded = ref<{
   isExpired: false,
 })
 
-const decodeBase64 = (str: string): string => {
-  try {
-    // Add padding if necessary
-    const padding = '='.repeat((4 - (str.length % 4)) % 4)
-    const base64 = (str + padding).replace(/-/g, '+').replace(/_/g, '/')
-    return decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
-    )
-  } catch {
-    return ''
-  }
-}
-
-const formatJSON = (str: string): string => {
-  try {
-    return JSON.stringify(JSON.parse(str), null, 2)
-  } catch {
-    return str
-  }
-}
-
 const decodeJWT = () => {
-  if (!jwtToken.value) {
-    decoded.value = {
-      header: '',
-      payload: '',
-      signature: '',
-      isValid: null,
-      algorithm: '',
-      tokenType: '',
-      claims: [],
-      expiration: '',
-      isExpired: false,
-    }
+  verifyResult.value = null
+  if (!jwtToken.value.trim()) {
+    decoded.value = { ...decoded.value, header: '', payload: '', signature: '', isValid: null, algorithm: '', tokenType: '', claims: [], expiration: '', isExpired: false }
     return
   }
-
-  const parts = jwtToken.value.trim().split('.')
-  
-  if (parts.length !== 3) {
-    decoded.value = {
-      header: '',
-      payload: '',
-      signature: '',
-      isValid: false,
-      algorithm: '',
-      tokenType: '',
-      claims: [],
-      expiration: '',
-      isExpired: false,
-    }
-    return
+  const result = decodeJwt(jwtToken.value)
+  decoded.value = {
+    header: result.headerText,
+    payload: result.payloadText,
+    signature: result.signature,
+    isValid: result.validStructure,
+    algorithm: result.algorithm || '-',
+    tokenType: result.type || '-',
+    claims: result.claims.map((claim) => ({ name: `${claim.key} (${claim.label})`, value: claim.value })),
+    expiration: result.expiration,
+    isExpired: result.expired,
   }
+}
 
-  try {
-    const header = formatJSON(decodeBase64(parts[0]))
-    const payload = formatJSON(decodeBase64(parts[1]))
-    const signature = parts[2]
-
-    const headerObj = JSON.parse(decodeBase64(parts[0]))
-    const payloadObj = JSON.parse(decodeBase64(parts[1]))
-
-    // Extract claims
-    const claims: Array<{ name: string; value: string }> = []
-    const claimNames: Record<string, string> = {
-      iss: '签发者',
-      sub: '主题',
-      aud: '受众',
-      exp: '过期时间',
-      nbf: '生效时间',
-      iat: '签发时间',
-      jti: 'JWT ID',
-    }
-
-    for (const [key, label] of Object.entries(claimNames)) {
-      if (payloadObj[key]) {
-        let value = payloadObj[key]
-        if (key === 'exp' || key === 'nbf' || key === 'iat') {
-          value = new Date(value * 1000).toLocaleString('zh-CN')
-        }
-        claims.push({ name: `${key} (${label})`, value })
-      }
-    }
-
-    // Check expiration
-    let expiration = ''
-    let isExpired = false
-    if (payloadObj.exp) {
-      const expDate = new Date(payloadObj.exp * 1000)
-      expiration = expDate.toLocaleString('zh-CN')
-      isExpired = Date.now() > payloadObj.exp * 1000
-    }
-
-    decoded.value = {
-      header,
-      payload,
-      signature,
-      isValid: true,
-      algorithm: headerObj.alg || '-',
-      tokenType: headerObj.typ || '-',
-      claims,
-      expiration,
-      isExpired,
-    }
-  } catch {
-    decoded.value = {
-      header: '',
-      payload: '',
-      signature: '',
-      isValid: false,
-      algorithm: '',
-      tokenType: '',
-      claims: [],
-      expiration: '',
-      isExpired: false,
-    }
-  }
+const verify = async () => {
+  decodeJWT()
+  verifyResult.value = await verifyJwtHs(jwtToken.value, secret.value)
 }
 </script>

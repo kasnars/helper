@@ -12,6 +12,23 @@
       </div>
     </div>
 
+    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+      <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+        <h3 class="font-semibold text-gray-900 dark:text-white">明暗色阶</h3>
+        <div class="flex gap-2">
+          <el-button size="small" data-testid="palette-css" @click="showScaleCss">CSS 变量</el-button>
+          <el-button size="small" data-testid="palette-tailwind" @click="showScaleTailwind">Tailwind</el-button>
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-2 sm:grid-cols-6 lg:grid-cols-11">
+        <button v-for="item in scale" :key="item.step" type="button" class="text-center" @click="copyColor(item.hex)">
+          <div class="h-14 rounded-lg border border-black/5" :style="{ backgroundColor: item.hex }" />
+          <span class="mt-1 block text-xs text-gray-500">{{ item.step }}</span>
+          <span class="block font-mono text-[10px] text-gray-400">{{ item.hex }}</span>
+        </button>
+      </div>
+    </div>
+
     <!-- Harmony Palettes -->
     <div class="space-y-4">
       <div v-for="harmony in harmonies" :key="harmony.name"
@@ -61,6 +78,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { Refresh, CopyDocument } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import { scaleToCss, scaleToTailwind, tonalScale } from '@/lib/color'
 
 const baseColor = ref('#409EFF')
 const exportOutput = ref('')
@@ -166,6 +184,11 @@ const generateHarmonies = (hex: string): Harmony[] => {
 }
 
 const harmonies = computed(() => generateHarmonies(baseColor.value))
+const scale = computed(() => {
+  try { return tonalScale(baseColor.value) } catch { return [] }
+})
+const showScaleCss = () => { exportOutput.value = scaleToCss('brand', scale.value) }
+const showScaleTailwind = () => { exportOutput.value = scaleToTailwind('brand', scale.value) }
 
 const generateAll = () => {
   exportOutput.value = ''

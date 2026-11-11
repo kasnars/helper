@@ -2,7 +2,10 @@
   <div class="space-y-6">
     <!-- Color Picker -->
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-      <h3 class="font-semibold text-gray-900 dark:text-white mb-4">颜色选择器</h3>
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <h3 class="font-semibold text-gray-900 dark:text-white">颜色选择器</h3>
+            <el-button size="small" data-testid="open-palette" @click="openTool('palette')">生成色阶</el-button>
+          </div>
       <div class="flex flex-col md:flex-row gap-6">
         <div class="flex-shrink-0">
           <el-color-picker v-model="color" size="large" show-alpha />
@@ -167,6 +170,7 @@
 import { ref, computed, watch } from 'vue'
 import { CopyDocument } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import { openTool } from '@/tools/navigate'
 
 const color = ref('#409EFF')
 const colorInput = ref('')

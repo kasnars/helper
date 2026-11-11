@@ -37,9 +37,11 @@
         <el-checkbox v-model="options.removeXmlns" @change="optimize">移除冗余命名空间</el-checkbox>
       </div>
       <div class="mt-4">
-        <el-button type="primary" @click="optimize" :disabled="!inputSvg.trim()">
-          <el-icon><MagicStick /></el-icon> 优化 SVG
+        <el-button type="primary" data-testid="svg-svgo" @click="optimizeWithSvgo" :disabled="!inputSvg.trim()">
+          <el-icon><MagicStick /></el-icon> SVGO 优化
         </el-button>
+        <el-button @click="optimize" :disabled="!inputSvg.trim()">轻量清理</el-button>
+        <el-button data-testid="svg-vue" :disabled="!optimizedSvg" @click="copyVue">复制 Vue 组件</el-button>
       </div>
     </div>
 
@@ -281,6 +283,26 @@ const optimize = () => {
 
   optimizedSvg.value = svg
   optimizedSize.value = new Blob([svg]).size
+}
+
+const optimizeWithSvgo = async () => {
+  try {
+    const { optimize: svgoOptimize } = await import('svgo/browser')
+    const result = svgoOptimize(inputSvg.value, { multipass: true })
+    optimizedSvg.value = result.data
+    optimizedSize.value = new Blob([result.data]).size
+    ElMessage.success('SVGO 优化完成')
+  } catch (reason) {
+    ElMessage.error(reason instanceof Error ? `SVGO 不可用：${reason.message}` : 'SVGO 不可用')
+  }
+}
+
+const copyVue = async () => {
+  const name = 'IconGraphic'
+  const svg = optimizedSvg.value.replace(/<\?xml[^>]*>/g, '').replace(/<!DOCTYPE[^>]*>/gi, '').trim()
+  const source = `<template>\n  ${svg}\n</template>\n\n<script setup lang="ts">\ndefineOptions({ name: '${name}' })\n${'<' + '/script>'}\n`
+  await navigator.clipboard.writeText(source)
+  ElMessage.success('已复制 Vue 组件')
 }
 
 const copyOptimized = async () => {
