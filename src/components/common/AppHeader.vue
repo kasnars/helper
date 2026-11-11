@@ -70,230 +70,29 @@
           </div>
         </div>
 
-        <!-- Right: Search - 紧贴最右边 -->
-        <div class="flex items-center pr-2 ml-auto">
-          <el-autocomplete
-            v-model="searchQuery"
-            :fetch-suggestions="searchTools"
-            placeholder="搜索工具..."
-            class="w-80"
-            :trigger-on-focus="true"
-            @select="handleSelect"
-            @keyup.enter="handleFirstSelect"
+        <div class="ml-auto flex items-center gap-2 pr-2">
+          <ThemeToggle />
+          <button
+            type="button"
+            data-testid="open-palette"
+            class="flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:border-blue-300 hover:text-blue-600 dark:border-gray-700 dark:text-gray-300"
+            @click="openPalette"
           >
-            <template #prefix>
-              <el-icon><Search /></el-icon>
-            </template>
-            <template #default="{ item }">
-              <div class="flex items-center gap-2">
-                <div class="w-4 h-4 flex items-center justify-center">
-                  <el-icon v-if="item.icon === 'Food'" :size="16" class="text-gray-500"><Food /></el-icon>
-                  <el-icon v-else-if="item.icon === 'CircleCheckFilled'" :size="16" class="text-gray-500"><CircleCheckFilled /></el-icon>
-                  <el-icon v-else-if="item.icon === 'FullScreen'" :size="16" class="text-gray-500"><FullScreen /></el-icon>
-                  <el-icon v-else-if="item.icon === 'ScaleToOriginal'" :size="16" class="text-gray-500"><ScaleToOriginal /></el-icon>
-                  <el-icon v-else-if="item.icon === 'Picture'" :size="16" class="text-gray-500"><Picture /></el-icon>
-                  <el-icon v-else-if="item.icon === 'EditPen'" :size="16" class="text-gray-500"><EditPen /></el-icon>
-                  <el-icon v-else-if="item.icon === 'Document'" :size="16" class="text-gray-500"><Document /></el-icon>
-                  <el-icon v-else-if="item.icon === 'Search'" :size="16" class="text-gray-500"><Search /></el-icon>
-                  <el-icon v-else-if="item.icon === 'Share'" :size="16" class="text-gray-500"><Share /></el-icon>
-                  <el-icon v-else-if="item.icon === 'Timer'" :size="16" class="text-gray-500"><Timer /></el-icon>
-                  <el-icon v-else-if="item.icon === 'Brush'" :size="16" class="text-gray-500"><Brush /></el-icon>
-                  <el-icon v-else-if="item.icon === 'Key'" :size="16" class="text-gray-500"><Key /></el-icon>
-                  <el-icon v-else-if="item.icon === 'Sort'" :size="16" class="text-gray-500"><Sort /></el-icon>
-                  <el-icon v-else-if="item.icon === 'Postcard'" :size="16" class="text-gray-500"><Postcard /></el-icon>
-                  <el-icon v-else-if="item.icon === 'Link'" :size="16" class="text-gray-500"><Link /></el-icon>
-                  <el-icon v-else-if="item.icon === 'DataLine'" :size="16" class="text-gray-500"><DataLine /></el-icon>
-                  <el-icon v-else-if="item.icon === 'Calendar'" :size="16" class="text-gray-500"><Calendar /></el-icon>
-                  <el-icon v-else-if="item.icon === 'Lock'" :size="16" class="text-gray-500"><Lock /></el-icon>
-                  <el-icon v-else-if="item.icon === 'Crop'" :size="16" class="text-gray-500"><Crop /></el-icon>
-                  <el-icon v-else-if="item.icon === 'Avatar'" :size="16" class="text-gray-500"><Avatar /></el-icon>
-                  <el-icon v-else-if="item.icon === 'Edit'" :size="16" class="text-gray-500"><Edit /></el-icon>
-                  <el-icon v-else-if="item.icon === 'Grid'" :size="16" class="text-gray-500"><Grid /></el-icon>
-                  <el-icon v-else-if="item.icon === 'SetUp'" :size="16" class="text-gray-500"><SetUp /></el-icon>
-                </div>
-                <div>
-                  <div class="text-sm font-medium">{{ item.name }}</div>
-                  <div class="text-xs text-gray-500">{{ item.category }}</div>
-                </div>
-              </div>
-            </template>
-          </el-autocomplete>
+            <el-icon><Search /></el-icon>
+            <span class="hidden sm:inline">搜索工具</span>
+            <kbd class="hidden rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-500 dark:bg-gray-800 md:inline">Ctrl K</kbd>
+          </button>
         </div>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import {
-  Menu, Fold, Expand, Search,
-  Food, CircleCheckFilled, FullScreen, ScaleToOriginal,
-  Picture, EditPen, Document,
-  Share, Timer, Brush, Key, Sort, Postcard, Link,
-  DataLine, Calendar, Lock, Crop, Avatar, Edit,
-  Grid, SetUp
-} from '@element-plus/icons-vue'
+import { Menu, Fold, Expand, Search } from '@element-plus/icons-vue'
+import ThemeToggle from './ThemeToggle.vue'
 import { useAppStore } from '../../stores'
 
+const openPalette = () => window.dispatchEvent(new Event('helper:open-palette'))
+
 const appStore = useAppStore()
-const router = useRouter()
-const searchQuery = ref('')
-
-// 路径 → sessionStorage key 映射
-const tabStorageKeys: Record<string, string> = {
-  '/life': 'activeLifeTool',
-  '/imagetools': 'activeImageTool',
-  '/utility': 'activeUtilityTool',
-  '/devtools': 'activeDevTool',
-  '/securitytools': 'activeDevTool',
-  '/webtools': 'activeDevTool',
-  '/systemtools': 'activeDevTool',
-  '/texttools': 'activeTextTool',
-  '/other': 'activeOtherTool',
-}
-
-// 工具搜索数据
-const allTools = [
-  // 生活工具
-  { name: '今天吃什么', category: '生活工具', path: '/life', tab: 'food', icon: 'Food' },
-  { name: '随机数生成', category: '生活工具', path: '/life', tab: 'random', icon: 'CircleCheckFilled' },
-  { name: 'BMI 计算', category: '生活工具', path: '/life', tab: 'bmi', icon: 'DataLine' },
-  { name: '年龄星座', category: '生活工具', path: '/life', tab: 'age', icon: 'Calendar' },
-  { name: '日期计算', category: '生活工具', path: '/life', tab: 'datecalc', icon: 'Timer' },
-  { name: '倒计时', category: '生活工具', path: '/life', tab: 'countdown', icon: 'Timer' },
-  { name: '热量与基础代谢', category: '生活工具', path: '/life', tab: 'calorie', icon: 'DataLine' },
-  { name: '彩票号码生成', category: '生活工具', path: '/life', tab: 'lottery', icon: 'CircleCheckFilled' },
-  { name: '随机分组', category: '生活工具', path: '/life', tab: 'group', icon: 'DataLine' },
-  { name: '随机抽签', category: '生活工具', path: '/life', tab: 'draw', icon: 'CircleCheckFilled' },
-
-  // 图片工具
-  { name: '图片处理', category: '图片工具', path: '/imagetools', tab: 'processor', icon: 'Picture' },
-  { name: '图片裁剪', category: '图片工具', path: '/imagetools', tab: 'crop', icon: 'Crop' },
-  { name: '图片水印', category: '图片工具', path: '/imagetools', tab: 'watermark', icon: 'Picture' },
-  { name: 'EXIF 信息', category: '图片工具', path: '/imagetools', tab: 'exif', icon: 'Document' },
-  { name: '证件照换底色', category: '图片工具', path: '/imagetools', tab: 'idphoto', icon: 'Avatar' },
-  { name: '像素画', category: '图片工具', path: '/imagetools', tab: 'pixelart', icon: 'Grid' },
-  { name: 'Favicon生成', category: '图片工具', path: '/imagetools', tab: 'favicon', icon: 'Picture' },
-  { name: '图片格式检测', category: '图片工具', path: '/imagetools', tab: 'formatdetect', icon: 'Document' },
-  { name: '图片批量调整尺寸', category: '图片工具', path: '/imagetools', tab: 'batchresize', icon: 'Picture' },
-
-  // 实用工具
-  { name: '单位换算', category: '实用工具', path: '/utility', tab: 'unit', icon: 'ScaleToOriginal' },
-  { name: '密码生成', category: '实用工具', path: '/utility', tab: 'password', icon: 'Lock' },
-  { name: '加密解密', category: '实用工具', path: '/utility', tab: 'encrypt', icon: 'Key' },
-  { name: 'Cron 生成器', category: '实用工具', path: '/utility', tab: 'cron', icon: 'Timer' },
-  { name: 'JSON转Excel', category: '实用工具', path: '/utility', tab: 'json2excel', icon: 'Grid' },
-  { name: '金额大写', category: '实用工具', path: '/utility', tab: 'amount', icon: 'DataLine' },
-  { name: '文字转语音', category: '实用工具', path: '/utility', tab: 'tts', icon: 'Document' },
-  { name: 'Mock数据', category: '实用工具', path: '/utility', tab: 'mock', icon: 'DataLine' },
-  { name: 'CSS单位转换', category: '实用工具', path: '/utility', tab: 'cssunit', icon: 'SetUp' },
-  { name: 'JSON查看器', category: '实用工具', path: '/utility', tab: 'jsontree', icon: 'Share' },
-  { name: '音频可视化', category: '实用工具', path: '/utility', tab: 'audioviz', icon: 'Document' },
-  { name: '密码强度检测', category: '实用工具', path: '/utility', tab: 'pwcheck', icon: 'Lock' },
-  { name: 'TOTP验证码', category: '实用工具', path: '/utility', tab: 'totp', icon: 'Key' },
-
-  // 开发工具
-  { name: 'JSON 工具', category: '开发工具', path: '/devtools', tab: 'json', icon: 'Document' },
-  { name: '代码格式化', category: '开发工具', path: '/devtools', tab: 'formatter', icon: 'Edit' },
-  { name: 'YAML/JSON', category: '开发工具', path: '/devtools', tab: 'yaml', icon: 'Document' },
-  { name: 'SQL格式化', category: '开发工具', path: '/devtools', tab: 'sql', icon: 'Document' },
-  { name: 'SQL建表', category: '开发工具', path: '/devtools', tab: 'sqlcreate', icon: 'Grid' },
-  { name: 'Base64', category: '编码与安全', path: '/securitytools', tab: 'base64', icon: 'Share' },
-  { name: 'URL 编解码', category: '编码与安全', path: '/securitytools', tab: 'url', icon: 'Link' },
-  { name: 'JWT 解码', category: '编码与安全', path: '/securitytools', tab: 'jwt', icon: 'Key' },
-  { name: '哈希', category: '编码与安全', path: '/securitytools', tab: 'hash', icon: 'Key' },
-  { name: 'UUID', category: '编码与安全', path: '/securitytools', tab: 'uuid', icon: 'Postcard' },
-  { name: '颜色工具', category: 'Web 与 CSS', path: '/webtools', tab: 'color', icon: 'Brush' },
-  { name: '渐变生成', category: 'Web 与 CSS', path: '/webtools', tab: 'gradient', icon: 'Brush' },
-  { name: '阴影生成', category: 'Web 与 CSS', path: '/webtools', tab: 'boxshadow', icon: 'Document' },
-  { name: 'Flexbox', category: 'Web 与 CSS', path: '/webtools', tab: 'flexbox', icon: 'Grid' },
-  { name: 'HTTP状态码', category: 'Web 与 CSS', path: '/webtools', tab: 'http', icon: 'Link' },
-  { name: '调色板生成', category: 'Web 与 CSS', path: '/webtools', tab: 'palette', icon: 'Brush' },
-  { name: '时间戳', category: '系统与网络', path: '/systemtools', tab: 'timestamp', icon: 'Timer' },
-  { name: '进制转换', category: '系统与网络', path: '/systemtools', tab: 'radix', icon: 'Sort' },
-  { name: 'Chmod计算', category: '系统与网络', path: '/systemtools', tab: 'chmod', icon: 'SetUp' },
-  { name: 'Linux命令', category: '系统与网络', path: '/systemtools', tab: 'linux', icon: 'Document' },
-  { name: 'UA解析', category: '系统与网络', path: '/systemtools', tab: 'useragent', icon: 'Document' },
-  { name: 'IP计算器', category: '系统与网络', path: '/systemtools', tab: 'ipcalc', icon: 'Monitor' },
-  { name: 'JWT生成器', category: '编码与安全', path: '/securitytools', tab: 'jwtgenerate', icon: 'Key' },
-  { name: 'HMAC签名', category: '编码与安全', path: '/securitytools', tab: 'hmac', icon: 'Key' },
-  { name: 'CSS动画生成器', category: 'Web 与 CSS', path: '/webtools', tab: 'cssanimation', icon: 'Brush' },
-  { name: 'CSS Filter', category: 'Web 与 CSS', path: '/webtools', tab: 'cssfilter', icon: 'Brush' },
-
-  // 文本工具
-  { name: '正则测试', category: '文本工具', path: '/texttools', tab: 'regex', icon: 'Search' },
-  { name: '正则可视化', category: '文本工具', path: '/texttools', tab: 'regexviz', icon: 'Document' },
-  { name: '文本统计', category: '文本工具', path: '/texttools', tab: 'textstat', icon: 'Document' },
-  { name: '文本去重', category: '文本工具', path: '/texttools', tab: 'textdedup', icon: 'Document' },
-  { name: 'Markdown 预览', category: '文本工具', path: '/texttools', tab: 'markdown', icon: 'Document' },
-  { name: 'HTML实体', category: '文本工具', path: '/texttools', tab: 'htmlentity', icon: 'Document' },
-  { name: '字符频次', category: '文本工具', path: '/texttools', tab: 'charfreq', icon: 'Document' },
-  { name: '文本提取', category: '文本工具', path: '/texttools', tab: 'textextractor', icon: 'Document' },
-  { name: '文件对比', category: '文本工具', path: '/texttools', tab: 'filediff', icon: 'Document' },
-  { name: 'ROT13/凯撒密码', category: '文本工具', path: '/texttools', tab: 'rot13', icon: 'Key' },
-  { name: 'XML格式化', category: '文本工具', path: '/texttools', tab: 'xml', icon: 'Document' },
-  { name: '文本排序与过滤', category: '文本工具', path: '/texttools', tab: 'textsort', icon: 'Sort' },
-
-  // 其他工具
-  { name: '二维码工具', category: '其他工具', path: '/other', tab: 'qrcode', icon: 'FullScreen' },
-  { name: '在线画板', category: '其他工具', path: '/other', tab: 'whiteboard', icon: 'EditPen' },
-  { name: 'SVG 编辑器', category: '其他工具', path: '/other', tab: 'svg', icon: 'Edit' },
-  { name: 'PDF 工具', category: '其他工具', path: '/other', tab: 'pdf', icon: 'Document' },
-  { name: '响应式测试', category: '其他工具', path: '/other', tab: 'responsive', icon: 'Document' },
-  { name: '九宫格切图', category: '其他工具', path: '/other', tab: 'gridsplitter', icon: 'Grid' },
-  { name: 'ZIP浏览与解压', category: '其他工具', path: '/other', tab: 'zip', icon: 'Document' },
-]
-
-const searchTools = (queryString: string, cb: Function) => {
-  if (!queryString) {
-    cb([])
-    return
-  }
-  
-  const query = queryString.toLowerCase()
-  const results = allTools.filter(tool => 
-    tool.name.toLowerCase().includes(query) ||
-    tool.category.toLowerCase().includes(query)
-  )
-  
-  cb(results.map(tool => ({
-    value: tool.name,
-    ...tool,
-  })))
-}
-
-const handleSelect = (item: any) => {
-  navigateToTool(item)
-}
-
-const handleFirstSelect = () => {
-  // 当按下回车时，如果有搜索结果，跳转到第一个
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    const firstResult = allTools.find(tool => 
-      tool.name.toLowerCase().includes(query) ||
-      tool.category.toLowerCase().includes(query)
-    )
-    if (firstResult) {
-      navigateToTool(firstResult)
-    }
-  }
-}
-
-const navigateToTool = (tool: any) => {
-  // 设置对应的 tab（使用页面特定的 key）
-  if (tool.tab) {
-    const storageKey = tabStorageKeys[tool.path]
-    if (storageKey) {
-      sessionStorage.setItem(storageKey, tool.tab)
-    }
-  }
-
-  // 跳转到对应页面
-  router.push(tool.path)
-
-  // 清空搜索
-  searchQuery.value = ''
-}
 </script>

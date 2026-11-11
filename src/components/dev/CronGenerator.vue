@@ -6,7 +6,8 @@
       
       <el-input
         v-model="cronExpression"
-        placeholder="例如：0 */2 * * * *"
+        placeholder="例如：0 */2 * * * * 或 */5 * * * *"
+        data-testid="cron-input"
         size="large"
         @input="parseCron"
       />
@@ -14,10 +15,10 @@
       <!-- Format Hint -->
       <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
         <p class="text-sm text-blue-800 dark:text-blue-200">
-          <strong>格式：</strong>秒 分 时 日 月 周
+          <strong>格式：</strong>5 段「分 时 日 月 周」，或 6 段「秒 分 时 日 月 周」
         </p>
         <p class="text-xs text-blue-600 dark:text-blue-300 mt-1">
-          范围：0-59 0-59 0-23 1-31 1-12 0-6 (0=周日)
+          支持 *、列表、区间、步长。日和星期同时限制时，满足任意一个即运行。
         </p>
       </div>
     </div>
@@ -111,7 +112,7 @@
         </div>
 
         <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">接下来 5 次执行时间</h3>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">接下来 10 次执行时间</h3>
           <ul class="space-y-2">
             <li v-for="(time, index) in nextRuns" :key="index" class="text-sm text-gray-700 dark:text-gray-300">
               <el-tag size="small" class="mr-2">{{ index + 1 }}</el-tag>
@@ -135,6 +136,8 @@
         <el-button @click="applyTemplate('0 */10 * * * *')">每 10 分钟执行</el-button>
         <el-button @click="applyTemplate('0 0 0 1 * *')">每月 1 号执行</el-button>
         <el-button @click="applyTemplate('0 0 0 * * 0')">每周日执行</el-button>
+        <el-button @click="applyTemplate('*/5 * * * *')">每 5 分钟（5 段）</el-button>
+        <el-button @click="applyTemplate('0 9 * * 1-5')">工作日 9 点（5 段）</el-button>
       </div>
     </div>
   </div>
@@ -142,6 +145,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { describeCron, nextCronRuns } from '@/lib/cron'
 
 const cronExpression = ref('0 */2 * * * *')
 
@@ -200,45 +204,12 @@ const updateCron = () => {
 }
 
 const parseCron = () => {
-  const parts = cronExpression.value.trim().split(/\s+/)
-  if (parts.length !== 6) {
-    cronDescription.value = '无效的 Cron 表达式'
+  try {
+    cronDescription.value = describeCron(cronExpression.value)
+    nextRuns.value = nextCronRuns(cronExpression.value, 10).map((date) => date.toLocaleString('zh-CN', { hour12: false }))
+  } catch (reason) {
+    cronDescription.value = reason instanceof Error ? reason.message : '无效的 Cron 表达式'
     nextRuns.value = []
-    return
-  }
-
-  const [second, minute, hour, day, month, week] = parts
-  
-  // Generate description
-  let desc = '执行时间：'
-  
-  if (second === '*' && minute === '*' && hour === '*') {
-    desc += '每秒'
-  } else if (minute === '*' && hour === '*') {
-    desc += `每秒`
-  } else if (hour === '*') {
-    desc += `每小时的第 ${minute} 分钟`
-  } else if (day === '*' && month === '*' && week === '*') {
-    desc += `每天 ${hour}:`
-    desc += minute === '0' ? '00' : minute
-  } else {
-    desc += `${month}月${day}日 星期${week} ${hour}:${minute}:${second}`
-  }
-  
-  cronDescription.value = desc
-  
-  // Calculate next runs (simplified)
-  calculateNextRuns()
-}
-
-const calculateNextRuns = () => {
-  nextRuns.value = []
-  const now = new Date()
-  
-  // Simplified calculation - just show pattern
-  for (let i = 0; i < 5; i++) {
-    const future = new Date(now.getTime() + (i + 1) * 7200000) // Every 2 hours as example
-    nextRuns.value.push(future.toLocaleString('zh-CN'))
   }
 }
 

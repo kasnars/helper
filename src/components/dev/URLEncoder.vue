@@ -73,6 +73,7 @@
       <el-input
         v-model="urlInput"
         placeholder="输入完整的 URL..."
+        data-testid="url-input"
         @input="parseURL"
       />
 
@@ -83,13 +84,17 @@
           <el-descriptions-item label="端口">{{ parsedURL.port || '默认' }}</el-descriptions-item>
           <el-descriptions-item label="路径">{{ parsedURL.pathname }}</el-descriptions-item>
           <el-descriptions-item label="查询参数">
-            <div v-if="parsedURL.params.length > 0" class="space-y-2">
-              <div v-for="param in parsedURL.params" :key="param.key" class="flex items-center gap-2">
-                <el-tag size="small">{{ param.key }}</el-tag>
-                <span class="text-gray-600 dark:text-gray-400">{{ param.value }}</span>
+            <div class="space-y-2">
+              <div v-for="(param, index) in parsedURL.params" :key="index" class="flex gap-2">
+                <el-input v-model="param.key" placeholder="键" />
+                <el-input v-model="param.value" placeholder="值" />
+                <el-button @click="parsedURL.params.splice(index, 1)">删除</el-button>
+              </div>
+              <div class="flex gap-2">
+                <el-button size="small" @click="parsedURL.params.push({ key: '', value: '' })">添加参数</el-button>
+                <el-button size="small" type="primary" data-testid="url-rebuild" @click="rebuild">重新拼 URL</el-button>
               </div>
             </div>
-            <span v-else class="text-gray-400">无</span>
           </el-descriptions-item>
           <el-descriptions-item label="锚点">{{ parsedURL.hash || '无' }}</el-descriptions-item>
         </el-descriptions>
@@ -114,38 +119,28 @@ import { copyToClipboard } from '@/utils/clipboard'
 import { ref } from 'vue'
 import { CopyDocument } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import { buildUrl, decodeUrlComponent, encodeUrlComponent, parseUrl as parseUrlValue, type ParsedUrl } from '@/lib/url'
 
 const encodeInput = ref('')
 const encodeResult = ref('')
 const decodeInput = ref('')
 const decodeResult = ref('')
 const urlInput = ref('')
-const parsedURL = ref<{
-  protocol: string
-  hostname: string
-  port: string
-  pathname: string
-  params: Array<{ key: string; value: string }>
-  hash: string
-} | null>(null)
+const parsedURL = ref<ParsedUrl | null>(null)
 
 const handleEncode = () => {
   if (!encodeInput.value) return
-  try {
-    encodeResult.value = encodeURIComponent(encodeInput.value)
-    ElMessage.success('编码成功')
-  } catch {
-    ElMessage.error('编码失败')
-  }
+  encodeResult.value = encodeUrlComponent(encodeInput.value)
+  ElMessage.success('编码成功')
 }
 
 const handleDecode = () => {
   if (!decodeInput.value) return
   try {
-    decodeResult.value = decodeURIComponent(decodeInput.value)
+    decodeResult.value = decodeUrlComponent(decodeInput.value)
     ElMessage.success('解码成功')
-  } catch {
-    ElMessage.error('解码失败，输入内容格式不正确')
+  } catch (reason) {
+    ElMessage.error(reason instanceof Error ? reason.message : '解码失败')
   }
 }
 
@@ -154,25 +149,20 @@ const parseURL = () => {
     parsedURL.value = null
     return
   }
-
   try {
-    const url = new URL(urlInput.value)
-    const params: Array<{ key: string; value: string }> = []
-    
-    url.searchParams.forEach((value, key) => {
-      params.push({ key, value })
-    })
-
-    parsedURL.value = {
-      protocol: url.protocol,
-      hostname: url.hostname,
-      port: url.port,
-      pathname: url.pathname,
-      params,
-      hash: url.hash,
-    }
+    parsedURL.value = parseUrlValue(urlInput.value)
   } catch {
     parsedURL.value = null
+  }
+}
+
+const rebuild = () => {
+  if (!parsedURL.value) return
+  try {
+    urlInput.value = buildUrl(parsedURL.value)
+    ElMessage.success('已重新拼出 URL')
+  } catch (reason) {
+    ElMessage.error(reason instanceof Error ? reason.message : '无法拼接')
   }
 }
 

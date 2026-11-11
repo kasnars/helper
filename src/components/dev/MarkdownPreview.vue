@@ -30,6 +30,7 @@
             <el-icon><Download /></el-icon>
             下载 HTML
           </el-button>
+          <el-button class="flex-1" data-testid="markdown-print" @click="printPdf">导出 PDF</el-button>
         </div>
       </div>
 
@@ -74,8 +75,24 @@ const md = new MarkdownIt({
   breaks: true,
 })
 
-const renderMarkdown = () => {
+const defaultFence = md.renderer.rules.fence
+md.renderer.rules.fence = (tokens, idx, options, env, self) => {
+  const token = tokens[idx]
+  if (token.info.trim() === 'mermaid') {
+    return `<div class="mermaid">${token.content.replace(/</g, '&lt;')}</div>`
+  }
+  return defaultFence ? defaultFence(tokens, idx, options, env, self) : self.renderToken(tokens, idx, options)
+}
+
+const renderMarkdown = async () => {
   renderedHTML.value = md.render(markdownInput.value)
+  if (!markdownInput.value.includes('```mermaid')) return
+  await new Promise((resolve) => requestAnimationFrame(() => resolve(undefined)))
+  const nodes = document.querySelectorAll('.markdown-body .mermaid')
+  if (!nodes.length) return
+  const mermaid = (await import('mermaid')).default
+  mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default' })
+  await mermaid.run({ nodes: Array.from(nodes) as HTMLElement[] })
 }
 
 const insertText = (before: string, after: string) => {
@@ -171,6 +188,17 @@ ${renderedHTML.value}
   link.click()
   URL.revokeObjectURL(url)
   ElMessage.success('HTML 文件已下载')
+}
+
+const printPdf = () => {
+  const popup = window.open('', '_blank', 'noopener,width=900,height=700')
+  if (!popup) {
+    ElMessage.error('浏览器拦截了打印窗口')
+    return
+  }
+  const closeScript = '<' + '/script>'
+  popup.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Markdown</title><style>body{font-family:sans-serif;max-width:800px;margin:32px auto;line-height:1.7} pre{background:#f5f5f5;padding:12px}</style></head><body>${renderedHTML.value}<script>addEventListener('load',()=>print())${closeScript}</body></html>`)
+  popup.document.close()
 }
 
 const applyTemplate = (type: string) => {

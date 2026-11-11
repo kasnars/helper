@@ -3,6 +3,7 @@
     <div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       <!-- Header -->
       <AppHeader />
+      <CommandPalette />
       
       <!-- Side menu -->
       <SideMenu />
@@ -34,15 +35,18 @@ import { onMounted } from 'vue'
 import { ElConfigProvider } from 'element-plus'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import AppHeader from './components/common/AppHeader.vue'
+import CommandPalette from './components/common/CommandPalette.vue'
 import SideMenu from './components/common/SideMenu.vue'
 import ErrorBoundary from './components/common/ErrorBoundary.vue'
 import { useThemeStore, useFoodStore, useRandomStore, useAppStore } from './stores'
+import { useUsageStore } from './stores/usage'
 import { initDatabase } from './db'
 
 const themeStore = useThemeStore()
 const appStore = useAppStore()
 const foodStore = useFoodStore()
 const randomStore = useRandomStore()
+const usageStore = useUsageStore()
 
 // Initialize on mount
 onMounted(async () => {
@@ -56,6 +60,7 @@ onMounted(async () => {
   await foodStore.loadOptions()
   await foodStore.loadHistory()
   await randomStore.loadConfig()
+  usageStore.load()
 })
 </script>
 

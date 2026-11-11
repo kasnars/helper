@@ -12,6 +12,8 @@
             <el-radio-button value="json">JSON</el-radio-button>
             <el-radio-button value="css">CSS</el-radio-button>
             <el-radio-button value="html">HTML</el-radio-button>
+            <el-radio-button value="markdown">Markdown</el-radio-button>
+            <el-radio-button value="yaml">YAML</el-radio-button>
           </el-radio-group>
         </div>
 
@@ -100,12 +102,6 @@ import { copyToClipboard } from '@/utils/clipboard'
 import { ref, computed } from 'vue'
 import { Document, Delete, Check, Download, CopyDocument, Warning } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import * as prettier from 'prettier/standalone'
-import * as prettierBabel from 'prettier/plugins/babel'
-import * as prettierEstree from 'prettier/plugins/estree'
-import * as prettierTypescript from 'prettier/plugins/typescript'
-import * as prettierCss from 'prettier/plugins/postcss'
-import * as prettierHtml from 'prettier/plugins/html'
 
 const language = ref('javascript')
 const indent = ref(2)
@@ -149,6 +145,8 @@ const users: User[] = [
   json: `{"name":"Helper","version":"1.0.0","description":"A collection of useful tools","keywords":["tools","utilities","frontend"],"author":{"name":"Helper Team","email":"helper@example.com"},"dependencies":{"vue":"^3.4.0","element-plus":"^2.5.0"}}`,
   css: `.container{display:flex;justify-content:center;align-items:center;min-height:100vh;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%)}.card{background:white;border-radius:8px;padding:24px;box-shadow:0 4px 6px rgba(0,0,0,0.1)}.card h1{font-size:24px;margin-bottom:16px;color:#333}`,
   html: `<!DOCTYPE html><html><head><title>My Page</title></head><body><div class="container"><h1>Hello World</h1><p>This is a paragraph.</p><button onclick="alert('Clicked!')">Click Me</button></div></body></html>`,
+  markdown: `# 标题\n\n一段**没有换行**的文字。\n- 第一项\n- 第二项`,
+  yaml: `name: helper\ntools:\n- json\n- cron\nenabled: true`,
 }
 
 const loadSample = () => {
@@ -166,6 +164,16 @@ const clearInput = () => {
 const formatCode = async () => {
   try {
     errorMessage.value = ''
+    const prettier = await import('prettier/standalone')
+    const plugins = await Promise.all([
+      import('prettier/plugins/babel'),
+      import('prettier/plugins/estree'),
+      import('prettier/plugins/typescript'),
+      import('prettier/plugins/postcss'),
+      import('prettier/plugins/html'),
+      import('prettier/plugins/markdown'),
+      import('prettier/plugins/yaml'),
+    ])
 
     const parserMap: Record<string, string> = {
       javascript: 'babel',
@@ -173,9 +181,9 @@ const formatCode = async () => {
       json: 'json',
       css: 'css',
       html: 'html',
+      markdown: 'markdown',
+      yaml: 'yaml',
     }
-
-    const plugins = [prettierBabel, prettierEstree, prettierTypescript, prettierCss, prettierHtml]
 
     const result = await prettier.format(inputCode.value, {
       parser: parserMap[language.value],

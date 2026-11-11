@@ -3,7 +3,19 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- 左侧：配置 -->
       <div>
-        <h3 class="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200">⚙️ 数据配置</h3>
+        <h3 class="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200">按结构生成</h3>
+        <el-input v-model="schemaText" type="textarea" :rows="6" data-testid="mock-schema" placeholder="interface User { name: string; age: number }" />
+        <div class="my-3 flex flex-wrap items-center gap-2">
+          <el-input-number v-model="schemaCount" :min="1" :max="200" />
+          <el-radio-group v-model="locale">
+            <el-radio-button value="zh_CN">中文</el-radio-button>
+            <el-radio-button value="en">英文</el-radio-button>
+          </el-radio-group>
+          <el-button type="primary" data-testid="mock-generate" @click="generateFromSchema">生成</el-button>
+          <el-button @click="exportCsv">导出 CSV</el-button>
+        </div>
+        <p v-if="schemaError" class="mb-3 text-sm text-red-500">{{ schemaError }}</p>
+        <h3 class="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200">字段拼装</h3>
 
         <!-- 数据类型 -->
         <div class="mb-4">
@@ -83,6 +95,35 @@ import { copyToClipboard } from '@/utils/clipboard'
 import { ref } from 'vue'
 import { Refresh, DocumentCopy } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import { generateRecords, parseSchema, recordsToCsv, type MockLocale } from '@/lib/mock'
+
+const schemaText = ref('interface User {\n  name: string\n  age: number\n  email?: string\n}')
+const schemaCount = ref(5)
+const locale = ref<MockLocale>('zh_CN')
+const schemaError = ref('')
+const schemaRows = ref<Record<string, unknown>[]>([])
+
+const generateFromSchema = () => {
+  try {
+    const fields = parseSchema(schemaText.value)
+    schemaRows.value = generateRecords(fields, schemaCount.value, locale.value)
+    output.value = JSON.stringify(schemaRows.value, null, 2)
+    schemaError.value = ''
+  } catch (reason) {
+    schemaError.value = reason instanceof Error ? reason.message : '无法解析结构'
+  }
+}
+
+const exportCsv = () => {
+  if (!schemaRows.value.length) generateFromSchema()
+  if (!schemaRows.value.length) return
+  const blob = new Blob([recordsToCsv(schemaRows.value)], { type: 'text/csv;charset=utf-8' })
+  const link = document.createElement('a')
+  link.href = URL.createObjectURL(blob)
+  link.download = 'mock.csv'
+  link.click()
+  URL.revokeObjectURL(link.href)
+}
 
 const dataTypes = [
   { value: 'name', label: '姓名', icon: '👤' },
