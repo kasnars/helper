@@ -145,6 +145,21 @@
    - 一键复制单个或全部结果
    - 统计信息（最小值、最大值、平均值）
 
+### v2 新增与增强
+
+工具名单以 `src/tools/registry.ts` 为唯一来源，侧栏、首页、命令面板和收藏都读这一份。
+
+- Cron 中文解析和接下来 10 次运行，JWT 的 HS256/384/512 校验，URL 查询参数可编辑后拼回
+- 行级和词级文本对比，SQL 方言格式化，Prettier 格式化 JS/TS/CSS/HTML/JSON/Markdown/YAML
+- 由 interface 或 JSON 样例生成 Mock 数据，Markdown 预览支持 Mermaid，并可打印成 PDF
+- curl 转 fetch、axios 和 Node
+- 色阶调色板、CSS 阴影/渐变/圆角/贝塞尔、SVGO 压缩并导出 Vue 组件、图标 zip 和 web manifest
+- 图片裁剪、文字和图片水印、EXIF 查看与清除、长图拼接
+- 图片 OCR（tesseract.js，中英文，本地语言包）和视频转 GIF（单线程 ffmpeg.wasm）
+- 番茄钟和每日复盘、记账本、倒计时与纪念日、个税累计预扣、房贷计划、AI 接口费用估算
+- 单位换算，以及带本地缓存和离线估算的货币换算
+- Ctrl/Cmd+K 命令面板、收藏和最近使用、可安装的 PWA、整包数据导出与校验恢复
+
 ### ✨ 通用特性
 
 - 🌙 白天/黑夜主题切换
@@ -155,15 +170,24 @@
 - 🔒 纯前端处理，数据不上传服务器
 - 📋 一键复制功能
 - 💫 拖拽上传支持
+- ⌨️ Ctrl/Cmd+K 搜索并打开任意工具
+- ⭐ 收藏和最近使用
+- 📦 可安装，已访问过的页面可离线打开
 
 ## 项目结构
 
 ```
 src/
+├── tools/               # 工具注册表和跳转
+│   ├── registry.ts      # 菜单、首页、命令面板、收藏共用
+│   └── navigate.ts
+├── lib/                 # 可单测的纯函数
 ├── components/
 │   ├── common/          # 公共组件
 │   │   ├── AppHeader.vue    # 顶部导航
 │   │   ├── SideMenu.vue     # 左侧菜单
+│   │   ├── CommandPalette.vue # Ctrl/Cmd+K
+│   │   ├── ToolPage.vue     # 分类页工具切换
 │   │   ├── ThemeToggle.vue  # 主题切换按钮
 │   │   └── ToolCard.vue     # 工具卡片
 │   ├── dev/             # 开发者工具
@@ -226,6 +250,9 @@ src/
 | 今天吃什么 | [今天吃什么.md](./doc/今天吃什么.md) | 转盘动画、菜品管理 |
 | 图片压缩 | [图片压缩.md](./doc/图片压缩.md) | 批量压缩、质量调节 |
 | 密码管理 | [密码管理.md](./doc/密码管理.md) | 增删改查、导入导出 |
+| 命令面板 | [命令面板.md](./doc/命令面板.md) | 搜索、收藏、最近使用 |
+| 数据备份 | [数据备份.md](./doc/数据备份.md) | 整包导出和校验恢复 |
+| PWA | [PWA.md](./doc/PWA.md) | 安装和离线打开 |
 
 > 📖 完整文档索引请查看：[doc/README.md](./doc/README.md)
 
@@ -252,6 +279,12 @@ npm run build
 
 # 预览生产构建
 npm run preview
+
+# 类型检查、lint、单元测试、端到端冒烟
+npm run typecheck
+npm run lint
+npm run test
+npm run test:e2e
 ```
 
 ## 文档结构
@@ -291,12 +324,11 @@ doc/
 
 ## 项目统计
 
-- **总功能数**: 17 个
-- **已完成功能**: 17 个 ✅
-- **技术文档**: 12 个功能文档 + 1 个索引文档 + 1 个总结文档
-- **文档覆盖率**: 70.6% (12/17)
-- **代码行数**: ~8,000 行
-- **依赖包**: 20+ 个
+- **注册工具**: 98 个（`src/tools/registry.ts`）
+- **v2 新增或重做的能力**: 27 项，另有命令面板、收藏、PWA、整包备份的说明文档
+- **技术文档**: `doc/` 下每个主要功能一篇，索引见 [doc/README.md](./doc/README.md)
+- **`src` 代码行数**: 约 26,000 行（含原有工具）
+- **需求、规格、计划和验证记录**: `docs/requirements-v2.md`、`docs/spec-v2.md`、`docs/plan-v2.md`、`docs/progress-v2.md`
 
 ## 开发规范
 
