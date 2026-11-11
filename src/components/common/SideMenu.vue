@@ -60,8 +60,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { HomeFilled, Star, More, Tools, Memo, Suitcase, Picture, Lock, Brush, Monitor } from '@element-plus/icons-vue'
 import { useAppStore } from '../../stores'
+import { menuPages } from '../../tools/registry'
 
 const appStore = useAppStore()
 
@@ -96,18 +96,7 @@ onUnmounted(() => {
   window.removeEventListener('resize', checkMobile)
 })
 
-const menuRoutes = computed(() => [
-  { path: '/', title: '首页', icon: HomeFilled },
-  { path: '/imagetools', title: '图片工具', icon: Picture },
-  { path: '/texttools', title: '文本工具', icon: Memo },
-  { path: '/utility', title: '实用工具', icon: Suitcase },
-  { path: '/devtools', title: '开发工具', icon: Tools },
-  { path: '/securitytools', title: '编码与安全', icon: Lock },
-  { path: '/webtools', title: 'Web 与 CSS', icon: Brush },
-  { path: '/systemtools', title: '系统与网络', icon: Monitor },
-  { path: '/life', title: '生活工具', icon: Star },
-  { path: '/other', title: '其他工具', icon: More },
-])
+const menuRoutes = computed(() => menuPages)
 
 // 点击菜单项时，仅在移动端关闭菜单
 const handleMenuClick = () => {
